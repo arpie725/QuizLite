@@ -24,7 +24,7 @@ function authMiddleware(req, res, next) {
       return res.status(401).json({ success: false, message: 'Invalid token' });
     }
     // modify the request to include a userId
-    req.userId = decoded.indexOf;
+    req.userId = decoded.id;
     // continue to the endpoint
     next();
   });
