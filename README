@@ -1,0 +1,18 @@
+This is my Quizlet inspired Web App!
+It's a dockerized, full stack flashcards application that uses a Nextjs frontend, a Nodejs backend, a PostgreSQL database, a Prisma ORM, and JWT Authentication.
+
+For Development:
+
+- Frontend:
+  - Navigate to the frontend folder
+  - run 'npm install'
+  - run 'npm run dev'
+
+- Backend:
+  - Navigate to the backend folder
+  - run 'npm install'
+  - run 'npm run dev'
+
+
+
+To run in Docker (Coming Soon!)

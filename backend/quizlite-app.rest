@@ -1,0 +1,29 @@
+
+
+## Register a user
+POST http://localhost:1322/auth/register
+Content-Type: application/json
+
+{
+  "username": "arpie",
+  "password": "password"
+}
+
+### Log in a user
+POST http://localhost:1322/auth/login
+Content-Type: application/json
+
+{
+  "username": "arpie",
+  "password": "password"
+}
+
+### Log in using invalid credentials
+POST http://localhost:1322/auth/login
+Content-Type: application/json
+
+{
+  "username": "arpie",
+  "password": "wrongPassword!"
+}
+
