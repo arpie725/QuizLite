@@ -12,7 +12,7 @@
 // any changes to the db needs a npx prisma generate
 
 // assuming postgresql is on port 5432
-// psql -U postgress -h localhost -p 5432
+// psql -U postgres -h localhost -p 5432
 // to switch to 'mydb' database
 // \c mydb
 // to view tables

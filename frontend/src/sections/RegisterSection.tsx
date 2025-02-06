@@ -35,7 +35,7 @@ export const Register = () => {
       .then((data) => {
         console.log('Response from backend: ', data);
         // handle the response
-        const { token } = data;
+        const { token } = data.data;
         console.log('TOKEN = ' + token);
         // put the token in local storage
         localStorage.setItem('token', data.data.token);
