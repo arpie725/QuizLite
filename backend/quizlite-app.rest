@@ -28,11 +28,33 @@ Content-Type: application/json
 }
 
 ### Create a new study set
-POST http://localhost:1322/studySet/create
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODczMDE2LCJleHAiOjE3Mzg5NTk0MTZ9.WhkyKNYTtCdo90SrDnl9p-7BSIRA4LsYovSvQxz4BtE
+POST http://localhost:1322/studySet
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
 Content-Type: application/json
 
 {
   "title": "Physics",
-  "isPublic": 0
+  "isPublic": false
+}
+
+### Delete a study set
+DELETE http://localhost:1322/studySet/11
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
+
+### Change the name of a study set
+PUT http://localhost:1322/studySet/12
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
+Content-Type: application/json
+
+{
+  "title": "Pharmacy"
+}
+
+### Change the visibility of a study set
+PUT http://localhost:1322/studySet/12
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
+Content-Type: application/json
+
+{
+  "isPublic": false
 }

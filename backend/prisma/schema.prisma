@@ -35,7 +35,7 @@ model Set {
   title     String
   isPublic  Boolean   @default(false)
   tags      Tag[]     @relation("SetTags")
-  cards     Card[]   
+  cards     Card[]
   userId    Int
   user      User      @relation(fields: [userId], references: [id])
 }
@@ -46,7 +46,7 @@ model Card {
   answer      String
   isComplete  Boolean   @default(false)
   setId       Int
-  set         Set       @relation(fields: [setId], references: [id])
+  set         Set       @relation(fields: [setId], references: [id], onDelete: Cascade)
 }
 
 model Tag {
