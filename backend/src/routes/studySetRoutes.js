@@ -166,4 +166,45 @@ router.delete('/:setId', async (req, res) => {
   }
 });
 
+/*
+  retrieves the study set from the database
+    - ensures setId belongs to the user
+    - queries the database for the study set
+    - returns the study set
+*/
+router.get('/:setId/', async (req, res) => {
+  const setId = parseInt(req.params.setId);
+  const userId = req.userId;
+  // interact with the database
+  try {
+    // verify the setId exists and belongs to the user
+    const { curSet, cardCount } = await findAndVerifySet(setId, userId);
+    // return the set from the database
+    return res.status(201).json({
+      success: true,
+      message: 'Retrieved the set',
+      data: {
+        set: {
+          ...curSet,
+          cardCount,
+        },
+      },
+    });
+  } catch (er) {
+    if (
+      er instanceof InvalidParamsError ||
+      er instanceof NotFoundError ||
+      er instanceof UnauthorizedError
+    ) {
+      return res
+        .status(er.statusCode)
+        .json({ success: false, errorType: er.name, message: er.message });
+    }
+    console.log(er);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+});
+
 export default router;
