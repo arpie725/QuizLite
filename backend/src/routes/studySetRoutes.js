@@ -69,7 +69,7 @@ router.post('/', async (req, res) => {
     if (er instanceof InvalidParamsError || er instanceof DuplicateEntryError) {
       return res
         .status(er.statusCode)
-        .json({ success: false, message: er.message });
+        .json({ success: false, errorType: er.name, message: er.message });
     }
     console.log(er);
     return res
@@ -77,7 +77,6 @@ router.post('/', async (req, res) => {
       .json({ success: false, message: 'Internal server error' });
   }
 });
-
 
 /*
   edits an existing study set
@@ -123,13 +122,12 @@ router.put('/:setId', async (req, res) => {
     ) {
       return res
         .status(er.statusCode)
-        .json({ success: false, message: er.message });
+        .json({ success: false, errorType: er.name, message: er.message });
     }
     console.log(er);
     res.status(500).json({ success: false, message: er });
   }
 });
-
 
 /*
   deletes an existing study set
@@ -161,7 +159,7 @@ router.delete('/:setId', async (req, res) => {
     ) {
       return res
         .status(er.statusCode)
-        .json({ success: false, message: er.message });
+        .json({ success: false, errorType: er.name, message: er.message });
     }
     console.log(er);
     return res.status(500).json({ success: false, message: er });

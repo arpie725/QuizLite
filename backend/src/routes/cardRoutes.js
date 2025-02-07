@@ -7,6 +7,7 @@ import {
   UnauthorizedError,
 } from '../utils/errors.js';
 import { findAndVerifySet } from '../utils/studySetHelpers.js';
+import { NODATA } from 'dns';
 
 const router = express.Router();
 
@@ -68,7 +69,7 @@ router.post('/:setId', async (req, res) => {
     ) {
       return res
         .status(er.statusCode)
-        .json({ success: false, message: er.message });
+        .json({ success: false, errorType: er.name, message: er.message });
     }
     return res
       .status(500)
@@ -133,7 +134,7 @@ router.put('/:cardId', async (req, res) => {
     ) {
       return res
         .status(er.statusCode)
-        .json({ success: false, message: er.message });
+        .json({ success: false, errorType: er.name, message: er.message });
     }
     console.log(er);
     return res
@@ -148,5 +149,48 @@ router.put('/:cardId', async (req, res) => {
     - deletes the card from the database
     - returns 204 status
 */
+router.delete('/:cardId', async (req, res) => {
+  const cardId = parseInt(req.params.cardId);
+  const userId = req.userId;
+  // interact with the database
+  try {
+    // make sure cardId is not undefined
+    if (cardId === undefined) {
+      throw new InvalidParamsError('No cardId was given');
+    }
+    // make sure the card exists
+    const curCard = await prisma.card.findUnique({
+      where: {
+        id: cardId,
+      },
+    });
+    if (!curCard) {
+      throw new NotFoundError(`Card with id: ${cardId} not found`);
+    }
+    // validate the study set belongs to the user
+    await findAndVerifySet(curCard.setId, userId);
+    // delete the card from the database
+    await prisma.card.delete({
+      where: {
+        id: cardId,
+      },
+    });
+    return res.sendStatus(204); // 204 means no content
+  } catch (er) {
+    if (
+      er instanceof InvalidParamsError ||
+      er instanceof NotFoundError ||
+      er instanceof UnauthorizedError
+    ) {
+      return res
+        .status(er.statusCode)
+        .json({ success: false, errorType: er.name, message: er.message });
+    }
+    console.log(er);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal service error' });
+  }
+});
 
 export default router;
