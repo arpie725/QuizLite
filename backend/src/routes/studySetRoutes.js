@@ -18,14 +18,11 @@ const router = express.Router();
     - ensures the user is not adding an already created study set
     - adds a new set entry into the database
     - creates a default flashcard for new study sets
-    - returns the newly created study set with the default card inside it
+    - returns the newly created study set
 */
 router.post('/', async (req, res) => {
   const { title, isPublic } = req.body;
-  const userId = req.userId;
-  console.log(
-    `Creating a new study set with title: ${title}, isPublic: ${isPublic}, userId: ${userId}`
-  );
+  const userId_ = req.userId;
   // interact with the db
   try {
     // check if title is empty or undefined
@@ -33,9 +30,9 @@ router.post('/', async (req, res) => {
       throw new InvalidParamsError('Title cannot be empty');
     }
     // check the set already exists
-    if (await setExists(title, userId)) {
+    if (await setExists(title, userId_)) {
       throw new DuplicateEntryError(
-        `Study set with with title: ${title} and userId: ${userId} already exists`
+        `Study set with with title: ${title} and userId: ${userId_} already exists`
       );
     }
     // add the new study set entry into the database
@@ -43,11 +40,13 @@ router.post('/', async (req, res) => {
       data: {
         title,
         isPublic,
-        user: { connect: { id: userId } },
+        user: { connect: { id: userId_ } },
       },
     });
+    // remove the userId from the set
+    const { userId, ...setWithoutUserId } = newSet;
     // create a default flashcard
-    const defaultCard = await prisma.card.create({
+    await prisma.card.create({
       data: {
         question: 'What color is the sky',
         answer: 'Blue!',
@@ -60,8 +59,7 @@ router.post('/', async (req, res) => {
       message: 'Created a new study set',
       data: {
         set: {
-          ...newSet,
-          cards: [{ ...defaultCard }],
+          ...setWithoutUserId,
         },
       },
     });
@@ -87,7 +85,7 @@ router.post('/', async (req, res) => {
 */
 router.put('/:setId', async (req, res) => {
   const setId = parseInt(req.params.setId);
-  const userId = req.userId;
+  const userId_ = req.userId;
   const { title, isPublic } = req.body;
   // interact with the database
   try {
@@ -96,7 +94,7 @@ router.put('/:setId', async (req, res) => {
       throw new InvalidParamsError('Title cannot be empty');
     }
     // verify setId exists and belongs to the user
-    await findAndVerifySet(setId, userId);
+    await findAndVerifySet(setId, userId_);
     // update the title
     const updatedSet = await prisma.set.update({
       where: {
@@ -107,11 +105,17 @@ router.put('/:setId', async (req, res) => {
         isPublic,
       },
     });
+    // remove the userId from the set
+    const { userId, ...setWithoutUserId } = updatedSet;
     // return the updated set
     return res.status(200).json({
       success: true,
       message: 'Updated the study set',
-      data: updatedSet,
+      data: {
+        set: {
+          ...setWithoutUserId,
+        },
+      },
     });
   } catch (er) {
     if (
@@ -174,18 +178,20 @@ router.delete('/:setId', async (req, res) => {
 */
 router.get('/:setId/', async (req, res) => {
   const setId = parseInt(req.params.setId);
-  const userId = req.userId;
+  const userId_ = req.userId;
   // interact with the database
   try {
     // verify the setId exists and belongs to the user
-    const { curSet, cardCount } = await findAndVerifySet(setId, userId);
+    const { curSet, cardCount } = await findAndVerifySet(setId, userId_);
+    // remove the userId from the set
+    const { userId, ...setWithoutUserId } = curSet;
     // return the set from the database
     return res.status(201).json({
       success: true,
       message: 'Retrieved the set',
       data: {
         set: {
-          ...curSet,
+          ...setWithoutUserId,
           cardCount,
         },
       },
@@ -215,11 +221,13 @@ router.get('/:setId/', async (req, res) => {
 */
 router.get('/:setId/cards', async (req, res) => {
   const setId = parseInt(req.params.setId);
-  const userId = req.userId;
+  const userId_ = req.userId;
   // interact with the database
   try {
     // verify study set belongs to user
-    const { curSet, cardCount } = await findAndVerifySet(setId, userId);
+    const { curSet, cardCount } = await findAndVerifySet(setId, userId_);
+    // remove the userId from the set
+    const { userId, ...setWithoutUserId } = curSet;
     // query the database for all cards that have setId
     const cards = await prisma.card.findMany({
       where: {
@@ -232,7 +240,7 @@ router.get('/:setId/cards', async (req, res) => {
       message: 'Retrieved all cards from set',
       data: {
         set: {
-          ...curSet,
+          ...setWithoutUserId,
           cardCount,
         },
         cards,

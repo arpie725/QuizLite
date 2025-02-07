@@ -27,6 +27,7 @@ router.get('/sets', async (req, res) => {
         userId: userId_,
       },
     });
+    // remove the userId from each set
     const setsWithoutUserId = sets.map((set) => {
       const { userId, ...rest } = set;
       return rest;
