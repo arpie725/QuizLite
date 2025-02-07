@@ -45,7 +45,7 @@ async function findAndVerifySet(setId, userId) {
 }
 
 /*
-  determines if a set already exists
+  determines if a set with the same title already exists
   [Params]: title (string), userId (int)
   [Returns]: boolean of whether the set exists in the database
 */

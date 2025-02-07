@@ -95,6 +95,12 @@ router.put('/:setId', async (req, res) => {
     }
     // verify setId exists and belongs to the user
     await findAndVerifySet(setId, userId_);
+    // verify that a set with the same title doesn't already exist
+    if (await setExists(title, userId_)) {
+      throw new DuplicateEntryError(
+        `Study set with with title: ${title} and userId: ${userId_} already exists`
+      );
+    }
     // update the title
     const updatedSet = await prisma.set.update({
       where: {
@@ -122,7 +128,8 @@ router.put('/:setId', async (req, res) => {
       er instanceof NotFoundError ||
       er instanceof UnauthorizedError ||
       er instanceof InternalError ||
-      er instanceof InvalidParamsError
+      er instanceof InvalidParamsError ||
+      er instanceof DuplicateEntryError
     ) {
       return res
         .status(er.statusCode)
