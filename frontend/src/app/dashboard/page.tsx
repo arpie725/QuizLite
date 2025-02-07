@@ -3,14 +3,14 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-const Dashboard = () => {
+const DashboardPage = () => {
   const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       console.log('no token found!');
-      router.push('/');
+      router.push('/auth');
     }
     // TODO: use token to get data from server
     // make sure to check if the token is a valid token (jwt.verify in server)
@@ -23,4 +23,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default DashboardPage;
