@@ -1,0 +1,47 @@
+class NotFoundError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'NotFoundError';
+    this.statusCode = 404;
+  }
+}
+
+class UnauthorizedError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'UnauthorizedError';
+    this.statusCode = 403;
+  }
+}
+
+class InternalError extends Error {
+  constructor() {
+    super('Internal server error');
+    this.name = 'InternalError';
+    this.statusCode = 503;
+  }
+}
+
+class InvalidParamsError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'Invalid Params Error';
+    this.statusCode = 400;
+  }
+}
+
+class DuplicateEntryError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'Duplicate Entry Error';
+    this.statusCode = 400;
+  }
+}
+
+export {
+  NotFoundError,
+  UnauthorizedError,
+  InternalError,
+  InvalidParamsError,
+  DuplicateEntryError,
+};

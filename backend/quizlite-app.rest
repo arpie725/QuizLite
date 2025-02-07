@@ -14,7 +14,7 @@ POST http://localhost:1322/auth/login
 Content-Type: application/json
 
 {
-  "username": "arpie",
+  "username": "arpie1",
   "password": "password"
 }
 
@@ -29,25 +29,25 @@ Content-Type: application/json
 
 ### Create a new study set
 POST http://localhost:1322/studySet
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODg4OTQyLCJleHAiOjE3Mzg5NzUzNDJ9.xbMBdAp-hs26f7poS4FnAkOxnrfp9jhSh3yfwMI9h2w
 Content-Type: application/json
 
 {
-  "title": "Physics",
+  "title": "Music",
   "isPublic": false
 }
 
 ### Delete a study set
-DELETE http://localhost:1322/studySet/11
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
+DELETE http://localhost:1322/studySet/17
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODg4OTQyLCJleHAiOjE3Mzg5NzUzNDJ9.xbMBdAp-hs26f7poS4FnAkOxnrfp9jhSh3yfwMI9h2w
 
 ### Change the name of a study set
-PUT http://localhost:1322/studySet/12
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
+PUT http://localhost:1322/studySet/17
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODg4OTQyLCJleHAiOjE3Mzg5NzUzNDJ9.xbMBdAp-hs26f7poS4FnAkOxnrfp9jhSh3yfwMI9h2w
 Content-Type: application/json
 
 {
-  "title": "Pharmacy"
+  "title": "Computer Science",
 }
 
 ### Change the visibility of a study set

@@ -1,5 +1,13 @@
 import express from 'express';
 import prisma from '../prismaClient.js';
+import { findAndVerifySet, setExists } from '../utils/studySetHelpers.js';
+import {
+  NotFoundError,
+  UnauthorizedError,
+  InternalError,
+  InvalidParamsError,
+  DuplicateEntryError,
+} from '../utils/errors.js';
 
 const router = express.Router();
 
@@ -18,30 +26,17 @@ router.post('/', async (req, res) => {
   console.log(
     `Creating a new study set with title: ${title}, isPublic: ${isPublic}, userId: ${userId}`
   );
-  // check if title is empty or undefined
-  if (!title) {
-    console.log('Title cannot be empty');
-    return res
-      .status(400)
-      .json({ success: false, message: 'Title cannot be empty' });
-  }
   // interact with the db
   try {
-    // check the set table for userId == userId and title == title
-    const existingSet = await prisma.set.findFirst({
-      where: {
-        userId: userId,
-        title: title,
-      },
-    });
-    if (existingSet) {
-      console.log(
+    // check if title is empty or undefined
+    if (!title) {
+      throw new InvalidParamsError('Title cannot be empty');
+    }
+    // check the set already exists
+    if (await setExists(title, userId)) {
+      throw new DuplicateEntryError(
         `Study set with with title: ${title} and userId: ${userId} already exists`
       );
-      return res.status(400).json({
-        success: false,
-        message: `User ${userId} with study set '${title}' already exists`,
-      });
     }
     // add the new study set entry into the database
     const newSet = await prisma.set.create({
@@ -71,6 +66,11 @@ router.post('/', async (req, res) => {
       },
     });
   } catch (er) {
+    if (er instanceof InvalidParamsError || er instanceof DuplicateEntryError) {
+      return res
+        .status(er.statusCode)
+        .json({ success: false, message: er.message });
+    }
     console.log(er);
     return res
       .status(503)
@@ -89,29 +89,9 @@ router.delete('/:setId', async (req, res) => {
   const userId = req.userId;
   // interact with the database
   try {
-    // find the study set with id == setId
-    const curSet = await prisma.set.findUnique({
-      where: {
-        id: setId,
-      },
-    });
-    if (!curSet) {
-      console.log(`Study set '${setId}' does not exist`);
-      return res.status(404).json({
-        success: false,
-        message: `Study set '${setId}' does not exist`,
-      });
-    }
-    // ensure the set id belongs to the user
-    if (curSet.userId != userId) {
-      // error: study set does not belong to the current user 403
-      console.log(`Study set '${setId}' does not belong to the current user`);
-      return res.status(403).json({
-        success: false,
-        message: `Study set '${setId}' does not belong to the current user`,
-      });
-    }
-    // delete the study set form the Set table
+    // verify setId exists and belongs to the user
+    await findAndVerifySet(setId, userId);
+    // delete the study set from the database
     await prisma.set.delete({
       where: {
         id: setId,
@@ -120,10 +100,18 @@ router.delete('/:setId', async (req, res) => {
     // send back a 204 status
     return res.sendStatus(204); // 204 means no content
   } catch (er) {
+    if (
+      er instanceof NotFoundError ||
+      er instanceof UnauthorizedError ||
+      er instanceof InternalError ||
+      er instanceof InvalidParamsError
+    ) {
+      return res
+        .status(er.statusCode)
+        .json({ success: false, message: er.message });
+    }
     console.log(er);
-    return res
-      .status(503)
-      .json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ success: false, message: er });
   }
 });
 
@@ -138,37 +126,14 @@ router.put('/:setId', async (req, res) => {
   const setId = parseInt(req.params.setId);
   const userId = req.userId;
   const { title, isPublic } = req.body;
-  // check if the title is empty string
-  if (title === '') {
-    console.log('Title cannot be empty');
-    return res
-      .status(400)
-      .json({ success: false, message: 'Title cannot be empty' });
-  }
   // interact with the database
   try {
-    // check if the setId exists
-    const curSet = await prisma.set.findUnique({
-      where: {
-        id: setId,
-      },
-    });
-    if (!curSet) {
-      console.log(`Study set '${setId}' does not exist`);
-      return res.status(404).json({
-        success: false,
-        message: `Study set '${setId}' does not exist`,
-      });
+    // check if the title is empty string
+    if (title === '') {
+      throw new InvalidParamsError('Title cannot be empty');
     }
-    // ensure the setId belongs to the current user
-    if (curSet.userId != userId) {
-      // error: study set does not belong to the current user 403
-      console.log(`Study set '${setId}' does not belong to the current user`);
-      return res.status(403).json({
-        success: false,
-        message: `Study set '${setId}' does not belong to the current user`,
-      });
-    }
+    // verify setId exists and belongs to the user
+    await findAndVerifySet(setId, userId);
     // update the title
     const updatedSet = await prisma.set.update({
       where: {
@@ -186,10 +151,18 @@ router.put('/:setId', async (req, res) => {
       data: updatedSet,
     });
   } catch (er) {
+    if (
+      er instanceof NotFoundError ||
+      er instanceof UnauthorizedError ||
+      er instanceof InternalError ||
+      er instanceof InvalidParamsError
+    ) {
+      return res
+        .status(er.statusCode)
+        .json({ success: false, message: er.message });
+    }
     console.log(er);
-    return res
-      .status(503)
-      .json({ success: false, message: 'Internal server error' });
+    res.status(500).json({ success: false, message: er });
   }
 });
 
