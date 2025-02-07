@@ -78,42 +78,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-/*
-  deletes an existing study set
-    - ensures setId belongs to the user
-    - deletes the study set from the sets database
-    - returns success message
-*/
-router.delete('/:setId', async (req, res) => {
-  const setId = parseInt(req.params.setId);
-  const userId = req.userId;
-  // interact with the database
-  try {
-    // verify setId exists and belongs to the user
-    await findAndVerifySet(setId, userId);
-    // delete the study set from the database
-    await prisma.set.delete({
-      where: {
-        id: setId,
-      },
-    });
-    // send back a 204 status
-    return res.sendStatus(204); // 204 means no content
-  } catch (er) {
-    if (
-      er instanceof NotFoundError ||
-      er instanceof UnauthorizedError ||
-      er instanceof InternalError ||
-      er instanceof InvalidParamsError
-    ) {
-      return res
-        .status(er.statusCode)
-        .json({ success: false, message: er.message });
-    }
-    console.log(er);
-    return res.status(500).json({ success: false, message: er });
-  }
-});
 
 /*
   edits an existing study set
@@ -163,6 +127,44 @@ router.put('/:setId', async (req, res) => {
     }
     console.log(er);
     res.status(500).json({ success: false, message: er });
+  }
+});
+
+
+/*
+  deletes an existing study set
+    - ensures setId belongs to the user
+    - deletes the study set from the sets database
+    - returns 204 status
+*/
+router.delete('/:setId', async (req, res) => {
+  const setId = parseInt(req.params.setId);
+  const userId = req.userId;
+  // interact with the database
+  try {
+    // verify setId exists and belongs to the user
+    await findAndVerifySet(setId, userId);
+    // delete the study set from the database
+    await prisma.set.delete({
+      where: {
+        id: setId,
+      },
+    });
+    // send back a 204 status
+    return res.sendStatus(204); // 204 means no content
+  } catch (er) {
+    if (
+      er instanceof NotFoundError ||
+      er instanceof UnauthorizedError ||
+      er instanceof InternalError ||
+      er instanceof InvalidParamsError
+    ) {
+      return res
+        .status(er.statusCode)
+        .json({ success: false, message: er.message });
+    }
+    console.log(er);
+    return res.status(500).json({ success: false, message: er });
   }
 });
 

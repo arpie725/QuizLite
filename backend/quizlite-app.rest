@@ -14,7 +14,7 @@ POST http://localhost:1322/auth/login
 Content-Type: application/json
 
 {
-  "username": "arpie1",
+  "username": "arpie",
   "password": "password"
 }
 
@@ -29,11 +29,11 @@ Content-Type: application/json
 
 ### Create a new study set
 POST http://localhost:1322/studySet
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODg4OTQyLCJleHAiOjE3Mzg5NzUzNDJ9.xbMBdAp-hs26f7poS4FnAkOxnrfp9jhSh3yfwMI9h2w
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
 Content-Type: application/json
 
 {
-  "title": "Music",
+  "title": "Computer Science",
   "isPublic": false
 }
 
@@ -51,10 +51,26 @@ Content-Type: application/json
 }
 
 ### Change the visibility of a study set
-PUT http://localhost:1322/studySet/12
+PUT http://localhost:1322/studySet/18
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
 Content-Type: application/json
 
 {
-  "isPublic": false
+  "isPublic": true
 }
+
+### Create a new card
+POST http://localhost:1322/card/19
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
+Content-Type: application/json
+
+{
+  "question": "What does BFS stand for?",
+  "answer": "Breadth First Search"
+}
+
+
+
+### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODk1MjAyLCJleHAiOjE3Mzg5ODE2MDJ9.dEXf37Q49mYMebOhR3Oq9cdtLmjRUHIiHxwj1qqfnd4
+### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
+### arpie2: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzM4ODk1MjE3LCJleHAiOjE3Mzg5ODE2MTd9.R-2CLRcSeZ2bKWlrQ7lWNdlXHOoDa0BjsoJAEdJrZWA
