@@ -29,7 +29,7 @@ async function findAndVerifySet(setId, userId) {
     }
     // ensure the set id belongs to the user
     if (curSet.userId != userId) {
-      throw new UnauthorizedError('Unauthorized');
+      throw new UnauthorizedError('Unauthorized access to the set');
     }
     // find the number of cards that belong to the setId
     const cardCount = await prisma.card.count({
@@ -40,14 +40,7 @@ async function findAndVerifySet(setId, userId) {
     // return the set (and cardCount) from the database
     return { curSet, cardCount: cardCount };
   } catch (er) {
-    if (
-      er instanceof NotFoundError ||
-      er instanceof UnauthorizedError ||
-      er instanceof InvalidParamsError
-    ) {
-      throw er;
-    }
-    throw new InternalError();
+    throw er;
   }
 }
 

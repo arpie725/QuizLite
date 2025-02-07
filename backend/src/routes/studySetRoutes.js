@@ -207,4 +207,50 @@ router.get('/:setId/', async (req, res) => {
   }
 });
 
+/*
+  retrieves all cards belonging to a study set
+    - ensures the setId belongs to the user
+    - queries the database for all cards that have desired setId
+    - returns the study set with all cards (nested)
+*/
+router.get('/:setId/cards', async (req, res) => {
+  const setId = parseInt(req.params.setId);
+  const userId = req.userId;
+  // interact with the database
+  try {
+    // verify study set belongs to user
+    const { curSet, cardCount } = await findAndVerifySet(setId, userId);
+    // query the database for all cards that have setId
+    const cards = await prisma.card.findMany({
+      where: {
+        setId: setId,
+      },
+    });
+    // return the curSet with the cards
+    return res.status(201).json({
+      success: true,
+      message: 'Retrieved all cards from set',
+      data: {
+        set: {
+          ...curSet,
+          cardCount,
+        },
+        cards,
+      },
+    });
+  } catch (er) {
+    if (
+      er instanceof NotFoundError ||
+      er instanceof UnauthorizedError ||
+      er instanceof InvalidParamsError
+    ) {
+      return res
+        .status(er.statusCode)
+        .json({ success: false, errorType: er.name, message: er.message });
+    }
+    console.log(er);
+    return res;
+  }
+});
+
 export default router;
