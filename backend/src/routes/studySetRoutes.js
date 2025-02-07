@@ -211,7 +211,7 @@ router.get('/:setId/', async (req, res) => {
   retrieves all cards belonging to a study set
     - ensures the setId belongs to the user
     - queries the database for all cards that have desired setId
-    - returns the study set with all cards (nested)
+    - returns the study set and all cards 
 */
 router.get('/:setId/cards', async (req, res) => {
   const setId = parseInt(req.params.setId);
@@ -226,7 +226,7 @@ router.get('/:setId/cards', async (req, res) => {
         setId: setId,
       },
     });
-    // return the curSet with the cards
+    // return the curSet and cards
     return res.status(201).json({
       success: true,
       message: 'Retrieved all cards from set',

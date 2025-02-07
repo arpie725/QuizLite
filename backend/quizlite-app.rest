@@ -33,8 +33,8 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODk1
 Content-Type: application/json
 
 {
-  "title": "Philosophy",
-  "isPublic": false
+  "title": "Humanity",
+  "isPublic": true
 }
 
 ### Delete a study set
@@ -101,6 +101,10 @@ Content-Type: application/json
 ### Get all cards from a study set
 GET http://localhost:1322/studySet/18/cards
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
+
+### Get all sets from a user
+GET http://localhost:1322/user/sets
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzM4ODk1MjE3LCJleHAiOjE3Mzg5ODE2MTd9.R-2CLRcSeZ2bKWlrQ7lWNdlXHOoDa0BjsoJAEdJrZWA
 
 
 ### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODk1MjAyLCJleHAiOjE3Mzg5ODE2MDJ9.dEXf37Q49mYMebOhR3Oq9cdtLmjRUHIiHxwj1qqfnd4
