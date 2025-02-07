@@ -80,6 +80,7 @@ router.post('/:setId', async (req, res) => {
 /*
   edits an existing card
     - ensures the card exists, belongs to the user, and belongs to the study set
+    - ensures the question and answer doesn't already exist in the set
     - edits the card 
     - returns the edited card
 */
@@ -87,11 +88,12 @@ router.put('/:cardId', async (req, res) => {
   const { question, answer, isComplete } = req.body;
   const userId = req.userId;
   const cardId = parseInt(req.params.cardId);
-
+  const trimmedQuestion = question?.trim();
+  const trimmedAnswer = answer?.trim();
   // interact with the database
   try {
     // check if the question or answer is empty string
-    if (question === '' || answer === '') {
+    if (trimmedQuestion === '' || trimmedAnswer === '') {
       throw new InvalidParamsError('Question or Answer cannot be empty');
     }
     // check if a card with cardId exists in the database
@@ -107,14 +109,34 @@ router.put('/:cardId', async (req, res) => {
     const setId = curCard.setId;
     // verify the setId exists and belongs to the user
     await findAndVerifySet(setId, userId);
+    // the user wants to update the question and / or answer
+    if (trimmedQuestion || trimmedAnswer) {
+      // what would the question be after the update
+      const updatedQuestion = trimmedQuestion ?? curCard.question;
+      // what would the answer be after the update
+      const updatedAnswer = trimmedAnswer ?? curCard.answer;
+      // check if a card with the same question / answer already exists in the set
+      const existingCard = await prisma.card.findFirst({
+        where: {
+          setId,
+          question: updatedQuestion,
+          answer: updatedAnswer,
+        },
+      });
+      if (existingCard) {
+        throw new DuplicateEntryError(
+          'Card with identical question + answer already exists'
+        );
+      }
+    }
     // update the card at cardId
     const updatedCard = await prisma.card.update({
       where: {
         id: cardId,
       },
       data: {
-        question,
-        answer,
+        question: trimmedQuestion,
+        answer: trimmedAnswer,
         isComplete,
       },
     });
@@ -130,7 +152,8 @@ router.put('/:cardId', async (req, res) => {
     if (
       er instanceof InvalidParamsError ||
       er instanceof UnauthorizedError ||
-      er instanceof NotFoundError
+      er instanceof NotFoundError ||
+      er instanceof DuplicateEntryError
     ) {
       return res
         .status(er.statusCode)
