@@ -76,13 +76,71 @@ router.post('/:setId', async (req, res) => {
   }
 });
 
-
 /*
   edits an existing card
     - ensures the card exists, belongs to the user, and belongs to the study set
     - edits the card 
     - returns the edited card
 */
+router.put('/:cardId', async (req, res) => {
+  const { question, answer, isComplete } = req.body;
+  const userId = req.userId;
+  const cardId = parseInt(req.params.cardId);
+
+  // interact with the database
+  try {
+    // check if the question or answer is empty string
+    if (question === '' || answer === '') {
+      throw new InvalidParamsError('Question or Answer cannot be empty');
+    }
+    // check if a card with cardId exists in the database
+    const curCard = await prisma.card.findUnique({
+      where: {
+        id: cardId,
+      },
+    });
+    if (!curCard) {
+      throw new NotFoundError(`Card with id: ${cardId} not found`);
+    }
+    // get the setId from the card
+    const setId = curCard.setId;
+    // verify the setId exists and belongs to the user
+    await findAndVerifySet(setId, userId);
+    // update the card at cardId
+    const updatedCard = await prisma.card.update({
+      where: {
+        id: cardId,
+      },
+      data: {
+        question,
+        answer,
+        isComplete,
+      },
+    });
+    // return the updated card
+    res.status(200).json({
+      success: true,
+      message: 'Updated the card',
+      data: {
+        updatedCard,
+      },
+    });
+  } catch (er) {
+    if (
+      er instanceof InvalidParamsError ||
+      er instanceof UnauthorizedError ||
+      er instanceof NotFoundError
+    ) {
+      return res
+        .status(er.statusCode)
+        .json({ success: false, message: er.message });
+    }
+    console.log(er);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+});
 
 /*
   deletes an existing card
