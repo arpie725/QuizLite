@@ -37,7 +37,7 @@ model Set {
   tags      Tag[]     @relation("SetTags")
   cards     Card[]
   userId    Int
-  user      User      @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Card {

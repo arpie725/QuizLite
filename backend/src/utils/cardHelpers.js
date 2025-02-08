@@ -1,10 +1,5 @@
 import prisma from '../prismaClient.js';
-import {
-  InternalError,
-  InvalidParamsError,
-  NotFoundError,
-  UnauthorizedError,
-} from './errors.js';
+import { NotFoundError } from './errors.js';
 
 /*
   determines if a card with (question, answer, setId) exists in the database
