@@ -32,13 +32,13 @@ export const AuthForm = () => {
         // continue if successful
         return response.json();
       })
-      .then((data) => {
+      .then(({ data }) => {
         console.log('Response from backend: ', data);
         // handle the response
-        const { token } = data.data;
+        const { token } = data;
         console.log('TOKEN = ' + token);
         // put the token in local storage
-        localStorage.setItem('token', data.data.token);
+        localStorage.setItem('token', token);
         // route to the url/dashboard page
         router.push('/dashboard');
       })
