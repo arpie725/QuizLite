@@ -45,7 +45,7 @@ async function authMiddleware(req, res, next) {
       if (er instanceof NotFoundError) {
         return res
           .status(er.statusCode)
-          .json({ success: false, message: er.message });
+          .json({ success: false, errorType: er.name, message: er.message });
       }
       console.log(er);
       return res
