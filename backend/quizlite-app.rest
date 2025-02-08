@@ -14,7 +14,7 @@ POST http://localhost:1322/auth/login
 Content-Type: application/json
 
 {
-  "username": "arpie1",
+  "username": "arpie",
   "password": "password"
 }
 
@@ -105,9 +105,12 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4
 
 ### Get all sets from a user
 GET http://localhost:1322/user/sets
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODk1MjAyLCJleHAiOjE3Mzg5ODE2MDJ9.dEXf37Q49mYMebOhR3Oq9cdtLmjRUHIiHxwj1qqfnd4
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4OTY5NDQxLCJleHAiOjE3MzkwNTU4NDF9.jr13J9hbHFAXO9qa6ZO7RXO3vtw46LpoS3srnUKwU0k
 
+### Delete a user
+DELETE http://localhost:1322/user
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4OTkwNjY5LCJleHAiOjE3MzkwNzcwNjl9.0YRM3VxXYpmMLjocRIYLY-yFBrYMi-owwGA_Ypab0jQ
 
-### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODk1MjAyLCJleHAiOjE3Mzg5ODE2MDJ9.dEXf37Q49mYMebOhR3Oq9cdtLmjRUHIiHxwj1qqfnd4
+### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4OTkwNjY5LCJleHAiOjE3MzkwNzcwNjl9.0YRM3VxXYpmMLjocRIYLY-yFBrYMi-owwGA_Ypab0jQ
 ### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4OTY5NDQxLCJleHAiOjE3MzkwNTU4NDF9.jr13J9hbHFAXO9qa6ZO7RXO3vtw46LpoS3srnUKwU0k
 ### arpie2: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzM4ODk1MjE3LCJleHAiOjE3Mzg5ODE2MTd9.R-2CLRcSeZ2bKWlrQ7lWNdlXHOoDa0BjsoJAEdJrZWA

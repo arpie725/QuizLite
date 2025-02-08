@@ -7,6 +7,7 @@ import {
   InvalidParamsError,
   DuplicateEntryError,
 } from '../utils/errors.js';
+import { userExists } from '../utils/authHelpers.js';
 
 const router = express.Router();
 
@@ -33,11 +34,7 @@ router.get('/sets', async (req, res) => {
       return rest;
     });
     // get the user
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId_,
-      },
-    });
+    const user = await userExists(userId_);
     // return the user and all the sets
     return res.status(201).json({
       success: true,
@@ -50,6 +47,31 @@ router.get('/sets', async (req, res) => {
         sets: setsWithoutUserId,
       },
     });
+  } catch (er) {
+    console.log(er);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+});
+
+/*
+  deletes a user from the database
+    - query the database
+    - return 204 code
+*/
+router.delete('/', async (req, res) => {
+  // Note: userId already validated in authMiddleware
+  const userId = req.userId;
+  // interact with the database
+  try {
+    // delete the user from the database
+    await prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    });
+    return res.sendStatus(204);
   } catch (er) {
     console.log(er);
     return res

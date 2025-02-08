@@ -31,8 +31,8 @@ async function authMiddleware(req, res, next) {
       });
     }
     const userId = decoded.id;
-    // check if the user exists in the database
     try {
+      // check if the user exists in the database
       const existingUser = await userExists(userId);
       if (!existingUser) {
         throw new NotFoundError('User not found');
