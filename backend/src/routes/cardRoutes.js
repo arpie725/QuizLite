@@ -28,7 +28,7 @@ router.post('/:setId', async (req, res) => {
   // interact with the database
   try {
     // check that the request sent the question, answer, and setId
-    if (!question || !answer || setId === undefined) {
+    if (!trimmedQuestion || !trimmedAnswer || setId === undefined) {
       throw new InvalidParamsError(
         'Cannot have empty question, answer, or undefined setId'
       );
