@@ -93,6 +93,9 @@ router.put('/:cardId', async (req, res) => {
     }
     // check if a card with cardId exists in the database
     const curCard = await cardExists(cardId);
+    if (!curCard) {
+      throw new NotFoundError(`Card with id: ${cardId} not found`);
+    }
     // get the setId from the card
     const setId = curCard.setId;
     // verify the setId exists and belongs to the user
@@ -162,6 +165,9 @@ router.delete('/:cardId', async (req, res) => {
     }
     // make sure the card exists
     const curCard = await cardExists(cardId);
+    if (!curCard) {
+      throw new NotFoundError(`Card with id: ${cardId} not found`);
+    }
     // validate the study set belongs to the user
     await findAndVerifySet(curCard.setId, userId);
     // delete the card from the database

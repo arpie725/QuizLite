@@ -23,7 +23,7 @@ async function cardQASExists(question, answer, setId) {
 }
 
 /*
-  determines if a card with cardId exists in the database
+  determines if the cardId exists in the cards database
     - queries the database
     - returns the card
 */
@@ -35,9 +35,6 @@ async function cardExists(cardId) {
         id: cardId,
       },
     });
-    if (!curCard) {
-      throw new NotFoundError(`Card with id: ${cardId} not found`);
-    }
     return curCard;
   } catch (er) {
     throw er;

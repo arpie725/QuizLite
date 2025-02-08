@@ -2,8 +2,8 @@ import prisma from '../prismaClient.js';
 import { NotFoundError } from './errors.js';
 
 /*
-  checks if the user exists in the database
-  - returns boolean
+  checks if the userId exists in the users database
+  - returns user
 */
 async function userExists(userId) {
   // interact with the database
@@ -13,10 +13,28 @@ async function userExists(userId) {
         id: userId,
       },
     });
-    return !!user;
+    return user;
   } catch (er) {
     throw er;
   }
 }
 
-export { userExists };
+/*
+  checks if a username already exists in the users database
+  - returns the user
+*/
+async function usernameExists(username) {
+  // interact with the database
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
+    return user;
+  } catch (er) {
+    throw er;
+  }
+}
+
+export { userExists, usernameExists };

@@ -17,18 +17,24 @@ async function authMiddleware(req, res, next) {
   if (!token) {
     return res.status(401).json({
       success: false,
+      errorType: 'NotFoundError',
       message: 'Token was not found',
     });
   }
   // check if the token is valid using jwt
   jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
     if (err) {
-      return res.status(401).json({ success: false, message: 'Invalid token' });
+      return res.status(401).json({
+        success: false,
+        errorType: 'UnauthorizedError',
+        message: 'Invalid token',
+      });
     }
     const userId = decoded.id;
     // check if the user exists in the database
     try {
-      if (!(await userExists(userId))) {
+      const existingUser = await userExists(userId);
+      if (!existingUser) {
         throw new NotFoundError('User not found');
       }
       // modify the request to include a userId

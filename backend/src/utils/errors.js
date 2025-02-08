@@ -16,7 +16,7 @@ class UnauthorizedError extends Error {
 
 class InternalError extends Error {
   constructor() {
-    super('Internal server error');
+    super('InternalServerError');
     this.name = 'InternalError';
     this.statusCode = 503;
   }
@@ -25,7 +25,7 @@ class InternalError extends Error {
 class InvalidParamsError extends Error {
   constructor(message) {
     super(message);
-    this.name = 'Invalid Params Error';
+    this.name = 'InvalidParamsError';
     this.statusCode = 400;
   }
 }

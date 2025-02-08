@@ -2,6 +2,12 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../prismaClient.js';
+import { usernameExists } from '../utils/authHelpers.js';
+import {
+  DuplicateEntryError,
+  NotFoundError,
+  UnauthorizedError,
+} from '../utils/errors.js';
 
 const router = express.Router();
 
@@ -14,25 +20,33 @@ const router = express.Router();
 */
 router.post('/register', async (req, res) => {
   const { username, password } = req.body;
+  const trimmedUsername = username?.trim();
+  // check validity of username / password
+  if (
+    !trimmedUsername ||
+    trimmedUsername === '' ||
+    !password ||
+    password === ''
+  ) {
+    return res.status(404).json({
+      success: false,
+      errorType: 'InvalidParamsError',
+      message: 'Username or Password empty / nonexistent',
+    });
+  }
   // hash the password
   const hashedPassword = bcrypt.hashSync(password, parseInt(process.env.SALT));
-  // check if the username already exists (not unique)
+  // interacting with the database
   try {
-    const existingUser = await prisma.user.findUnique({
-      where: {
-        username: username,
-      },
-    });
-    // check if user was found
+    // check if the username already exists
+    const existingUser = await usernameExists(trimmedUsername);
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Username already exists' });
+      throw new DuplicateEntryError('Username already exists');
     }
     // add the user and hashed password into the database
     const newUser = await prisma.user.create({
       data: {
-        username,
+        username: trimmedUsername,
         password: hashedPassword,
       },
     });
@@ -40,15 +54,20 @@ router.post('/register', async (req, res) => {
     const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
       expiresIn: '24h',
     });
-    // send back the token to the user (as json)
-    res.status(201).json({
+    // send back the token to the user
+    return res.status(201).json({
       success: true,
-      message: `${username} registered successfully`,
+      message: `${trimmedUsername} registered successfully`,
       data: {
         token: token,
       },
     });
   } catch (er) {
+    if (er instanceof DuplicateEntryError) {
+      return res
+        .status(er.statusCode)
+        .json({ success: false, errorType: er.name, message: er.message });
+    }
     console.log(er);
     return res
       .status(503)
@@ -64,30 +83,29 @@ router.post('/register', async (req, res) => {
 */
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
-  // hash the password the user sent
-  const hashedPassword = bcrypt.hashSync(password, parseInt(process.env.SALT));
-  // check that the username exists in the db
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        username: username,
-      },
+  const trimmedUsername = username?.trim();
+  if (
+    !trimmedUsername ||
+    trimmedUsername === '' ||
+    !password ||
+    password === ''
+  ) {
+    return res.status(404).json({
+      success: false,
+      errorType: 'InvalidParamsError',
+      message: 'Username or Password empty / nonexistent',
     });
-    // user might not exist
+  }
+  try {
+    // check that the username exists in the db
+    const user = await usernameExists(trimmedUsername);
     if (!user) {
-      console.log('User not found');
-      return res
-        .status(404)
-        .json({ success: false, message: 'User not found' });
+      throw new NotFoundError('User not found');
     }
     // compare passwords (user inputted password --> hashed)
     const passwordIsValid = bcrypt.compareSync(password, user.password);
     if (!passwordIsValid) {
-      console.log('Incorrect password');
-      return res.status(401).json({
-        success: false,
-        message: 'Incorrect password',
-      });
+      throw new UnauthorizedError('Incorrect password');
     }
     // create the token
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
@@ -102,6 +120,11 @@ router.post('/login', async (req, res) => {
       },
     });
   } catch (er) {
+    if (er instanceof NotFoundError || er instanceof UnauthorizedError) {
+      return res
+        .status(er.statusCode)
+        .json({ success: false, errorType: er.name, message: er.message });
+    }
     console.log(er);
     return res
       .status(503)
