@@ -16,7 +16,7 @@ class UnauthorizedError extends Error {
 
 class InternalError extends Error {
   constructor() {
-    super('InternalServerError');
+    super('Internal Server Error');
     this.name = 'InternalError';
     this.statusCode = 503;
   }

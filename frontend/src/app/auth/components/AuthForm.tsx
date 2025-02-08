@@ -1,8 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+import { loginUser } from '@/api/auth.js';
+import { NotFoundError, UnauthorizedError } from '@/utils/errors.js';
 
 export const AuthForm = () => {
   const router = useRouter();
@@ -10,41 +10,22 @@ export const AuthForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    console.log('sending ' + username + ' ' + password + ' to the server');
-
-    // make api call with the username, password
-    fetch(`${apiUrl}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username: username, password: password }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          return response.json().then((errorData) => {
-            throw new Error(errorData.message);
-          });
-        }
-        // continue if successful
-        return response.json();
-      })
-      .then(({ data }) => {
-        console.log('Response from backend: ', data);
-        // handle the response
-        const { token } = data;
-        console.log('TOKEN = ' + token);
-        // put the token in local storage
-        localStorage.setItem('token', token);
-        // route to the url/dashboard page
-        router.push('/dashboard');
-      })
-      .catch((error) => {
-        console.error('Login error:', error.message);
-      });
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      await loginUser(username, password);
+      // successful login should redirect to dashboard
+      router.push('/dashboard');
+    } catch (er) {
+      if (er instanceof UnauthorizedError) {
+        // TODO: display incorrect password to client
+        console.log('Incorrect password');
+      }
+      if (er instanceof NotFoundError) {
+        // TODO: display username not found to client
+        console.log('Username not found');
+      }
+    }
   };
 
   return (
