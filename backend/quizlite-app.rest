@@ -65,8 +65,8 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4OTY5
 Content-Type: application/json
 
 {
-  "question": "What does BFS stand for?",
-  "answer": "Breadth First Search"
+  "question": "  What does CRUD stand for ",
+  "answer": "  create, read, update, delete     "
 }
 
 ### Edit the (question / answer) of a card

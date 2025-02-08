@@ -23,6 +23,8 @@ router.post('/:setId', async (req, res) => {
   const { question, answer } = req.body;
   const setId = parseInt(req.params.setId);
   const userId = req.userId;
+  const trimmedQuestion = question?.trim();
+  const trimmedAnswer = answer?.trim();
   // interact with the database
   try {
     // check that the request sent the question, answer, and setId
@@ -34,7 +36,7 @@ router.post('/:setId', async (req, res) => {
     // verify the set exists and belongs to the user
     await findAndVerifySet(setId, userId);
     // ensure the new card's question and answer is unique to the set
-    if (await cardQASExists(question, answer, setId)) {
+    if (await cardQASExists(trimmedQuestion, trimmedAnswer, setId)) {
       throw new DuplicateEntryError(
         'Card with identical question + answer already exists'
       );
@@ -42,8 +44,8 @@ router.post('/:setId', async (req, res) => {
     // create a new card entry
     const newCard = await prisma.card.create({
       data: {
-        question,
-        answer,
+        question: trimmedQuestion,
+        answer: trimmedAnswer,
         set: { connect: { id: setId } },
       },
     });
@@ -97,9 +99,7 @@ router.put('/:cardId', async (req, res) => {
     await findAndVerifySet(setId, userId);
     // the user wants to update the question and / or answer
     if (trimmedQuestion || trimmedAnswer) {
-      // what would the question be after the update
       const updatedQuestion = trimmedQuestion ?? curCard.question;
-      // what would the answer be after the update
       const updatedAnswer = trimmedAnswer ?? curCard.answer;
       // check if a card with the same question / answer already exists in the set
       if (await cardQASExists(updatedQuestion, updatedAnswer, setId)) {
