@@ -50,13 +50,18 @@ async function findAndVerifySet(setId, userId) {
   [Returns]: boolean of whether the set exists in the database
 */
 async function setExists(title, userId) {
-  const existingSet = await prisma.set.findFirst({
-    where: {
-      userId,
-      title,
-    },
-  });
-  return !!existingSet;
+  // interacting with database
+  try {
+    const existingSet = await prisma.set.findFirst({
+      where: {
+        userId,
+        title,
+      },
+    });
+    return !!existingSet;
+  } catch (er) {
+    throw er;
+  }
 }
 
 export { findAndVerifySet, setExists };

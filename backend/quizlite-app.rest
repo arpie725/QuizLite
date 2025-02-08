@@ -61,7 +61,7 @@ Content-Type: application/json
 
 ### Create a new card
 POST http://localhost:1322/card/19
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4OTY5NDQxLCJleHAiOjE3MzkwNTU4NDF9.jr13J9hbHFAXO9qa6ZO7RXO3vtw46LpoS3srnUKwU0k
 Content-Type: application/json
 
 {
@@ -70,12 +70,12 @@ Content-Type: application/json
 }
 
 ### Edit the (question / answer) of a card
-PUT http://localhost:1322/card/21
+PUT http://localhost:1322/card/20
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4OTY5NDQxLCJleHAiOjE3MzkwNTU4NDF9.jr13J9hbHFAXO9qa6ZO7RXO3vtw46LpoS3srnUKwU0k
 Content-Type: application/json
 
 {
-  "question": "Who is the current US President?",
+  "question": "Maga is made from who",
   "answer": "Donald Trump"
 }
 
@@ -90,8 +90,8 @@ Content-Type: application/json
 }
 
 ### Delete a card
-DELETE http://localhost:1322/card/22
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODk1MjAyLCJleHAiOjE3Mzg5ODE2MDJ9.dEXf37Q49mYMebOhR3Oq9cdtLmjRUHIiHxwj1qqfnd4
+DELETE http://localhost:1322/card/20
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4OTY5NDQxLCJleHAiOjE3MzkwNTU4NDF9.jr13J9hbHFAXO9qa6ZO7RXO3vtw46LpoS3srnUKwU0k
 
 
 ### Get a study set

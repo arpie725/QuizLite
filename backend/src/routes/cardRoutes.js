@@ -7,7 +7,7 @@ import {
   UnauthorizedError,
 } from '../utils/errors.js';
 import { findAndVerifySet } from '../utils/studySetHelpers.js';
-import { NODATA } from 'dns';
+import { cardExists, cardQASExists } from '../utils/cardHelpers.js';
 
 const router = express.Router();
 
@@ -34,16 +34,9 @@ router.post('/:setId', async (req, res) => {
     // verify the set exists and belongs to the user
     await findAndVerifySet(setId, userId);
     // ensure the new card's question and answer is unique to the set
-    const existingCard = await prisma.card.findFirst({
-      where: {
-        question,
-        answer,
-        setId,
-      },
-    });
-    if (existingCard) {
+    if (await cardQASExists(question, answer, setId)) {
       throw new DuplicateEntryError(
-        'A card with the same question and answer already exists in the set'
+        'Card with identical question + answer already exists'
       );
     }
     // create a new card entry
@@ -97,14 +90,7 @@ router.put('/:cardId', async (req, res) => {
       throw new InvalidParamsError('Question or Answer cannot be empty');
     }
     // check if a card with cardId exists in the database
-    const curCard = await prisma.card.findUnique({
-      where: {
-        id: cardId,
-      },
-    });
-    if (!curCard) {
-      throw new NotFoundError(`Card with id: ${cardId} not found`);
-    }
+    const curCard = await cardExists(cardId);
     // get the setId from the card
     const setId = curCard.setId;
     // verify the setId exists and belongs to the user
@@ -116,14 +102,7 @@ router.put('/:cardId', async (req, res) => {
       // what would the answer be after the update
       const updatedAnswer = trimmedAnswer ?? curCard.answer;
       // check if a card with the same question / answer already exists in the set
-      const existingCard = await prisma.card.findFirst({
-        where: {
-          setId,
-          question: updatedQuestion,
-          answer: updatedAnswer,
-        },
-      });
-      if (existingCard) {
+      if (await cardQASExists(updatedQuestion, updatedAnswer, setId)) {
         throw new DuplicateEntryError(
           'Card with identical question + answer already exists'
         );
@@ -182,14 +161,7 @@ router.delete('/:cardId', async (req, res) => {
       throw new InvalidParamsError('No cardId was given');
     }
     // make sure the card exists
-    const curCard = await prisma.card.findUnique({
-      where: {
-        id: cardId,
-      },
-    });
-    if (!curCard) {
-      throw new NotFoundError(`Card with id: ${cardId} not found`);
-    }
+    const curCard = await cardExists(cardId);
     // validate the study set belongs to the user
     await findAndVerifySet(curCard.setId, userId);
     // delete the card from the database
