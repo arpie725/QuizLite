@@ -23,22 +23,23 @@ const router = express.Router();
 router.post('/', async (req, res) => {
   const { title, isPublic } = req.body;
   const userId_ = req.userId;
+  const trimmedTitle = title?.trim();
   // interact with the db
   try {
     // check if title is empty or undefined
-    if (!title) {
+    if (!trimmedTitle) {
       throw new InvalidParamsError('Title cannot be empty');
     }
-    // check the set already exists
-    if (await setExists(title, userId_)) {
+    // check if the set already exists
+    if (await setExists(trimmedTitle, userId_)) {
       throw new DuplicateEntryError(
-        `Study set with with title: ${title} and userId: ${userId_} already exists`
+        `Study set with with title: ${trimmedTitle} and userId: ${userId_} already exists`
       );
     }
     // add the new study set entry into the database
     const newSet = await prisma.set.create({
       data: {
-        title,
+        title: trimmedTitle,
         isPublic,
         user: { connect: { id: userId_ } },
       },
@@ -87,19 +88,23 @@ router.put('/:setId', async (req, res) => {
   const setId = parseInt(req.params.setId);
   const userId_ = req.userId;
   const { title, isPublic } = req.body;
+  const trimmedTitle = title?.trim();
   // interact with the database
   try {
     // check if the title is empty string
-    if (title === '') {
+    if (trimmedTitle === '') {
       throw new InvalidParamsError('Title cannot be empty');
     }
     // verify setId exists and belongs to the user
     await findAndVerifySet(setId, userId_);
-    // verify that a set with the same title doesn't already exist
-    if (await setExists(title, userId_)) {
-      throw new DuplicateEntryError(
-        `Study set with with title: ${title} and userId: ${userId_} already exists`
-      );
+    // possible that title was never passed in
+    if (title) {
+      // verify that a set with the same title doesn't already exist
+      if (await setExists(trimmedTitle, userId_)) {
+        throw new DuplicateEntryError(
+          `Study set with with title: ${trimmedTitle} and userId: ${userId_} already exists`
+        );
+      }
     }
     // update the title
     const updatedSet = await prisma.set.update({
@@ -107,7 +112,7 @@ router.put('/:setId', async (req, res) => {
         id: setId,
       },
       data: {
-        title,
+        title: trimmedTitle,
         isPublic,
       },
     });

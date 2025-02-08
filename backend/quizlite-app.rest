@@ -33,30 +33,30 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODk1
 Content-Type: application/json
 
 {
-  "title": "Biology",
+  "title": " Biology",
   "isPublic": true
 }
 
 ### Delete a study set
-DELETE http://localhost:1322/studySet/18
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODg4OTQyLCJleHAiOjE3Mzg5NzUzNDJ9.xbMBdAp-hs26f7poS4FnAkOxnrfp9jhSh3yfwMI9h2w
+DELETE http://localhost:1322/studySet/29
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODk1MjAyLCJleHAiOjE3Mzg5ODE2MDJ9.dEXf37Q49mYMebOhR3Oq9cdtLmjRUHIiHxwj1qqfnd4
 
 ### Change the name of a study set
-PUT http://localhost:1322/studySet/19
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODg4OTQyLCJleHAiOjE3Mzg5NzUzNDJ9.xbMBdAp-hs26f7poS4FnAkOxnrfp9jhSh3yfwMI9h2w
+PUT http://localhost:1322/studySet/30
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODk1MjAyLCJleHAiOjE3Mzg5ODE2MDJ9.dEXf37Q49mYMebOhR3Oq9cdtLmjRUHIiHxwj1qqfnd4
 Content-Type: application/json
 
 {
-  "title": "Biology"
+  "title": "   Chemistry  "
 }
 
 ### Change the visibility of a study set
-PUT http://localhost:1322/studySet/19
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
+PUT http://localhost:1322/studySet/30
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODk1MjAyLCJleHAiOjE3Mzg5ODE2MDJ9.dEXf37Q49mYMebOhR3Oq9cdtLmjRUHIiHxwj1qqfnd4
 Content-Type: application/json
 
 {
-  "isPublic": true
+  "isPublic": false
 }
 
 ### Create a new card
@@ -65,7 +65,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4OTY5
 Content-Type: application/json
 
 {
-  "question": "  What does CRUD stand for ",
+  "question": "l ",
   "answer": "  create, read, update, delete     "
 }
 
