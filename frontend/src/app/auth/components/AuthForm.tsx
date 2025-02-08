@@ -1,20 +1,29 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { loginUser } from '@/api/auth.js';
-import { NotFoundError, UnauthorizedError } from '@/utils/errors.js';
+import { loginUser, registerUser } from '@/api/auth.js';
+import {
+  DuplicateEntryError,
+  InvalidParamsError,
+  NotFoundError,
+  UnauthorizedError,
+} from '@/utils/errors.js';
 
 export const AuthForm = () => {
   const router = useRouter();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLogin, setIsLogin] = useState(true);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      await loginUser(username, password);
-      // successful login should redirect to dashboard
+      // decide whether to login or register a user
+      isLogin
+        ? await loginUser(username, password)
+        : await registerUser(username, password);
+      // successful login or register should redirect to dashboard
       router.push('/dashboard');
     } catch (er) {
       if (er instanceof UnauthorizedError) {
@@ -24,6 +33,15 @@ export const AuthForm = () => {
       if (er instanceof NotFoundError) {
         // TODO: display username not found to client
         console.log('Username not found');
+      }
+      if (er instanceof InvalidParamsError) {
+        // TODO: invalid params (empty user / pass)
+        // NOTE: should not go to this ever
+        console.log('Username or password cannot be empty');
+      }
+      if (er instanceof DuplicateEntryError) {
+        // TODO: display duplicate username already exists to client
+        console.log('Username already exists');
       }
     }
   };
@@ -73,13 +91,16 @@ export const AuthForm = () => {
                   type='submit'
                   className='bg-purple-pink max-w-sm py-2 text-white text-3xl font-semibold font-geist outline-none'
                 >
-                  Login
+                  {isLogin ? 'Login' : 'Register'}
                 </button>
               </div>
             </div>
           </form>
-          <button className='flex mt-4 w-fit mx-auto text-fuchsia-300 text-lg font-geist font-semibold opacity-50 hover:opacity-100 transition duration-300 outline-none'>
-            Register
+          <button
+            className='flex mt-4 w-fit mx-auto text-fuchsia-300 text-lg font-geist font-semibold opacity-50 hover:opacity-100 transition duration-300 outline-none'
+            onClick={() => setIsLogin(!isLogin)}
+          >
+            {isLogin ? 'Register' : 'Login'}
           </button>
         </div>
       </div>

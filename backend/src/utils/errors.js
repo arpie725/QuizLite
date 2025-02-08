@@ -33,7 +33,7 @@ class InvalidParamsError extends Error {
 class DuplicateEntryError extends Error {
   constructor(message) {
     super(message);
-    this.name = 'Duplicate Entry Error';
+    this.name = 'DuplicateEntryError';
     this.statusCode = 400;
   }
 }

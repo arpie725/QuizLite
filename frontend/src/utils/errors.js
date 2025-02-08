@@ -14,4 +14,20 @@ class UnauthorizedError extends Error {
   }
 }
 
-export { NotFoundError, UnauthorizedError };
+class InvalidParamsError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'InvalidParamsError';
+    this.statusCode = 400;
+  }
+}
+
+class DuplicateEntryError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'DuplicateEntryError';
+    this.statusCode = 400;
+  }
+}
+
+export { NotFoundError, UnauthorizedError, InvalidParamsError, DuplicateEntryError };

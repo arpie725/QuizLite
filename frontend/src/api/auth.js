@@ -1,5 +1,10 @@
 import axios from 'axios';
-import { NotFoundError, UnauthorizedError } from '../utils/errors.js';
+import {
+  InvalidParamsError,
+  NotFoundError,
+  UnauthorizedError,
+  DuplicateEntryError,
+} from '../utils/errors.js';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -32,10 +37,47 @@ async function loginUser(username, password) {
     if (et === 'NotFoundError') {
       throw new NotFoundError();
     }
+    if (et === 'InvalidParamsError') {
+      throw new InvalidParamsError();
+    }
     // handle unexpected errors
     console.log(er);
     throw er;
   }
 }
 
-export { loginUser };
+/** attempts to register a new user
+ *  - make api call with the given credentials
+ *  - assign token into local storage
+ * @params - username (string), password (string)
+ * @returns - None
+ */
+async function registerUser(username, password) {
+  try {
+    // make api call
+    const res = await axios.post(`${apiUrl}/auth/register`, {
+      username: username,
+      password: password,
+    });
+    // handle successful registration
+    const { data } = res;
+    const token = data.data.token;
+    // assign token into local storage
+    localStorage.setItem('token', token);
+    return;
+  } catch (er) {
+    const et = er.response.data.errorType;
+    // handle expected errors
+    if (et === 'InvalidParamsError') {
+      throw new InvalidParamsError();
+    }
+    if (et === 'DuplicateEntryError') {
+      throw new DuplicateEntryError();
+    }
+    // handle unexpected errors
+    console.log(er);
+    throw er;
+  }
+}
+
+export { loginUser, registerUser };
