@@ -1,16 +1,15 @@
 import express from 'express';
-import next from 'next';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import authMiddleware from './middleware/authMiddleware.js';
 import studySetRoutes from './routes/studySetRoutes.js';
 import cardRoutes from './routes/cardRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import tagRoutes from './routes/tagRoutes.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// TODO: delete the filename, dirname stuff
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
 const app = express();
 app.use(cors());
@@ -24,6 +23,7 @@ app.use('/auth', authRoutes);
 app.use('/user', authMiddleware, userRoutes);
 app.use('/studySet', authMiddleware, studySetRoutes);
 app.use('/card', authMiddleware, cardRoutes);
+app.use('/tag', authMiddleware, tagRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server has started on port: ${PORT}`);

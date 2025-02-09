@@ -14,7 +14,7 @@ POST http://localhost:1322/auth/login
 Content-Type: application/json
 
 {
-  "username": "arpie1",
+  "username": "arpie2",
   "password": "password"
 }
 
@@ -111,6 +111,15 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4OTY5
 DELETE http://localhost:1322/user
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4OTkwNjY5LCJleHAiOjE3MzkwNzcwNjl9.0YRM3VxXYpmMLjocRIYLY-yFBrYMi-owwGA_Ypab0jQ
 
-### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MDc3Mzk1LCJleHAiOjE3MzkxNjM3OTV9.0R8K8nY3aQ_PfDVh1qskvTFoQDYEcC1-JozKQl0uE_0
-### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5MTE3ODc3LCJleHAiOjE3MzkyMDQyNzd9.BzCLtU95ba-U4DKlo29v2onspQPlxFpEA6UdGIhmwJE
-### arpie2: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzM4ODk1MjE3LCJleHAiOjE3Mzg5ODE2MTd9.R-2CLRcSeZ2bKWlrQ7lWNdlXHOoDa0BjsoJAEdJrZWA
+### Create a new tag
+POST http://localhost:1322/tag
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MTM3NjQ1LCJleHAiOjE3MzkyMjQwNDV9.b8VCjgcxohsNofQnIDcIE0rHIX6m5dt3B3EKFAr3hOM
+Content-Type: application/json
+
+{
+  "name": " Pharmacy    "
+}
+
+### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MTM3NjQ1LCJleHAiOjE3MzkyMjQwNDV9.b8VCjgcxohsNofQnIDcIE0rHIX6m5dt3B3EKFAr3hOM
+### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5MTM3Njc1LCJleHAiOjE3MzkyMjQwNzV9.jmb6_e7KsWDv_LSYHmw1fCLLQo8Thy2IzqX-Ft7kPC8
+### arpie2: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzM5MTM3NjkxLCJleHAiOjE3MzkyMjQwOTF9.iC0CIavD6U3XEhcwWo4xd1YVXUOj8oq-9-a0E4pikCY
