@@ -32,13 +32,13 @@ async function loginUser(username, password) {
     const et = er.response.data.errorType;
     // handle expected errors
     if (et === 'UnauthorizedError') {
-      throw new UnauthorizedError();
+      throw new UnauthorizedError('Incorrect password');
     }
     if (et === 'NotFoundError') {
-      throw new NotFoundError();
+      throw new NotFoundError('Username not found');
     }
     if (et === 'InvalidParamsError') {
-      throw new InvalidParamsError();
+      throw new InvalidParamsError('Username or password cannot be empty');
     }
     // handle unexpected errors
     console.log(er);
@@ -69,10 +69,10 @@ async function registerUser(username, password) {
     const et = er.response.data.errorType;
     // handle expected errors
     if (et === 'InvalidParamsError') {
-      throw new InvalidParamsError();
+      throw new InvalidParamsError('Username or password cannot be empty');
     }
     if (et === 'DuplicateEntryError') {
-      throw new DuplicateEntryError();
+      throw new DuplicateEntryError('Username already exists');
     }
     // handle unexpected errors
     console.log(er);
