@@ -13,12 +13,11 @@ const router = express.Router();
 
 // NOTE: authMiddleware authenticates the token before reaching this endpoint!
 
-/*
-  creates a new card
-    - new cards with the same question AND answer should be rejected
-    - adds a new card entry into the database
-    - returns the newly created card
-*/
+/** creates a new card
+ *  - new cards with the same question AND answer should be rejected
+ *  - adds a new card entry into the database
+ *  - returns the newly created card
+ */
 router.post('/:setId', async (req, res) => {
   const { question, answer } = req.body;
   const setId = parseInt(req.params.setId);
@@ -72,13 +71,12 @@ router.post('/:setId', async (req, res) => {
   }
 });
 
-/*
-  edits an existing card
-    - ensures the card exists, belongs to the user, and belongs to the study set
-    - ensures the question and answer doesn't already exist in the set
-    - edits the card 
-    - returns the edited card
-*/
+/** edits an existing card
+ * - ensures the card exists, belongs to the user, and belongs to the study set
+ * - ensures the question and answer doesn't already exist in the set
+ * - edits the card 
+ * - returns the edited card
+ */
 router.put('/:cardId', async (req, res) => {
   const { question, answer, isComplete } = req.body;
   const userId = req.userId;

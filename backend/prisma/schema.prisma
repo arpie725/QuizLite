@@ -28,6 +28,7 @@ model User {
   username  String    @unique
   password  String    
   sets      Set[]
+  tags      Tag[]
 }
 
 model Set {
@@ -38,6 +39,8 @@ model Set {
   cards     Card[]
   userId    Int
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([title, userId])
 }
 
 model Card {
@@ -47,10 +50,16 @@ model Card {
   isComplete  Boolean   @default(false)
   setId       Int
   set         Set       @relation(fields: [setId], references: [id], onDelete: Cascade)
+
+  @@unique([question, answer, setId])
 }
 
 model Tag {
   id        Int       @id @default(autoincrement())
-  name      String    @unique
+  name      String    
   sets      Set[]     @relation("SetTags")
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name])
 }
