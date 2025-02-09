@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
+import { Header } from '@/sections/HeaderSection';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -52,13 +53,9 @@ const DashboardPage = () => {
 
   return (
     <div>
+      <Header />
+      <div className='mt-[1000px]'></div>
       <h1 className='text-5xl login-text'>Dashboard!</h1>
-      <button
-        className='m-24 text-5xl font-bold bg-zinc-300 rounded-full p-4'
-        onClick={handleLogout}
-      >
-        Logout
-      </button>
       <button
         className='m-24 text-5xl font-bold bg-zinc-300 rounded-full p-4'
         onClick={async () => await fetchUserSets()}
