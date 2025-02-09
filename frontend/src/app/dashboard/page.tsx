@@ -44,7 +44,7 @@ const DashboardPage = () => {
         setSets(sets);
       } catch (er) {
         console.error('Error fetching sets:', er);
-        setError('Error fetching sets');
+        setError(`ERROR: ${(er as any).response.data.message}`);
       } finally {
         setLoading(false);
       }
@@ -63,7 +63,7 @@ const DashboardPage = () => {
 
   if (error) {
     // display an error div
-    return <div className='login-text'>ERROR...</div>;
+    return <div className='login-text'>{error}</div>;
   }
 
   return (
