@@ -1,0 +1,22 @@
+import Card from './Card';
+import CardData from './CardData';
+import SetData from './SetData';
+
+class Set {
+  id: number;
+  title: string;
+  isPublic: boolean;
+  cards: Card[];
+
+  constructor(data: SetData) {
+    this.id = data.id;
+    this.title = data.title;
+    this.isPublic = data.isPublic;
+    this.cards = data.cards
+      ? data.cards.map((cardData: CardData) => new Card(cardData))
+      : [];
+    // TODO: tags
+  }
+}
+
+export default Set;

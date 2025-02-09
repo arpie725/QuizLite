@@ -14,7 +14,7 @@ POST http://localhost:1322/auth/login
 Content-Type: application/json
 
 {
-  "username": "arpie",
+  "username": "arpie1",
   "password": "password"
 }
 
@@ -100,8 +100,8 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODk1
 Content-Type: application/json
 
 ### Get all cards from a study set
-GET http://localhost:1322/studySet/18/cards
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4ODc4NTE5LCJleHAiOjE3Mzg5NjQ5MTl9.AqkaNPH7-62Pls8SkDkhmdVVnt2742_r1SdcnyfNi7g
+GET http://localhost:1322/studySet/19/cards
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5MTE3ODc3LCJleHAiOjE3MzkyMDQyNzd9.BzCLtU95ba-U4DKlo29v2onspQPlxFpEA6UdGIhmwJE
 
 ### Get all sets from a user
 GET http://localhost:1322/user/sets
@@ -111,6 +111,6 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4OTY5
 DELETE http://localhost:1322/user
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4OTkwNjY5LCJleHAiOjE3MzkwNzcwNjl9.0YRM3VxXYpmMLjocRIYLY-yFBrYMi-owwGA_Ypab0jQ
 
-### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM4OTk3NTEzLCJleHAiOjE3MzkwODM5MTN9.Q6ZDklfKe11nLqVFJL1ap_0o8ANhJ3AOQ91n2nu_VNE
-### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4OTY5NDQxLCJleHAiOjE3MzkwNTU4NDF9.jr13J9hbHFAXO9qa6ZO7RXO3vtw46LpoS3srnUKwU0k
+### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MDc3Mzk1LCJleHAiOjE3MzkxNjM3OTV9.0R8K8nY3aQ_PfDVh1qskvTFoQDYEcC1-JozKQl0uE_0
+### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5MTE3ODc3LCJleHAiOjE3MzkyMDQyNzd9.BzCLtU95ba-U4DKlo29v2onspQPlxFpEA6UdGIhmwJE
 ### arpie2: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzM4ODk1MjE3LCJleHAiOjE3Mzg5ODE2MTd9.R-2CLRcSeZ2bKWlrQ7lWNdlXHOoDa0BjsoJAEdJrZWA
