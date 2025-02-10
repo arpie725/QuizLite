@@ -26,5 +26,4 @@ app.use('/card', authMiddleware, cardRoutes);
 app.use('/tag', authMiddleware, tagRoutes);
 
 app.listen(PORT, () => {
-  console.log(`Server has started on port: ${PORT}`);
 });

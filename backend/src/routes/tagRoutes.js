@@ -82,11 +82,16 @@ router.put('/:tagId', async (req, res) => {
   const trimmedName = name?.trim();
   // interact with the database
   try {
+    if (isNaN(tagId)) {
+      throw new InvalidParamsError('Invalid tagId');
+    }
     // check if the trimmedName is empty
     if (!trimmedName) {
       throw new InvalidParamsError('Tag name cannot be empty');
     }
     // check that a tag belonging to the user exists
+    // TODO: when refactoring this, first check if the tag exists (NotFoundError)
+    // TODO: then check if the tag belongs to the user (UnauthorizedError)
     const tagExists = await prisma.tag.findUnique({
       where: {
         id: tagId,
@@ -184,6 +189,60 @@ router.delete('/:tagId', async (req, res) => {
       er instanceof InvalidParamsError ||
       er instanceof NotFoundError ||
       er instanceof UnauthorizedError
+    ) {
+      return res
+        .status(er.statusCode)
+        .json({ success: false, errorType: er.name, message: er.message });
+    }
+    // unexpected error
+    console.log(er);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+});
+
+/** retrieves a tag
+ *  - ensures the tag exists and belongs to the user
+ *  - retrieve the tag from the database
+ *  - return the tag
+ */
+router.get('/:tagId', async (req, res) => {
+  const userId = req.userId;
+  const tagId = parseInt(req.params.tagId);
+  // interact with the database
+  try {
+    if (isNaN(tagId)) {
+      throw new InvalidParamsError('Invalid tagId');
+    }
+    // check the tag exists and belongs to the user
+    // TODO: not found error
+    // TODO: unauthorized error
+    const tagExists = await prisma.tag.findUnique({
+      where: {
+        id: tagId,
+        userId,
+      },
+    });
+    if (!tagExists) {
+      throw new NotFoundError('Tag not found');
+    }
+    // take off the userId
+    const { userId: _, ...tagExistsWithoutUserId } = tagExists;
+    // return the tag
+    return res.status(201).json({
+      success: true,
+      message: 'Retrieved the tag',
+      data: {
+        tag: tagExistsWithoutUserId,
+      },
+    });
+  } catch (er) {
+    // expected error
+    if (
+      er instanceof NotFoundError ||
+      er instanceof UnauthorizedError ||
+      er instanceof InvalidParamsError
     ) {
       return res
         .status(er.statusCode)
