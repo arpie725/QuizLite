@@ -121,18 +121,18 @@ Content-Type: application/json
 }
 
 ### Edit a tag
-PUT http://localhost:1322/tag/6
+PUT http://localhost:1322/tag/5
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MTM3NjQ1LCJleHAiOjE3MzkyMjQwNDV9.b8VCjgcxohsNofQnIDcIE0rHIX6m5dt3B3EKFAr3hOM
 Content-Type: application/json
 
 {
-  "name": "Pharmacy"
+  "name": " Farmville "
 }
 
 
 ### Delete a tag
-DELETE http://localhost:1322/tag/5
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MTM3NjQ1LCJleHAiOjE3MzkyMjQwNDV9.b8VCjgcxohsNofQnIDcIE0rHIX6m5dt3B3EKFAr3hOM
+DELETE http://localhost:1322/tag/6
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5MTM3Njc1LCJleHAiOjE3MzkyMjQwNzV9.jmb6_e7KsWDv_LSYHmw1fCLLQo8Thy2IzqX-Ft7kPC8
 
 
 ### Get a tag

@@ -6,6 +6,12 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '../utils/errors.js';
+import {
+  createNewTag,
+  findAndVerifyTag,
+  updateTagName,
+  verifyUniqueTag,
+} from '../utils/tagHelpers.js';
 
 const router = express.Router();
 
@@ -17,41 +23,20 @@ const router = express.Router();
  *  - returns the newly created tag
  */
 router.post('/', async (req, res) => {
-  const { name } = req.body;
-  const trimmedName = name?.trim();
+  const name = req.body.name?.trim();
   const userId = req.userId;
   // interact with the database
   try {
-    // check for empty name
-    if (!trimmedName) {
-      throw new InvalidParamsError('Tag name cannot be empty');
-    }
-    // check if user already has existing tag
-    const tagExists = await prisma.tag.findUnique({
-      where: {
-        userId_name: { userId, name: trimmedName },
-      },
-    });
-    if (tagExists) {
-      throw new DuplicateEntryError(
-        `Tag with name '${trimmedName}' already exists`
-      );
-    }
+    // verify the tag name is unique to user
+    await verifyUniqueTag(userId, name);
     // create the tag
-    const newTag = await prisma.tag.create({
-      data: {
-        name: trimmedName,
-        userId,
-      },
-    });
-    // remove the userId from the new tag
-    const { userId: _, ...tagWithoutUserId } = newTag;
+    const newTag = await createNewTag(userId, name);
     // return the newly created tag
     return res.status(201).json({
       success: true,
       message: 'Created a new tag',
       data: {
-        tag: tagWithoutUserId,
+        tag: newTag,
       },
     });
   } catch (er) {
@@ -78,55 +63,21 @@ router.post('/', async (req, res) => {
 router.put('/:tagId', async (req, res) => {
   const userId = req.userId;
   const tagId = parseInt(req.params.tagId);
-  const { name } = req.body;
-  const trimmedName = name?.trim();
+  const name = req.body.name?.trim();
   // interact with the database
   try {
-    if (isNaN(tagId)) {
-      throw new InvalidParamsError('Invalid tagId');
-    }
-    // check if the trimmedName is empty
-    if (!trimmedName) {
-      throw new InvalidParamsError('Tag name cannot be empty');
-    }
     // check that a tag belonging to the user exists
-    // TODO: when refactoring this, first check if the tag exists (NotFoundError)
-    // TODO: then check if the tag belongs to the user (UnauthorizedError)
-    const tagExists = await prisma.tag.findUnique({
-      where: {
-        id: tagId,
-        userId,
-      },
-    });
-    if (!tagExists) {
-      throw new NotFoundError('Tag belonging to user not found');
-    }
+    await findAndVerifyTag(tagId, userId);
     // make sure the new tag name doesn't already belong to the user
-    const newTagExists = await prisma.tag.findUnique({
-      where: {
-        userId_name: { userId, name: trimmedName },
-      },
-    });
-    if (newTagExists) {
-      throw new DuplicateEntryError('Tag name already exists');
-    }
+    await verifyUniqueTag(userId, name);
     // update the tag name
-    const updatedTag = await prisma.tag.update({
-      where: {
-        id: tagId,
-      },
-      data: {
-        name: trimmedName,
-      },
-    });
-    // remove the userId from the updatedTag
-    const { userId: _, ...updatedTagWithoutUserId } = updatedTag;
+    const updatedTag = await updateTagName(tagId, name);
     // return the updated tag
     return res.status(200).json({
       success: true,
       message: 'Changed the tag name',
       data: {
-        updatedTagWithoutUserId,
+        updatedTag,
       },
     });
   } catch (er) {
@@ -134,7 +85,8 @@ router.put('/:tagId', async (req, res) => {
     if (
       er instanceof NotFoundError ||
       er instanceof DuplicateEntryError ||
-      er instanceof InvalidParamsError
+      er instanceof InvalidParamsError ||
+      er instanceof UnauthorizedError
     ) {
       return res
         .status(er.statusCode)
@@ -158,23 +110,8 @@ router.delete('/:tagId', async (req, res) => {
   const userId = req.userId;
   // interact with the database
   try {
-    if (isNaN(tagId)) {
-      throw new InvalidParamsError('Invalid tagId');
-    }
     // ensure the tag exists and belongs to the user
-    // TODO: when refactoring this, first check if the tag exists (NotFoundError)
-    // TODO: then check if the tag belongs to the user (UnauthorizedError)
-    const tagExists = await prisma.tag.findUnique({
-      where: {
-        id: tagId,
-        userId,
-      },
-    });
-    if (!tagExists) {
-      throw new UnauthorizedError(
-        `REFACTOR LATER: Either tag: ${tagId} doesn't exist or unauthorized access`
-      );
-    }
+    await findAndVerifyTag(tagId, userId);
     // delete the tag from the database
     await prisma.tag.delete({
       where: {
@@ -212,29 +149,14 @@ router.get('/:tagId', async (req, res) => {
   const tagId = parseInt(req.params.tagId);
   // interact with the database
   try {
-    if (isNaN(tagId)) {
-      throw new InvalidParamsError('Invalid tagId');
-    }
     // check the tag exists and belongs to the user
-    // TODO: not found error
-    // TODO: unauthorized error
-    const tagExists = await prisma.tag.findUnique({
-      where: {
-        id: tagId,
-        userId,
-      },
-    });
-    if (!tagExists) {
-      throw new NotFoundError('Tag not found');
-    }
-    // take off the userId
-    const { userId: _, ...tagExistsWithoutUserId } = tagExists;
+    const tagExists = await findAndVerifyTag(tagId, userId);
     // return the tag
     return res.status(201).json({
       success: true,
       message: 'Retrieved the tag',
       data: {
-        tag: tagExistsWithoutUserId,
+        tag: tagExists,
       },
     });
   } catch (er) {
