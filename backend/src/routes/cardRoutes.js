@@ -74,7 +74,7 @@ router.post('/:setId', async (req, res) => {
 /** edits an existing card
  * - ensures the card exists, belongs to the user, and belongs to the study set
  * - ensures the question and answer doesn't already exist in the set
- * - edits the card 
+ * - edits the card
  * - returns the edited card
  */
 router.put('/:cardId', async (req, res) => {
@@ -92,7 +92,7 @@ router.put('/:cardId', async (req, res) => {
     // check if a card with cardId exists in the database
     const curCard = await cardExists(cardId);
     if (!curCard) {
-      throw new NotFoundError(`Card with id: ${cardId} not found`);
+      throw new NotFoundError(`Card not found`);
     }
     // get the setId from the card
     const setId = curCard.setId;
@@ -157,14 +157,10 @@ router.delete('/:cardId', async (req, res) => {
   const userId = req.userId;
   // interact with the database
   try {
-    // make sure cardId is not undefined
-    if (cardId === undefined) {
-      throw new InvalidParamsError('No cardId was given');
-    }
     // make sure the card exists
     const curCard = await cardExists(cardId);
     if (!curCard) {
-      throw new NotFoundError(`Card with id: ${cardId} not found`);
+      throw new NotFoundError(`Card not found`);
     }
     // validate the study set belongs to the user
     await findAndVerifySet(curCard.setId, userId);

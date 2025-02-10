@@ -143,4 +143,58 @@ router.put('/:tagId', async (req, res) => {
   }
 });
 
+/** deletes a tag
+ *  - ensures the tag exists and belongs to the user
+ *  - deletes the tag from the database
+ *  - returns a 204 no content response
+ */
+router.delete('/:tagId', async (req, res) => {
+  const tagId = parseInt(req.params.tagId);
+  const userId = req.userId;
+  // interact with the database
+  try {
+    if (isNaN(tagId)) {
+      throw new InvalidParamsError('Invalid tagId');
+    }
+    // ensure the tag exists and belongs to the user
+    // TODO: when refactoring this, first check if the tag exists (NotFoundError)
+    // TODO: then check if the tag belongs to the user (UnauthorizedError)
+    const tagExists = await prisma.tag.findUnique({
+      where: {
+        id: tagId,
+        userId,
+      },
+    });
+    if (!tagExists) {
+      throw new UnauthorizedError(
+        `REFACTOR LATER: Either tag: ${tagId} doesn't exist or unauthorized access`
+      );
+    }
+    // delete the tag from the database
+    await prisma.tag.delete({
+      where: {
+        id: tagId,
+      },
+    });
+    // return 204 no content
+    return res.sendStatus(204);
+  } catch (er) {
+    // expected error
+    if (
+      er instanceof InvalidParamsError ||
+      er instanceof NotFoundError ||
+      er instanceof UnauthorizedError
+    ) {
+      return res
+        .status(er.statusCode)
+        .json({ success: false, errorType: er.name, message: er.message });
+    }
+    // unexpected error
+    console.log(er);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+});
+
 export default router;
