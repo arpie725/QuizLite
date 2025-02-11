@@ -1,12 +1,5 @@
 import express from 'express';
 import prisma from '../prismaClient.js';
-import {
-  NotFoundError,
-  UnauthorizedError,
-  InternalError,
-  InvalidParamsError,
-  DuplicateEntryError,
-} from '../utils/errors.js';
 import { userExists } from '../utils/authHelpers.js';
 
 const router = express.Router();
@@ -18,22 +11,22 @@ const router = express.Router();
  *  - return user and sets
  */
 router.get('/sets', async (req, res) => {
-  const userId_ = req.userId;
+  const userId = req.userId;
   // interact with the database
   try {
     // get all the sets that belong to the user
     const sets = await prisma.set.findMany({
       where: {
-        userId: userId_,
+        userId,
       },
     });
     // remove the userId from each set
     const setsWithoutUserId = sets.map((set) => {
-      const { userId, ...rest } = set;
+      const { userId: _, ...rest } = set;
       return rest;
     });
     // get the user
-    const user = await userExists(userId_);
+    const user = await userExists(userId);
     // return the user and all the sets
     return res.status(201).json({
       success: true,
@@ -47,10 +40,8 @@ router.get('/sets', async (req, res) => {
       },
     });
   } catch (er) {
-    console.log(er);
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal server error' });
+    // expected error
+    return handleErrors(er, res);
   }
 });
 
@@ -78,10 +69,8 @@ router.get('/tags', async (req, res) => {
       },
     });
   } catch (er) {
-    console.log(er);
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal server error' });
+    // expected error
+    return handleErrors(er, res);
   }
 });
 
@@ -91,7 +80,6 @@ router.get('/tags', async (req, res) => {
     - return 204 code
 */
 router.delete('/', async (req, res) => {
-  // Note: userId already validated in authMiddleware
   const userId = req.userId;
   // interact with the database
   try {
@@ -103,10 +91,8 @@ router.delete('/', async (req, res) => {
     });
     return res.sendStatus(204);
   } catch (er) {
-    console.log(er);
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal server error' });
+    // expected error
+    return handleErrors(er, res);
   }
 });
 

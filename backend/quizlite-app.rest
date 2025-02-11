@@ -136,7 +136,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5MTM3
 
 
 ### Get a tag
-GET http://localhost:1322/tag/6
+GET http://localhost:1322/tag/sdfsdf
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MTM3NjQ1LCJleHAiOjE3MzkyMjQwNDV9.b8VCjgcxohsNofQnIDcIE0rHIX6m5dt3B3EKFAr3hOM
 
 

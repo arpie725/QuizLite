@@ -22,7 +22,7 @@ const router = express.Router();
 */
 router.post('/', async (req, res) => {
   const { title, isPublic } = req.body;
-  const userId_ = req.userId;
+  const userId = req.userId;
   const trimmedTitle = title?.trim();
   // interact with the db
   try {
@@ -31,9 +31,9 @@ router.post('/', async (req, res) => {
       throw new InvalidParamsError('Title cannot be empty');
     }
     // check if the set already exists
-    if (await setExists(trimmedTitle, userId_)) {
+    if (await setExists(trimmedTitle, userId)) {
       throw new DuplicateEntryError(
-        `Study set with with title: ${trimmedTitle} and userId: ${userId_} already exists`
+        `Study set with with title: ${trimmedTitle} and userId: ${userId} already exists`
       );
     }
     // add the new study set entry into the database
@@ -41,11 +41,11 @@ router.post('/', async (req, res) => {
       data: {
         title: trimmedTitle,
         isPublic,
-        user: { connect: { id: userId_ } },
+        user: { connect: { id: userId } },
       },
     });
     // remove the userId from the set
-    const { userId, ...setWithoutUserId } = newSet;
+    const { userId: _, ...setWithoutUserId } = newSet;
     // create a default flashcard
     await prisma.card.create({
       data: {
@@ -65,15 +65,8 @@ router.post('/', async (req, res) => {
       },
     });
   } catch (er) {
-    if (er instanceof InvalidParamsError || er instanceof DuplicateEntryError) {
-      return res
-        .status(er.statusCode)
-        .json({ success: false, errorType: er.name, message: er.message });
-    }
-    console.log(er);
-    return res
-      .status(503)
-      .json({ success: false, message: 'Internal server error' });
+    // expected error
+    return handleErrors(er, res);
   }
 });
 
@@ -86,7 +79,7 @@ router.post('/', async (req, res) => {
 */
 router.put('/:setId', async (req, res) => {
   const setId = parseInt(req.params.setId);
-  const userId_ = req.userId;
+  const userId = req.userId;
   const { title, isPublic } = req.body;
   const trimmedTitle = title?.trim();
   // interact with the database
@@ -96,13 +89,13 @@ router.put('/:setId', async (req, res) => {
       throw new InvalidParamsError('Title cannot be empty');
     }
     // verify setId exists and belongs to the user
-    await findAndVerifySet(setId, userId_);
+    await findAndVerifySet(setId, userId);
     // possible that title was never passed in
     if (title) {
       // verify that a set with the same title doesn't already exist
-      if (await setExists(trimmedTitle, userId_)) {
+      if (await setExists(trimmedTitle, userId)) {
         throw new DuplicateEntryError(
-          `Study set with with title: ${trimmedTitle} and userId: ${userId_} already exists`
+          `Study set with with title: ${trimmedTitle} and userId: ${userId} already exists`
         );
       }
     }
@@ -117,7 +110,7 @@ router.put('/:setId', async (req, res) => {
       },
     });
     // remove the userId from the set
-    const { userId, ...setWithoutUserId } = updatedSet;
+    const { userId: _, ...setWithoutUserId } = updatedSet;
     // return the updated set
     return res.status(200).json({
       success: true,
@@ -129,19 +122,8 @@ router.put('/:setId', async (req, res) => {
       },
     });
   } catch (er) {
-    if (
-      er instanceof NotFoundError ||
-      er instanceof UnauthorizedError ||
-      er instanceof InternalError ||
-      er instanceof InvalidParamsError ||
-      er instanceof DuplicateEntryError
-    ) {
-      return res
-        .status(er.statusCode)
-        .json({ success: false, errorType: er.name, message: er.message });
-    }
-    console.log(er);
-    res.status(500).json({ success: false, message: er });
+    // expected error
+    return handleErrors(er, res);
   }
 });
 
@@ -167,18 +149,8 @@ router.delete('/:setId', async (req, res) => {
     // send back a 204 status
     return res.sendStatus(204); // 204 means no content
   } catch (er) {
-    if (
-      er instanceof NotFoundError ||
-      er instanceof UnauthorizedError ||
-      er instanceof InternalError ||
-      er instanceof InvalidParamsError
-    ) {
-      return res
-        .status(er.statusCode)
-        .json({ success: false, errorType: er.name, message: er.message });
-    }
-    console.log(er);
-    return res.status(500).json({ success: false, message: er });
+    // expected error
+    return handleErrors(er, res);
   }
 });
 
@@ -190,13 +162,13 @@ router.delete('/:setId', async (req, res) => {
 */
 router.get('/:setId/', async (req, res) => {
   const setId = parseInt(req.params.setId);
-  const userId_ = req.userId;
+  const userId = req.userId;
   // interact with the database
   try {
     // verify the setId exists and belongs to the user
-    const { curSet, cardCount } = await findAndVerifySet(setId, userId_);
+    const { curSet, cardCount } = await findAndVerifySet(setId, userId);
     // remove the userId from the set
-    const { userId, ...setWithoutUserId } = curSet;
+    const { userId: _, ...setWithoutUserId } = curSet;
     // return the set from the database
     return res.status(201).json({
       success: true,
@@ -209,19 +181,8 @@ router.get('/:setId/', async (req, res) => {
       },
     });
   } catch (er) {
-    if (
-      er instanceof InvalidParamsError ||
-      er instanceof NotFoundError ||
-      er instanceof UnauthorizedError
-    ) {
-      return res
-        .status(er.statusCode)
-        .json({ success: false, errorType: er.name, message: er.message });
-    }
-    console.log(er);
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal server error' });
+    // expected error
+    return handleErrors(er, res);
   }
 });
 
@@ -233,13 +194,13 @@ router.get('/:setId/', async (req, res) => {
 */
 router.get('/:setId/cards', async (req, res) => {
   const setId = parseInt(req.params.setId);
-  const userId_ = req.userId;
+  const userId = req.userId;
   // interact with the database
   try {
     // verify study set belongs to user
-    const { curSet, cardCount } = await findAndVerifySet(setId, userId_);
+    const { curSet, cardCount } = await findAndVerifySet(setId, userId);
     // remove the userId from the set
-    const { userId, ...setWithoutUserId } = curSet;
+    const { userId: _, ...setWithoutUserId } = curSet;
     // query the database for all cards that have setId
     const cards = await prisma.card.findMany({
       where: {
@@ -259,17 +220,8 @@ router.get('/:setId/cards', async (req, res) => {
       },
     });
   } catch (er) {
-    if (
-      er instanceof NotFoundError ||
-      er instanceof UnauthorizedError ||
-      er instanceof InvalidParamsError
-    ) {
-      return res
-        .status(er.statusCode)
-        .json({ success: false, errorType: er.name, message: er.message });
-    }
-    console.log(er);
-    return res;
+    // expected error
+    return handleErrors(er, res);
   }
 });
 

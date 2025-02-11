@@ -10,6 +10,7 @@ import {
  *  - ensures tagId is a valid int
  *  @params tagId (int), userId (int)
  *  @returns tag (with userId removed)
+ *  @throws InvalidParamsError, NotFoundError, UnauthorizedError
  */
 async function findAndVerifyTag(tagId, userId) {
   // interact with the database
@@ -50,6 +51,7 @@ async function findAndVerifyTag(tagId, userId) {
  *  - ensures the userId and name do not already exist
  *  @params userId (int), name (string)
  *  @returns None
+ *  @throws InvalidParamsError, DuplicateEntryError
  */
 async function verifyUniqueTag(userId, name) {
   // interact with the database

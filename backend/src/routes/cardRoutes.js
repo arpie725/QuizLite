@@ -55,19 +55,8 @@ router.post('/:setId', async (req, res) => {
       data: newCard,
     });
   } catch (er) {
-    if (
-      er instanceof InvalidParamsError ||
-      er instanceof NotFoundError ||
-      er instanceof DuplicateEntryError ||
-      er instanceof UnauthorizedError
-    ) {
-      return res
-        .status(er.statusCode)
-        .json({ success: false, errorType: er.name, message: er.message });
-    }
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal server error' });
+    // expected error
+    return handleErrors(er, res);
   }
 });
 
@@ -129,20 +118,8 @@ router.put('/:cardId', async (req, res) => {
       },
     });
   } catch (er) {
-    if (
-      er instanceof InvalidParamsError ||
-      er instanceof UnauthorizedError ||
-      er instanceof NotFoundError ||
-      er instanceof DuplicateEntryError
-    ) {
-      return res
-        .status(er.statusCode)
-        .json({ success: false, errorType: er.name, message: er.message });
-    }
-    console.log(er);
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal server error' });
+    // expected error
+    return handleErrors(er, res);
   }
 });
 
@@ -172,19 +149,8 @@ router.delete('/:cardId', async (req, res) => {
     });
     return res.sendStatus(204); // 204 means no content
   } catch (er) {
-    if (
-      er instanceof InvalidParamsError ||
-      er instanceof NotFoundError ||
-      er instanceof UnauthorizedError
-    ) {
-      return res
-        .status(er.statusCode)
-        .json({ success: false, errorType: er.name, message: er.message });
-    }
-    console.log(er);
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal service error' });
+    // expected error
+    return handleErrors(er, res);
   }
 });
 

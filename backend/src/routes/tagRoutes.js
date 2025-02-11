@@ -5,6 +5,7 @@ import {
   InvalidParamsError,
   NotFoundError,
   UnauthorizedError,
+  handleErrors,
 } from '../utils/errors.js';
 import {
   createNewTag,
@@ -46,11 +47,8 @@ router.post('/', async (req, res) => {
         .status(er.statusCode)
         .json({ success: false, errorType: er.name, message: er.message });
     }
-    // unexpected error
-    console.log(er);
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal server error' });
+    // expected error
+    return handleErrors(er, res);
   }
 });
 
@@ -82,21 +80,7 @@ router.put('/:tagId', async (req, res) => {
     });
   } catch (er) {
     // expected error
-    if (
-      er instanceof NotFoundError ||
-      er instanceof DuplicateEntryError ||
-      er instanceof InvalidParamsError ||
-      er instanceof UnauthorizedError
-    ) {
-      return res
-        .status(er.statusCode)
-        .json({ success: false, errorType: er.name, message: er.message });
-    }
-    console.log(er);
-    // unexpected error
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal server error' });
+    return handleErrors(er, res);
   }
 });
 
@@ -122,20 +106,7 @@ router.delete('/:tagId', async (req, res) => {
     return res.sendStatus(204);
   } catch (er) {
     // expected error
-    if (
-      er instanceof InvalidParamsError ||
-      er instanceof NotFoundError ||
-      er instanceof UnauthorizedError
-    ) {
-      return res
-        .status(er.statusCode)
-        .json({ success: false, errorType: er.name, message: er.message });
-    }
-    // unexpected error
-    console.log(er);
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal server error' });
+    return handleErrors(er, res);
   }
 });
 
@@ -161,20 +132,25 @@ router.get('/:tagId', async (req, res) => {
     });
   } catch (er) {
     // expected error
-    if (
-      er instanceof NotFoundError ||
-      er instanceof UnauthorizedError ||
-      er instanceof InvalidParamsError
-    ) {
-      return res
-        .status(er.statusCode)
-        .json({ success: false, errorType: er.name, message: er.message });
-    }
-    // unexpected error
-    console.log(er);
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal server error' });
+    return handleErrors(er, res);
+  }
+});
+
+/** retrieves all sets belonging to a tag
+ *  - ensures the tag exists and belongs to the user
+ *  - retrieve many sets from the database
+ *  - return sets
+ */
+router.get('/:tagId/sets', async (req, res) => {
+  const userId = req.userId;
+  const tagId = parseInt(req.params.tagId);
+  // interact with the database
+  try {
+    await findAndVerifyTag(tagId, userId);
+    // retrieve all the sets that have tagId
+    // TODO
+  } catch (er) {
+    handleErrors(er);
   }
 });
 

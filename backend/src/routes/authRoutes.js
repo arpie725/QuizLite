@@ -63,15 +63,8 @@ router.post('/register', async (req, res) => {
       },
     });
   } catch (er) {
-    if (er instanceof DuplicateEntryError) {
-      return res
-        .status(er.statusCode)
-        .json({ success: false, errorType: er.name, message: er.message });
-    }
-    console.log(er);
-    return res
-      .status(503)
-      .json({ sucess: false, message: 'Internal server error' });
+    // expected error
+    return handleErrors(er, res);
   }
 });
 
@@ -120,15 +113,8 @@ router.post('/login', async (req, res) => {
       },
     });
   } catch (er) {
-    if (er instanceof NotFoundError || er instanceof UnauthorizedError) {
-      return res
-        .status(er.statusCode)
-        .json({ success: false, errorType: er.name, message: er.message });
-    }
-    console.log(er);
-    return res
-      .status(503)
-      .json({ success: false, message: 'Internal server error' });
+    // expected error
+    return handleErrors(er, res);
   }
 });
 
