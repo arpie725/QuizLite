@@ -50,7 +50,7 @@ async function findAndVerifySet(setId, userId) {
 /** determines if a set with the same title already exists
  * @param {string} title
  * @param {number} userId
- * @returns boolean
+ * @returns existing set
  */
 async function setExists(title, userId) {
   // interacting with database
@@ -60,14 +60,10 @@ async function setExists(title, userId) {
         title_userId: { title, userId },
       },
     });
-    return !!existingSet;
+    return existingSet;
   } catch (er) {
     throw er;
   }
 }
-
-/** verifies each
- *
- */
 
 export { findAndVerifySet, setExists };

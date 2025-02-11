@@ -15,13 +15,12 @@ const router = express.Router();
 
 // NOTE: middleware authenticates the token before reaching this endpoint!
 
-/*
-  creates a new study set
-    - ensures the user is not adding an already created study set
-    - adds a new set entry into the database
-    - creates a default flashcard for new study sets
-    - returns the newly created study set
-*/
+/** creates a new study set
+ * - ensures new study set is unique
+ * - adds a new set entry into the database
+ * - creates a default flashcard for the new set
+ * - returns the newly created study set 
+ */
 router.post('/', async (req, res) => {
   const { title, isPublic } = req.body;
   const userId = req.userId;
@@ -71,13 +70,12 @@ router.post('/', async (req, res) => {
   }
 });
 
-/*
-  edits an existing study set
-    - can be (title, isPublic, etc.)
-    - ensures the study setId belongs to the user
-    - updates the title field
-    - returns the updated set
-*/
+/** edits an existing study set
+ * - can be (title, isPublic, etc.)
+ * - ensures the set belongs to the user
+ * - updates the set
+ * - returns the updated set
+ */
 router.put('/:setId', async (req, res) => {
   const setId = parseInt(req.params.setId);
   const userId = req.userId;
@@ -127,12 +125,11 @@ router.put('/:setId', async (req, res) => {
   }
 });
 
-/*
-  deletes an existing study set
-    - ensures setId belongs to the user
-    - deletes the study set from the sets database
-    - returns 204 status
-*/
+/** deletes an existing study set
+ * - ensures the set belongs to the user
+ * - deletes the study set from the db
+ * - returns 204 no content
+ */
 router.delete('/:setId', async (req, res) => {
   const setId = parseInt(req.params.setId);
   const userId = req.userId;
@@ -154,12 +151,11 @@ router.delete('/:setId', async (req, res) => {
   }
 });
 
-/*
-  retrieves the study set from the database
-    - ensures setId belongs to the user
-    - queries the database for the study set
-    - returns the study set
-*/
+/** retrieves the study set from the database 
+ * - ensures the set belongs to the user
+ * - queries the database for the study set
+ * - returns the study set and cardCount
+ */
 router.get('/:setId/', async (req, res) => {
   const setId = parseInt(req.params.setId);
   const userId = req.userId;
@@ -182,12 +178,11 @@ router.get('/:setId/', async (req, res) => {
   }
 });
 
-/*
-  retrieves all cards belonging to a study set
-    - ensures the setId belongs to the user
-    - queries the database for all cards that have desired setId
-    - returns the study set and all cards 
-*/
+/** retrieves all cards belonging to a study set
+ * - ensures the set belongs to the user
+ * - queries the db for all cards that belong to the study set
+ * - returns the study set, cardCount, and cards
+ */
 router.get('/:setId/cards', async (req, res) => {
   const setId = parseInt(req.params.setId);
   const userId = req.userId;
@@ -220,11 +215,11 @@ router.get('/:setId/cards', async (req, res) => {
 /// TAGS ------------------------------------------------
 
 /** assigns tags to a study set
- *  - expects an array of tagIds
- *  - ensures the set exists and belongs to the user
- *  - ensures each tag exists and belongs to the user
- *  - connects the tags to the set
- *  - returns the set with the updated tags
+ * - expects an array of tagIds
+ * - ensures the set exists and belongs to the user
+ * - ensures each tag exists and belongs to the user
+ * - connects the tags to the set
+ * - returns the set with the updated tags
  */
 router.post('/:setId/assign-tags', async (req, res) => {
   const userId = req.userId;
@@ -263,11 +258,11 @@ router.post('/:setId/assign-tags', async (req, res) => {
 });
 
 /** removes tags from a study set
- *  - expects a non-empty int array of tagIds
- *  - ensures the set exists and belongs to the user
- *  - ensures each tag exists and belongs to the user
- *  - unconnects the tags to the set
- *  - returns the set with all its remaining tags
+ * - expects a non-empty int array of tagIds
+ * - ensures the set exists and belongs to the user
+ * - ensures each tag exists and belongs to the user
+ * - unconnects the tags to the set
+ * - returns the set with all its remaining tags
  */
 router.post('/:setId/unassign-tags', async (req, res) => {
   const userId = req.userId;
@@ -306,9 +301,9 @@ router.post('/:setId/unassign-tags', async (req, res) => {
 });
 
 /** gets all tags from a study set
- *  - ensures the set exists and belongs to the user
- *  - queries all tags from a set
- *  - returns the set with all tags
+ * - ensures the set exists and belongs to the user
+ * - queries all tags from a set
+ * - returns the set with all tags
  */
 router.get('/:setId/tags', async (req, res) => {
   const userId = req.userId;

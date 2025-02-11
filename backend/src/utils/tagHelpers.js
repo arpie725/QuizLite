@@ -8,10 +8,10 @@ import {
 } from './errors.js';
 
 /** verifies the tag exists and belongs to the user
- *  - ensures tagId is a valid positive int
- *  @param {number} tagId
- *  @param {number} userId
- *  @returns tag (with userId removed)
+ * - ensures tagId is a valid positive int
+ * @param {number} tagId
+ * @param {number} userId
+ * @returns tag (with userId removed)
  */
 async function findAndVerifyTag(tagId, userId) {
   // interact with the database
@@ -50,10 +50,10 @@ async function findAndVerifyTag(tagId, userId) {
 }
 
 /** verifies each tagId exists and belongs to the user
- *  - ensures tagIds is a non-empty int array
- *  @param {number[]} tagIds
- *  @param {number} userId
- *  @returns tags (with userId removed)
+ * - ensures tagIds is a non-empty int array
+ * @param {number[]} tagIds
+ * @param {number} userId
+ * @returns tags (with userId removed)
  */
 async function findAndVerifyTags(tagIds, userId) {
   try {
@@ -86,10 +86,10 @@ async function findAndVerifyTags(tagIds, userId) {
 }
 
 /** verifies a unique tag
- *  - ensures the userId and name do not already exist
- *  @param {number} userId
- *  @param {string} name
- *  @returns None
+ * - ensures the userId and name do not already exist
+ * @param {number} userId
+ * @param {string} name
+ * @returns None
  */
 async function verifyUniqueTag(userId, name) {
   // interact with the database
@@ -113,8 +113,9 @@ async function verifyUniqueTag(userId, name) {
 }
 
 /** creates new tag entry into the database
- *  @params userId (int), name (string)
- *  @returns newly created tag (without userId)
+ * @param {number} userId
+ * @param {string} name
+ * @returns newly created tag (without userId)
  */
 async function createNewTag(userId, name) {
   // interact with database
@@ -137,8 +138,9 @@ async function createNewTag(userId, name) {
 }
 
 /** updates the name of a tag
- *  @params tagId (int), name (string)
- *  @returns the updated tag (without userId)
+ * @param {number} tagId
+ * @param {string} name
+ * @returns the updated tag (without userId)
  */
 async function updateTagName(tagId, name) {
   // interact with the database

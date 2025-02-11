@@ -49,12 +49,7 @@ async function validateUsernameAndPassword(username, password) {
   const trimmedUsername = username?.trim();
   try {
     // ensure username and password is a non-empty string
-    if (
-      !trimmedUsername ||
-      trimmedUsername === '' ||
-      !password ||
-      password === ''
-    ) {
+    if (!trimmedUsername || !password) {
       throw new InvalidParamsError('Username or Password empty / nonexistent');
     }
     const hashedPassword = bcrypt.hashSync(

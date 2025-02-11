@@ -8,35 +8,36 @@ import {
   handleErrors,
 } from '../utils/errors.js';
 import { findAndVerifySet } from '../utils/studySetHelpers.js';
-import { cardExists, cardQASExists } from '../utils/cardHelpers.js';
+import {
+  cardExists,
+  cardQASExists,
+  validateQuestionAndAnswer,
+} from '../utils/cardHelpers.js';
 
 const router = express.Router();
 
 // NOTE: authMiddleware authenticates the token before reaching this endpoint!
 
 /** creates a new card
- *  - new cards with the same question AND answer should be rejected
- *  - adds a new card entry into the database
- *  - returns the newly created card
+ * - new cards with the same question AND answer should be rejected
+ * - adds a new card entry into the database
+ * - returns the newly created card
  */
 router.post('/:setId', async (req, res) => {
-  const { question, answer } = req.body;
+  const { question: rawQuestion, answer: rawAnswer } = req.body;
   const setId = parseInt(req.params.setId);
   const userId = req.userId;
-  const trimmedQuestion = question?.trim();
-  const trimmedAnswer = answer?.trim();
   // interact with the database
   try {
-    // check that the request sent the question, answer, and setId
-    if (!trimmedQuestion || !trimmedAnswer || setId === undefined) {
-      throw new InvalidParamsError(
-        'Cannot have empty question, answer, or undefined setId'
-      );
-    }
+    // validate the question, answer
+    const { question, answer } = await validateQuestionAndAnswer(
+      rawQuestion,
+      rawAnswer
+    );
     // verify the set exists and belongs to the user
     await findAndVerifySet(setId, userId);
     // ensure the new card's question and answer is unique to the set
-    if (await cardQASExists(trimmedQuestion, trimmedAnswer, setId)) {
+    if (await cardQASExists(question, answer, setId)) {
       throw new DuplicateEntryError(
         'Card with identical question + answer already exists'
       );
@@ -44,8 +45,8 @@ router.post('/:setId', async (req, res) => {
     // create a new card entry
     const newCard = await prisma.card.create({
       data: {
-        question: trimmedQuestion,
-        answer: trimmedAnswer,
+        question,
+        answer,
         set: { connect: { id: setId } },
       },
     });
@@ -68,17 +69,16 @@ router.post('/:setId', async (req, res) => {
  * - returns the edited card
  */
 router.put('/:cardId', async (req, res) => {
-  const { question, answer, isComplete } = req.body;
+  const { question: rawQuestion, answer: rawAnswer, isComplete } = req.body;
   const userId = req.userId;
   const cardId = parseInt(req.params.cardId);
-  const trimmedQuestion = question?.trim();
-  const trimmedAnswer = answer?.trim();
   // interact with the database
   try {
-    // check if the question or answer is empty string
-    if (trimmedQuestion === '' || trimmedAnswer === '') {
-      throw new InvalidParamsError('Question or Answer cannot be empty');
-    }
+    // validate question and answer
+    const { question, answer } = await validateQuestionAndAnswer(
+      rawQuestion,
+      rawAnswer
+    );
     // check if a card with cardId exists in the database
     const curCard = await cardExists(cardId);
     if (!curCard) {
@@ -89,9 +89,9 @@ router.put('/:cardId', async (req, res) => {
     // verify the setId exists and belongs to the user
     await findAndVerifySet(setId, userId);
     // the user wants to update the question and / or answer
-    if (trimmedQuestion || trimmedAnswer) {
-      const updatedQuestion = trimmedQuestion ?? curCard.question;
-      const updatedAnswer = trimmedAnswer ?? curCard.answer;
+    if (question || answer) {
+      const updatedQuestion = question ?? curCard.question;
+      const updatedAnswer = answer ?? curCard.answer;
       // check if a card with the same question / answer already exists in the set
       if (await cardQASExists(updatedQuestion, updatedAnswer, setId)) {
         throw new DuplicateEntryError(
@@ -105,8 +105,8 @@ router.put('/:cardId', async (req, res) => {
         id: cardId,
       },
       data: {
-        question: trimmedQuestion,
-        answer: trimmedAnswer,
+        question,
+        answer,
         isComplete,
       },
     });
@@ -124,12 +124,11 @@ router.put('/:cardId', async (req, res) => {
   }
 });
 
-/*
-  deletes an existing card
-    - ensures the card exists, belongs to the user, and belongs to the study set
-    - deletes the card from the database
-    - returns 204 status
-*/
+/** deletes an existing card
+ * - ensures the card exists, belongs to the user, and belongs to the set
+ * - deletes the card from the database
+ * - returns 204 no content 
+ */
 router.delete('/:cardId', async (req, res) => {
   const cardId = parseInt(req.params.cardId);
   const userId = req.userId;

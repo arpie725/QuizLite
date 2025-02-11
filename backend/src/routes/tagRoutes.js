@@ -19,9 +19,9 @@ const router = express.Router();
 // NOTE: authMiddleware authenticates the token before reaching this endpoint!
 
 /** creates a new tag
- *  - ensures that the tag is not empty, and that it is unique to the user
- *  - adds the tag to the database
- *  - returns the newly created tag
+ * - ensures that the tag is not empty, and that it is unique to the user
+ * - adds the tag to the database
+ * - returns the newly created tag
  */
 router.post('/', async (req, res) => {
   const name = req.body.name?.trim();
@@ -53,10 +53,10 @@ router.post('/', async (req, res) => {
 });
 
 /** edits the name of a tag
- *  - ensures that the new tag name is not empty
- *  - ensures that the old tag exists and belongs to the user
- *  - update the tag name
- *  - returns the updated tag
+ * - ensures that the new tag name is not empty
+ * - ensures that the old tag exists and belongs to the user
+ * - update the tag name
+ * - returns the updated tag
  */
 router.put('/:tagId', async (req, res) => {
   const userId = req.userId;
@@ -85,9 +85,9 @@ router.put('/:tagId', async (req, res) => {
 });
 
 /** deletes a tag
- *  - ensures the tag exists and belongs to the user
- *  - deletes the tag from the database
- *  - returns a 204 no content response
+ * - ensures the tag exists and belongs to the user
+ * - deletes the tag from the database
+ * - returns a 204 no content response
  */
 router.delete('/:tagId', async (req, res) => {
   const tagId = parseInt(req.params.tagId);
@@ -111,9 +111,9 @@ router.delete('/:tagId', async (req, res) => {
 });
 
 /** retrieves a tag
- *  - ensures the tag exists and belongs to the user
- *  - retrieve the tag from the database
- *  - return the tag
+ * - ensures the tag exists and belongs to the user
+ * - retrieve the tag from the database
+ * - return the tag
  */
 router.get('/get-tag/:tagId', async (req, res) => {
   const userId = req.userId;
@@ -139,9 +139,9 @@ router.get('/get-tag/:tagId', async (req, res) => {
 /// SETS ------------------------------------------------
 
 /** retrieves all sets belonging to a tag
- *  - ensures the tag exists and belongs to the user
- *  - retrieve the tag and include sets from the database
- *  - return the tag with the sets
+ * - ensures the tag exists and belongs to the user
+ * - retrieve the tag and include sets from the database
+ * - return the tag with the sets
  */
 router.get('/sets/:tagId', async (req, res) => {
   const userId = req.userId;
@@ -175,9 +175,9 @@ router.get('/sets/:tagId', async (req, res) => {
 });
 
 /** retrieves all public sets belonging to a tag
- *  - expects tag name
- *  - queries the database using tag name
- *  - returns tag name, set count, sets
+ * - expects tag name
+ * - queries the database using tag name
+ * - returns tag name, set count, sets
  */
 router.get('/public-sets', async (req, res) => {
   const name = req.body.tagName?.trim();
