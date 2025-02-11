@@ -115,7 +115,7 @@ router.delete('/:tagId', async (req, res) => {
  *  - retrieve the tag from the database
  *  - return the tag
  */
-router.get('/:tagId', async (req, res) => {
+router.get('/get-tag/:tagId', async (req, res) => {
   const userId = req.userId;
   const tagId = parseInt(req.params.tagId);
   // interact with the database
@@ -143,7 +143,7 @@ router.get('/:tagId', async (req, res) => {
  *  - retrieve the tag and include sets from the database
  *  - return the tag with the sets
  */
-router.get('/:tagId/sets', async (req, res) => {
+router.get('/sets/:tagId', async (req, res) => {
   const userId = req.userId;
   const tagId = parseInt(req.params.tagId);
   // interact with the database
@@ -174,8 +174,43 @@ router.get('/:tagId/sets', async (req, res) => {
   }
 });
 
-/** retrieves all public sets belonging to a tag (given name)
- *
+/** retrieves all public sets belonging to a tag
+ *  - expects tag name
+ *  - queries the database using tag name
+ *  - returns tag name, set count, sets
  */
+router.get('/public-sets', async (req, res) => {
+  const name = req.body.tagName?.trim();
+  // interact with the database
+  try {
+    // ensure name is a non empty string
+    if (!name) {
+      throw new InvalidParamsError('tagName must be a non empty string');
+    }
+    const sets = await prisma.set.findMany({
+      where: {
+        tags: {
+          some: {
+            name,
+          },
+        },
+        isPublic: true,
+      },
+      omit: { userId: true },
+    });
+    // return the sets
+    return res.status(200).json({
+      success: true,
+      message: 'Retrived all public sets belonging to a tag name',
+      data: {
+        tagName: name,
+        setCount: sets.length,
+        sets,
+      },
+    });
+  } catch (er) {
+    return handleErrors(er, res);
+  }
+});
 
 export default router;

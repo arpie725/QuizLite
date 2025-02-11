@@ -14,8 +14,8 @@ POST http://localhost:1322/auth/login
 Content-Type: application/json
 
 {
-  "username": "arpie",
-  "password": "p"
+  "username": "arpie1",
+  "password": "password"
 }
 
 ### Log in using invalid credentials
@@ -29,12 +29,12 @@ Content-Type: application/json
 
 ### Create a new study set
 POST http://localhost:1322/study-set
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5Mjk4OTYzLCJleHAiOjE3MzkzODUzNjN9.HfDNgdR6K70HqpXyq4CTIHJ5o1GmpdQPPdFAeC8dYNQ
 Content-Type: application/json
 
 {
-  "title": "Math Midterm",
-  "isPublic": true
+  "title": "Cheatsheat farm",
+  "isPublic": false
 }
 
 ### Delete a study set
@@ -51,8 +51,8 @@ Content-Type: application/json
 }
 
 ### Change the visibility of a study set
-PUT http://localhost:1322/study-set/30
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODk1MjAyLCJleHAiOjE3Mzg5ODE2MDJ9.dEXf37Q49mYMebOhR3Oq9cdtLmjRUHIiHxwj1qqfnd4
+PUT http://localhost:1322/study-set/31
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
 Content-Type: application/json
 
 {
@@ -113,11 +113,11 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4OTkw
 
 ### Create a new tag
 POST http://localhost:1322/tag
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5Mjk4OTYzLCJleHAiOjE3MzkzODUzNjN9.HfDNgdR6K70HqpXyq4CTIHJ5o1GmpdQPPdFAeC8dYNQ
 Content-Type: application/json
 
 {
-  "name": " Hipipestory "
+  "name": " Farmville "
 }
 
 ### Edit a tag
@@ -136,8 +136,8 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5MTM3
 
 
 ### Get a tag
-GET http://localhost:1322/tag/sdfsdf
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MTM3NjQ1LCJleHAiOjE3MzkyMjQwNDV9.b8VCjgcxohsNofQnIDcIE0rHIX6m5dt3B3EKFAr3hOM
+GET http://localhost:1322/tag/get-tag/9
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
 
 
 ### Get all tags from a user
@@ -146,12 +146,12 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2
 
 
 ### Assign tags to a study set 
-POST http://localhost:1322/study-set/34/assign-tags
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+POST http://localhost:1322/study-set/39/assign-tags
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5Mjk4OTYzLCJleHAiOjE3MzkzODUzNjN9.HfDNgdR6K70HqpXyq4CTIHJ5o1GmpdQPPdFAeC8dYNQ
 Content-Type: application/json
 
 {
-  "tagIds": [10, 6]
+  "tagIds": [11]
 }
 
 
@@ -170,10 +170,20 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2
 
 
 ### Get all sets belonging to a tag
-GET http://localhost:1322/tag/9/sets
+GET http://localhost:1322/tag/sets/11
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5Mjk4OTYzLCJleHAiOjE3MzkzODUzNjN9.HfDNgdR6K70HqpXyq4CTIHJ5o1GmpdQPPdFAeC8dYNQ
+
+
+### Get all public sets belonging to a tag
+GET http://localhost:1322/tag/public-sets
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+Content-Type: application/json
+
+{
+  "tagName": "   Farmville   "
+}
 
 
 ### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
-### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5MTM3Njc1LCJleHAiOjE3MzkyMjQwNzV9.jmb6_e7KsWDv_LSYHmw1fCLLQo8Thy2IzqX-Ft7kPC8
+### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5Mjk4OTYzLCJleHAiOjE3MzkzODUzNjN9.HfDNgdR6K70HqpXyq4CTIHJ5o1GmpdQPPdFAeC8dYNQ
 ### arpie2: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzM5MTM3NjkxLCJleHAiOjE3MzkyMjQwOTF9.iC0CIavD6U3XEhcwWo4xd1YVXUOj8oq-9-a0E4pikCY
