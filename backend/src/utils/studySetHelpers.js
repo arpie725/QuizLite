@@ -67,4 +67,8 @@ async function setExists(title, userId) {
   }
 }
 
+/** verifies each 
+ * 
+ */
+
 export { findAndVerifySet, setExists };

@@ -12,7 +12,6 @@ import {
  *  @param {number} tagId
  *  @param {number} userId
  *  @returns tag (with userId removed)
- *  @throws InvalidParamsError, NotFoundError, UnauthorizedError
  */
 async function findAndVerifyTag(tagId, userId) {
   // interact with the database
@@ -50,11 +49,47 @@ async function findAndVerifyTag(tagId, userId) {
   }
 }
 
+/** verifies each tagId exists and belongs to the user
+ *  - ensures tagIds is a non-empty int array
+ *  @param {number[]} tagIds
+ *  @param {number} userId
+ *  @returns tags (with userId removed)
+ */
+async function findAndVerifyTags(tagIds, userId) {
+  try {
+    // check that tagIds is a non-empty int array
+    if (
+      !Array.isArray(tagIds) ||
+      tagIds.length === 0 ||
+      !tagIds.every(Number.isInteger)
+    ) {
+      throw new InvalidParamsError('tagIds must be a non-empty int array');
+    }
+    // verify each tag exists and belongs to the user
+    const tags = await prisma.tag.findMany({
+      where: {
+        id: { in: tagIds },
+        userId,
+      },
+      omit: { userId: true },
+    });
+    if (tags.length != tagIds.length) {
+      throw new UnauthorizedError(
+        'Not all tags provided exist or belong to user'
+      );
+    }
+    // return the tags
+    return tags
+  } catch (er) {
+    throw er;
+  }
+}
+
 /** verifies a unique tag
  *  - ensures the userId and name do not already exist
- *  @params userId (int), name (string)
+ *  @param {number} userId
+ *  @param {string} name
  *  @returns None
- *  @throws InvalidParamsError, DuplicateEntryError
  */
 async function verifyUniqueTag(userId, name) {
   // interact with the database
@@ -126,4 +161,10 @@ async function updateTagName(tagId, name) {
   }
 }
 
-export { findAndVerifyTag, verifyUniqueTag, createNewTag, updateTagName };
+export {
+  findAndVerifyTag,
+  findAndVerifyTags,
+  verifyUniqueTag,
+  createNewTag,
+  updateTagName,
+};

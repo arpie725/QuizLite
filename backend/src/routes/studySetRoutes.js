@@ -9,6 +9,7 @@ import {
   DuplicateEntryError,
   handleErrors,
 } from '../utils/errors.js';
+import { findAndVerifyTags } from '../utils/tagHelpers.js';
 
 const router = express.Router();
 
@@ -231,34 +232,16 @@ router.post('/:setId/assign-tags', async (req, res) => {
   const { tagIds } = req.body; // expecting an array of tagId
   // interact with the database
   try {
-    // check that tagIds is an array
-    if (
-      !Array.isArray(tagIds) ||
-      tagIds.length === 0 ||
-      !tagIds.every(Number.isInteger)
-    ) {
-      throw new InvalidParamsError('tagIds must be a non-empty int array');
-    }
     // verify set exists and belongs to user
     await findAndVerifySet(setId, userId);
-    // verify each tag exists and belongs to the user
-    const existingTags = await prisma.tag.findMany({
-      where: {
-        id: { in: tagIds },
-        userId,
-      },
-    });
-    if (existingTags.length != tagIds.length) {
-      throw new UnauthorizedError(
-        'Not all tags provided exist or belong to user'
-      );
-    }
+    // verify all tags exist and belong to user
+    await findAndVerifyTags(tagIds, userId);
     // connect the tags to the set
     const updatedSet = await prisma.set.update({
       where: { id: setId },
       data: {
         tags: {
-          connect: existingTags.map((tag) => ({ id: tag.id })),
+          connect: tagIds.map((id) => ({ id })),
         },
       },
       include: { tags: { omit: { userId: true } } },
@@ -292,34 +275,16 @@ router.post('/:setId/unassign-tags', async (req, res) => {
   const { tagIds } = req.body; // expecting an array of tagId
   // interact with the database
   try {
-    // verify tagIds is a non-empty int array of tagId
-    if (
-      !Array.isArray(tagIds) ||
-      tagIds.length === 0 ||
-      !tagIds.every(Number.isInteger)
-    ) {
-      throw new InvalidParamsError('tagIds must be a non-empty int array');
-    }
     // verify set exists and belongs to the user
     await findAndVerifySet(setId, userId);
-    // verify each tag exists and belongs to the user
-    const existingTags = await prisma.tag.findMany({
-      where: {
-        id: { in: tagIds },
-        userId,
-      },
-    });
-    if (existingTags.length != tagIds.length) {
-      throw new UnauthorizedError(
-        'Not all tags provided exist or belong to user'
-      );
-    }
+    // verify all tags exist and belong to user
+    await findAndVerifyTags(tagIds, userId);
     // unconnect the tags to set relationship
     const updatedSet = await prisma.set.update({
       where: { id: setId },
       data: {
         tags: {
-          disconnect: existingTags.map((tag) => ({ id: tag.id })),
+          disconnect: tagIds.map((id) => ({ id })),
         },
       },
       include: { tags: { omit: { userId: true } } },
