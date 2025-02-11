@@ -8,7 +8,7 @@ import {
 } from './errors.js';
 
 /** verifies the tag exists and belongs to the user
- *  - ensures tagId is a valid int
+ *  - ensures tagId is a valid positive int
  *  @param {number} tagId
  *  @param {number} userId
  *  @returns tag (with userId removed)
@@ -17,7 +17,7 @@ async function findAndVerifyTag(tagId, userId) {
   // interact with the database
   try {
     // ensure tagId is a valid int
-    if (isNaN(tagId)) {
+    if (isNaN(tagId) || tagId < 0) {
       throw new InvalidParamsError('Invalid tagId');
     }
     // check if tag exists
@@ -79,7 +79,7 @@ async function findAndVerifyTags(tagIds, userId) {
       );
     }
     // return the tags
-    return tags
+    return tags;
   } catch (er) {
     throw er;
   }

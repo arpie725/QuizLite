@@ -169,6 +169,10 @@ GET http://localhost:1322/study-set/34/tags
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
 
 
+### Get all sets belonging to a tag
+GET http://localhost:1322/tag/9/sets
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+
 
 ### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
 ### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5MTM3Njc1LCJleHAiOjE3MzkyMjQwNzV9.jmb6_e7KsWDv_LSYHmw1fCLLQo8Thy2IzqX-Ft7kPC8

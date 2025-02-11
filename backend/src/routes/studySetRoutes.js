@@ -217,7 +217,7 @@ router.get('/:setId/cards', async (req, res) => {
   }
 });
 
-/// TAGS
+/// TAGS ------------------------------------------------
 
 /** assigns tags to a study set
  *  - expects an array of tagIds

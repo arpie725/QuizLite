@@ -123,7 +123,7 @@ router.get('/:tagId', async (req, res) => {
     // check the tag exists and belongs to the user
     const tagExists = await findAndVerifyTag(tagId, userId);
     // return the tag
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
       message: 'Retrieved the tag',
       data: {
@@ -136,10 +136,12 @@ router.get('/:tagId', async (req, res) => {
   }
 });
 
+/// SETS ------------------------------------------------
+
 /** retrieves all sets belonging to a tag
  *  - ensures the tag exists and belongs to the user
- *  - retrieve many sets from the database
- *  - return sets
+ *  - retrieve the tag and include sets from the database
+ *  - return the tag with the sets
  */
 router.get('/:tagId/sets', async (req, res) => {
   const userId = req.userId;
@@ -147,11 +149,33 @@ router.get('/:tagId/sets', async (req, res) => {
   // interact with the database
   try {
     await findAndVerifyTag(tagId, userId);
-    // retrieve all the sets that have tagId
-    // TODO
+    // query the database for the tag (include sets)
+    const tag = await prisma.tag.findUnique({
+      where: {
+        id: tagId,
+      },
+      include: {
+        sets: {
+          omit: { userId: true },
+        },
+      },
+      omit: { userId: true },
+    });
+    // return tag with all sets
+    return res.status(200).json({
+      success: true,
+      message: 'Retrieved all sets belonging to tag',
+      data: {
+        tag,
+      },
+    });
   } catch (er) {
-    handleErrors(er, res);
+    return handleErrors(er, res);
   }
 });
+
+/** retrieves all public sets belonging to a tag (given name)
+ *
+ */
 
 export default router;
