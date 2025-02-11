@@ -60,12 +60,12 @@ Content-Type: application/json
 }
 
 ### Create a new card
-POST http://localhost:1322/card/19
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4OTY5NDQxLCJleHAiOjE3MzkwNTU4NDF9.jr13J9hbHFAXO9qa6ZO7RXO3vtw46LpoS3srnUKwU0k
+POST http://localhost:1322/card/31
+Authorization:  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
 Content-Type: application/json
 
 {
-  "question": "l ",
+  "question": "What is CRUD   ",
   "answer": "  create, read, update, delete     "
 }
 

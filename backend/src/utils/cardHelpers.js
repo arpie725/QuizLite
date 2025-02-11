@@ -9,11 +9,9 @@ import { NotFoundError } from './errors.js';
 async function cardQASExists(question, answer, setId) {
   // interacting with database
   try {
-    const existingCard = await prisma.card.findFirst({
+    const existingCard = await prisma.card.findUnique({
       where: {
-        question,
-        answer,
-        setId,
+        question_answer_setId: { question, answer, setId },
       },
     });
     return !!existingCard;
