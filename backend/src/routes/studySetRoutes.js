@@ -70,62 +70,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-/** assigns tags to a study set
- *  - ensures the set exists and belongs to the user
- *  - ensures each tag exists and belongs to the user
- *  - connect the tags to the set
- *  - returns the set with the updated tags
- */
-router.post('/:setId/assign-tags', async (req, res) => {
-  const userId = req.userId;
-  const setId = parseInt(req.params.setId);
-  const { tagIds } = req.body; // expecting an array of tagId
-  // interact with the database
-  try {
-    // check that tagIds is an array
-    if (!Array.isArray(tagIds) || tagIds.length === 0) {
-      throw new InvalidParamsError('tagIds must be a non-empty array');
-    }
-    // verify set exists and belongs to user
-    await findAndVerifySet(setId, userId);
-    // verify each tag exists and belongs to the user
-    const existingTags = await prisma.tag.findMany({
-      where: {
-        id: { in: tagIds },
-        userId,
-      },
-    });
-    if (existingTags.length != tagIds.length) {
-      throw new UnauthorizedError(
-        'Not all tags provided exist or belong to user'
-      );
-    }
-    // connect the tags to the set
-    const updatedSet = await prisma.set.update({
-      where: { id: setId },
-      data: {
-        tags: {
-          connect: existingTags.map((tag) => ({ id: tag.id })),
-        },
-      },
-      include: { tags: { omit: { userId: true } } },
-      omit: {
-        userId: true,
-      },
-    });
-    // return the set with the tags
-    return res.status(201).json({
-      success: true,
-      message: 'Connected tags to set',
-      data: {
-        set: updatedSet,
-      },
-    });
-  } catch (er) {
-    return handleErrors(er, res);
-  }
-});
-
 /*
   edits an existing study set
     - can be (title, isPublic, etc.)
@@ -268,6 +212,163 @@ router.get('/:setId/cards', async (req, res) => {
     });
   } catch (er) {
     // expected error
+    return handleErrors(er, res);
+  }
+});
+
+/// TAGS
+
+/** assigns tags to a study set
+ *  - expects an array of tagIds
+ *  - ensures the set exists and belongs to the user
+ *  - ensures each tag exists and belongs to the user
+ *  - connects the tags to the set
+ *  - returns the set with the updated tags
+ */
+router.post('/:setId/assign-tags', async (req, res) => {
+  const userId = req.userId;
+  const setId = parseInt(req.params.setId);
+  const { tagIds } = req.body; // expecting an array of tagId
+  // interact with the database
+  try {
+    // check that tagIds is an array
+    if (
+      !Array.isArray(tagIds) ||
+      tagIds.length === 0 ||
+      !tagIds.every(Number.isInteger)
+    ) {
+      throw new InvalidParamsError('tagIds must be a non-empty int array');
+    }
+    // verify set exists and belongs to user
+    await findAndVerifySet(setId, userId);
+    // verify each tag exists and belongs to the user
+    const existingTags = await prisma.tag.findMany({
+      where: {
+        id: { in: tagIds },
+        userId,
+      },
+    });
+    if (existingTags.length != tagIds.length) {
+      throw new UnauthorizedError(
+        'Not all tags provided exist or belong to user'
+      );
+    }
+    // connect the tags to the set
+    const updatedSet = await prisma.set.update({
+      where: { id: setId },
+      data: {
+        tags: {
+          connect: existingTags.map((tag) => ({ id: tag.id })),
+        },
+      },
+      include: { tags: { omit: { userId: true } } },
+      omit: {
+        userId: true,
+      },
+    });
+    // return the set with the tags
+    return res.status(200).json({
+      success: true,
+      message: 'Connected tags to set',
+      data: {
+        set: updatedSet,
+      },
+    });
+  } catch (er) {
+    return handleErrors(er, res);
+  }
+});
+
+/** removes tags from a study set
+ *  - expects a non-empty int array of tagIds
+ *  - ensures the set exists and belongs to the user
+ *  - ensures each tag exists and belongs to the user
+ *  - unconnects the tags to the set
+ *  - returns the set with all its remaining tags
+ */
+router.post('/:setId/unassign-tags', async (req, res) => {
+  const userId = req.userId;
+  const setId = parseInt(req.params.setId);
+  const { tagIds } = req.body; // expecting an array of tagId
+  // interact with the database
+  try {
+    // verify tagIds is a non-empty int array of tagId
+    if (
+      !Array.isArray(tagIds) ||
+      tagIds.length === 0 ||
+      !tagIds.every(Number.isInteger)
+    ) {
+      throw new InvalidParamsError('tagIds must be a non-empty int array');
+    }
+    // verify set exists and belongs to the user
+    await findAndVerifySet(setId, userId);
+    // verify each tag exists and belongs to the user
+    const existingTags = await prisma.tag.findMany({
+      where: {
+        id: { in: tagIds },
+        userId,
+      },
+    });
+    if (existingTags.length != tagIds.length) {
+      throw new UnauthorizedError(
+        'Not all tags provided exist or belong to user'
+      );
+    }
+    // unconnect the tags to set relationship
+    const updatedSet = await prisma.set.update({
+      where: { id: setId },
+      data: {
+        tags: {
+          disconnect: existingTags.map((tag) => ({ id: tag.id })),
+        },
+      },
+      include: { tags: { omit: { userId: true } } },
+      omit: {
+        userId: true,
+      },
+    });
+    // return the set with the tags
+    return res.status(200).json({
+      success: true,
+      message: 'Disconnected tags from set',
+      data: {
+        set: updatedSet,
+      },
+    });
+  } catch (er) {
+    return handleErrors(er, res);
+  }
+});
+
+/** gets all tags from a study set
+ *  - ensures the set exists and belongs to the user
+ *  - queries all tags from a set
+ *  - returns the set with all tags
+ */
+router.get('/:setId/tags', async (req, res) => {
+  const userId = req.userId;
+  const setId = parseInt(req.params.setId);
+  // interact with the database
+  try {
+    // verify the set exists and belongs to the user
+    await findAndVerifySet(setId, userId);
+    // get the set with all the tags
+    const set = await prisma.set.findUnique({
+      where: {
+        id: setId,
+      },
+      include: { tags: { omit: { userId: true } } },
+      omit: { userId: true },
+    });
+    // return the set with all the tags
+    return res.status(200).json({
+      success: true,
+      message: 'Retrieved all tags from the set',
+      data: {
+        set,
+      },
+    });
+  } catch (er) {
     return handleErrors(er, res);
   }
 });
