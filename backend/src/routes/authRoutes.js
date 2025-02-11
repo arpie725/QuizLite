@@ -2,7 +2,10 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../prismaClient.js';
-import { usernameExists } from '../utils/authHelpers.js';
+import {
+  usernameExists,
+  validateUsernameAndPassword,
+} from '../utils/authHelpers.js';
 import {
   DuplicateEntryError,
   NotFoundError,
@@ -12,42 +15,30 @@ import {
 
 const router = express.Router();
 
-/*
-  registers a new user
-    - checks if the username already exists in the db
-    - adds the new user into the db
-    - creates a token for the new user 
-    - returns the token to the client
-*/
+/** registers a new user
+ * - checks if the username already exists in the db
+ * - adds the new user into the db
+ * - creates a token for the new user
+ * - returns username and token
+ */
 router.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-  const trimmedUsername = username?.trim();
-  // check validity of username / password
-  if (
-    !trimmedUsername ||
-    trimmedUsername === '' ||
-    !password ||
-    password === ''
-  ) {
-    return res.status(404).json({
-      success: false,
-      errorType: 'InvalidParamsError',
-      message: 'Username or Password empty / nonexistent',
-    });
-  }
-  // hash the password
-  const hashedPassword = bcrypt.hashSync(password, parseInt(process.env.SALT));
+  const { username: rawUsername, password } = req.body;
   // interacting with the database
   try {
+    // check validity of username / password
+    const { username, hashedPassword } = await validateUsernameAndPassword(
+      rawUsername,
+      password
+    );
     // check if the username already exists
-    const existingUser = await usernameExists(trimmedUsername);
+    const existingUser = await usernameExists(username);
     if (existingUser) {
       throw new DuplicateEntryError('Username already exists');
     }
     // add the user and hashed password into the database
     const newUser = await prisma.user.create({
       data: {
-        username: trimmedUsername,
+        username: username,
         password: hashedPassword,
       },
     });
@@ -58,9 +49,10 @@ router.post('/register', async (req, res) => {
     // send back the token to the user
     return res.status(201).json({
       success: true,
-      message: `${trimmedUsername} registered successfully`,
+      message: `${username} registered successfully`,
       data: {
-        token: token,
+        username,
+        token,
       },
     });
   } catch (er) {
@@ -69,30 +61,22 @@ router.post('/register', async (req, res) => {
   }
 });
 
-/*
-  log in an existing user
-    - checks if the username exists in the db
-    - compares the password with the one in the db
-    - returns the token to the client
-*/
+/** logs in an existing user
+ * - checks if the username exists in the db
+ * - compares the password with the one in the db
+ * - returns the username and token
+ */
 router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const trimmedUsername = username?.trim();
-  if (
-    !trimmedUsername ||
-    trimmedUsername === '' ||
-    !password ||
-    password === ''
-  ) {
-    return res.status(404).json({
-      success: false,
-      errorType: 'InvalidParamsError',
-      message: 'Username or Password empty / nonexistent',
-    });
-  }
+  const { username: rawUsername, password } = req.body;
+
   try {
+    // validate username / password
+    const { username } = await validateUsernameAndPassword(
+      rawUsername,
+      password
+    );
     // check that the username exists in the db
-    const user = await usernameExists(trimmedUsername);
+    const user = await usernameExists(username);
     if (!user) {
       throw new NotFoundError('User not found');
     }
@@ -110,6 +94,7 @@ router.post('/login', async (req, res) => {
       success: true,
       message: 'Successfully logged in',
       data: {
+        username,
         token: token,
       },
     });
