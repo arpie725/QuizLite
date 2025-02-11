@@ -2,9 +2,7 @@ import express from 'express';
 import prisma from '../prismaClient.js';
 import {
   DuplicateEntryError,
-  InvalidParamsError,
   NotFoundError,
-  UnauthorizedError,
   handleErrors,
 } from '../utils/errors.js';
 import { findAndVerifySet } from '../utils/studySetHelpers.js';
@@ -127,7 +125,7 @@ router.put('/:cardId', async (req, res) => {
 /** deletes an existing card
  * - ensures the card exists, belongs to the user, and belongs to the set
  * - deletes the card from the database
- * - returns 204 no content 
+ * - returns 204 no content
  */
 router.delete('/:cardId', async (req, res) => {
   const cardId = parseInt(req.params.cardId);

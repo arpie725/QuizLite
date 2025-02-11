@@ -4,7 +4,6 @@ import {
   NotFoundError,
   UnauthorizedError,
   DuplicateEntryError,
-  handleErrors,
 } from './errors.js';
 
 /** verifies the tag exists and belongs to the user

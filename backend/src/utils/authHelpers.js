@@ -1,6 +1,6 @@
 import prisma from '../prismaClient.js';
 import bcrypt from 'bcryptjs';
-import { InvalidParamsError, NotFoundError } from './errors.js';
+import { InvalidParamsError } from './errors.js';
 
 /** checks if the userId exists in the users database
  * @param {number} userId

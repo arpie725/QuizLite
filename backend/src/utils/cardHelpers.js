@@ -1,5 +1,5 @@
 import prisma from '../prismaClient.js';
-import { InvalidParamsError, NotFoundError } from './errors.js';
+import { InvalidParamsError } from './errors.js';
 
 /** determines if a card with (question, answer, setId) already exists
  * @param {string} question

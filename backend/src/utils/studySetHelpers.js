@@ -1,10 +1,8 @@
 import prisma from '../prismaClient.js';
 import {
-  InternalError,
   InvalidParamsError,
   NotFoundError,
   UnauthorizedError,
-  handleErrors,
 } from './errors.js';
 
 /** verifies the set exists and belongs to the user

@@ -2,9 +2,6 @@ import express from 'express';
 import prisma from '../prismaClient.js';
 import { findAndVerifySet, setExists } from '../utils/studySetHelpers.js';
 import {
-  NotFoundError,
-  UnauthorizedError,
-  InternalError,
   InvalidParamsError,
   DuplicateEntryError,
   handleErrors,
@@ -19,7 +16,7 @@ const router = express.Router();
  * - ensures new study set is unique
  * - adds a new set entry into the database
  * - creates a default flashcard for the new set
- * - returns the newly created study set 
+ * - returns the newly created study set
  */
 router.post('/', async (req, res) => {
   const { title, isPublic } = req.body;
@@ -151,7 +148,7 @@ router.delete('/:setId', async (req, res) => {
   }
 });
 
-/** retrieves the study set from the database 
+/** retrieves the study set from the database
  * - ensures the set belongs to the user
  * - queries the database for the study set
  * - returns the study set and cardCount

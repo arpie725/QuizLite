@@ -3,8 +3,6 @@ import prisma from '../prismaClient.js';
 import {
   DuplicateEntryError,
   InvalidParamsError,
-  NotFoundError,
-  UnauthorizedError,
   handleErrors,
 } from '../utils/errors.js';
 import {
