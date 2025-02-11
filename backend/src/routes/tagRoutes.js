@@ -150,7 +150,7 @@ router.get('/:tagId/sets', async (req, res) => {
     // retrieve all the sets that have tagId
     // TODO
   } catch (er) {
-    handleErrors(er);
+    handleErrors(er, res);
   }
 });
 

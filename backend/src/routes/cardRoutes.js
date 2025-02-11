@@ -5,6 +5,7 @@ import {
   InvalidParamsError,
   NotFoundError,
   UnauthorizedError,
+  handleErrors,
 } from '../utils/errors.js';
 import { findAndVerifySet } from '../utils/studySetHelpers.js';
 import { cardExists, cardQASExists } from '../utils/cardHelpers.js';

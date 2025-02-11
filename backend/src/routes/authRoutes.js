@@ -7,6 +7,7 @@ import {
   DuplicateEntryError,
   NotFoundError,
   UnauthorizedError,
+  handleErrors,
 } from '../utils/errors.js';
 
 const router = express.Router();

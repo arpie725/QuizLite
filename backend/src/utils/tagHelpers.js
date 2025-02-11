@@ -4,11 +4,13 @@ import {
   NotFoundError,
   UnauthorizedError,
   DuplicateEntryError,
+  handleErrors,
 } from './errors.js';
 
 /** verifies the tag exists and belongs to the user
  *  - ensures tagId is a valid int
- *  @params tagId (int), userId (int)
+ *  @param {number} tagId
+ *  @param {number} userId
  *  @returns tag (with userId removed)
  *  @throws InvalidParamsError, NotFoundError, UnauthorizedError
  */

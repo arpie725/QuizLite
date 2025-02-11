@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 1322;
 app.use('/auth', authRoutes);
 // send any of the requests below to the authMiddleware FIRST to verify token BEFORE going to endpoint
 app.use('/user', authMiddleware, userRoutes);
-app.use('/studySet', authMiddleware, studySetRoutes);
+app.use('/study-set', authMiddleware, studySetRoutes);
 app.use('/card', authMiddleware, cardRoutes);
 app.use('/tag', authMiddleware, tagRoutes);
 

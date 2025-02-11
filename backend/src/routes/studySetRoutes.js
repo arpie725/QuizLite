@@ -7,6 +7,7 @@ import {
   InternalError,
   InvalidParamsError,
   DuplicateEntryError,
+  handleErrors,
 } from '../utils/errors.js';
 
 const router = express.Router();
@@ -66,6 +67,62 @@ router.post('/', async (req, res) => {
     });
   } catch (er) {
     // expected error
+    return handleErrors(er, res);
+  }
+});
+
+/** assigns tags to a study set
+ *  - ensures the set exists and belongs to the user
+ *  - ensures each tag exists and belongs to the user
+ *  - connect the tags to the set
+ *  - returns the set with the updated tags
+ */
+router.post('/:setId/assign-tags', async (req, res) => {
+  const userId = req.userId;
+  const setId = parseInt(req.params.setId);
+  const { tagIds } = req.body; // expecting an array of tagId
+  // interact with the database
+  try {
+    // check that tagIds is an array
+    if (!Array.isArray(tagIds) || tagIds.length === 0) {
+      throw new InvalidParamsError('tagIds must be a non-empty array');
+    }
+    // verify set exists and belongs to user
+    await findAndVerifySet(setId, userId);
+    // verify each tag exists and belongs to the user
+    const existingTags = await prisma.tag.findMany({
+      where: {
+        id: { in: tagIds },
+        userId,
+      },
+    });
+    if (existingTags.length != tagIds.length) {
+      throw new UnauthorizedError(
+        'Not all tags provided exist or belong to user'
+      );
+    }
+    // connect the tags to the set
+    const set = await prisma.set.update({
+      where: { id: setId },
+      data: {
+        tags: {
+          connect: existingTags.map((tag) => ({ id: tag.id })),
+        },
+      },
+      include: { tags: { omit: { userId: true } } },
+      omit: {
+        userId: true,
+      },
+    });
+    // return the set with the tags
+    return res.status(201).json({
+      success: true,
+      message: 'Connected tags to set',
+      data: {
+        set,
+      },
+    });
+  } catch (er) {
     return handleErrors(er, res);
   }
 });
@@ -167,15 +224,13 @@ router.get('/:setId/', async (req, res) => {
   try {
     // verify the setId exists and belongs to the user
     const { curSet, cardCount } = await findAndVerifySet(setId, userId);
-    // remove the userId from the set
-    const { userId: _, ...setWithoutUserId } = curSet;
     // return the set from the database
     return res.status(201).json({
       success: true,
       message: 'Retrieved the set',
       data: {
         set: {
-          ...setWithoutUserId,
+          ...curSet,
           cardCount,
         },
       },
@@ -199,8 +254,6 @@ router.get('/:setId/cards', async (req, res) => {
   try {
     // verify study set belongs to user
     const { curSet, cardCount } = await findAndVerifySet(setId, userId);
-    // remove the userId from the set
-    const { userId: _, ...setWithoutUserId } = curSet;
     // query the database for all cards that have setId
     const cards = await prisma.card.findMany({
       where: {
@@ -213,7 +266,7 @@ router.get('/:setId/cards', async (req, res) => {
       message: 'Retrieved all cards from set',
       data: {
         set: {
-          ...setWithoutUserId,
+          ...curSet,
           cardCount,
         },
         cards,

@@ -14,8 +14,8 @@ POST http://localhost:1322/auth/login
 Content-Type: application/json
 
 {
-  "username": "arpie2",
-  "password": "password"
+  "username": "arpie",
+  "password": "p"
 }
 
 ### Log in using invalid credentials
@@ -42,12 +42,12 @@ DELETE http://localhost:1322/studySet/29
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODk1MjAyLCJleHAiOjE3Mzg5ODE2MDJ9.dEXf37Q49mYMebOhR3Oq9cdtLmjRUHIiHxwj1qqfnd4
 
 ### Change the name of a study set
-PUT http://localhost:1322/studySet/19
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5MTM3Njc1LCJleHAiOjE3MzkyMjQwNzV9.jmb6_e7KsWDv_LSYHmw1fCLLQo8Thy2IzqX-Ft7kPC8
+PUT http://localhost:1322/study-set/33
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
 Content-Type: application/json
 
 {
-  "title": "   Chemistry  "
+  "title": "   Hist Midterm  "
 }
 
 ### Change the visibility of a study set
@@ -95,8 +95,8 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4OTY5
 
 
 ### Get a study set
-GET http://localhost:1322/studySet/33
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MTM3NjQ1LCJleHAiOjE3MzkyMjQwNDV9.b8VCjgcxohsNofQnIDcIE0rHIX6m5dt3B3EKFAr3hOM
+GET http://localhost:1322/study-set/13
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
 Content-Type: application/json
 
 ### Get all cards from a study set
@@ -144,6 +144,17 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MTM3
 GET http://localhost:1322/user/tags
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MTM3NjQ1LCJleHAiOjE3MzkyMjQwNDV9.b8VCjgcxohsNofQnIDcIE0rHIX6m5dt3B3EKFAr3hOM
 
-### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MTM3NjQ1LCJleHAiOjE3MzkyMjQwNDV9.b8VCjgcxohsNofQnIDcIE0rHIX6m5dt3B3EKFAr3hOM
+
+### Assign tags to a study set 
+POST http://localhost:1322/study-set/33/assign-tags
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+Content-Type: application/json
+
+{
+  "tagIds": [9, 8, 6]
+}
+
+
+### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
 ### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5MTM3Njc1LCJleHAiOjE3MzkyMjQwNzV9.jmb6_e7KsWDv_LSYHmw1fCLLQo8Thy2IzqX-Ft7kPC8
 ### arpie2: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzM5MTM3NjkxLCJleHAiOjE3MzkyMjQwOTF9.iC0CIavD6U3XEhcwWo4xd1YVXUOj8oq-9-a0E4pikCY

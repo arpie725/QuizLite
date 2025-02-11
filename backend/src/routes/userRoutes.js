@@ -1,6 +1,7 @@
 import express from 'express';
 import prisma from '../prismaClient.js';
 import { userExists } from '../utils/authHelpers.js';
+import { handleErrors } from '../utils/errors.js';
 
 const router = express.Router();
 

@@ -4,13 +4,14 @@ import {
   InvalidParamsError,
   NotFoundError,
   UnauthorizedError,
+  handleErrors,
 } from './errors.js';
 
-/*
-  verifies the setId exists and belongs to the user
-  [Params]: setId (int), userId (int)
-  [Returns]: set from the database along with the number of cards that belong in the set
-*/
+/** verifies the set exists and belongs to the user
+ * @param {number} setId
+ * @param {number} userId
+ * @returns curSet (with userId removed) with cardCount
+ */
 async function findAndVerifySet(setId, userId) {
   // interact with the database
   try {
@@ -31,6 +32,8 @@ async function findAndVerifySet(setId, userId) {
     if (curSet.userId != userId) {
       throw new UnauthorizedError('Unauthorized access to the set');
     }
+    // remove the userId from the set
+    const { userId: _, ...curSetWithoutUserId } = curSet;
     // find the number of cards that belong to the setId
     const cardCount = await prisma.card.count({
       where: {
@@ -38,17 +41,17 @@ async function findAndVerifySet(setId, userId) {
       },
     });
     // return the set (and cardCount) from the database
-    return { curSet, cardCount: cardCount };
+    return { curSet: curSetWithoutUserId, cardCount };
   } catch (er) {
     throw er;
   }
 }
 
-/*
-  determines if a set with the same title already exists
-  [Params]: title (string), userId (int)
-  [Returns]: boolean of whether the set exists in the database
-*/
+/** determines if a set with the same title already exists
+ * @param {string} title
+ * @param {number} userId
+ * @returns boolean
+ */
 async function setExists(title, userId) {
   // interacting with database
   try {
