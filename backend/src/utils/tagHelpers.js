@@ -36,14 +36,15 @@ async function findAndVerifyTag(tagId, userId) {
         id: tagId,
         userId,
       },
+      omit: {
+        userId: true,
+      },
     });
     if (!tagBelongingUser) {
       throw new UnauthorizedError('Unauthorized access to tag');
     }
-    // remove the userId from the tag
-    const { userId: _, ...tagWithoutUserId } = tagBelongingUser;
     // return the tag
-    return tagWithoutUserId;
+    return tagBelongingUser;
   } catch (er) {
     throw er;
   }
@@ -89,11 +90,12 @@ async function createNewTag(userId, name) {
         name,
         userId,
       },
+      omit: {
+        userId: true,
+      },
     });
-    // remove the userId from the tag
-    const { userId: _, ...tagWithoutUserId } = newTag;
     // return the newly created tag
-    return tagWithoutUserId;
+    return newTag;
   } catch (er) {
     throw er;
   }
@@ -114,10 +116,11 @@ async function updateTagName(tagId, name) {
       data: {
         name,
       },
+      omit: {
+        userId: true,
+      },
     });
-    // remove the userId from the updatedTag
-    const { userId: _, ...updatedTagWithoutUserId } = updatedTag;
-    return updatedTagWithoutUserId;
+    return updatedTag;
   } catch (er) {
     throw er;
   }

@@ -44,9 +44,10 @@ router.post('/', async (req, res) => {
         isPublic,
         user: { connect: { id: userId } },
       },
+      omit: {
+        userId: true,
+      },
     });
-    // remove the userId from the set
-    const { userId: _, ...setWithoutUserId } = newSet;
     // create a default flashcard
     await prisma.card.create({
       data: {
@@ -60,9 +61,7 @@ router.post('/', async (req, res) => {
       success: true,
       message: 'Created a new study set',
       data: {
-        set: {
-          ...setWithoutUserId,
-        },
+        set: newSet,
       },
     });
   } catch (er) {
@@ -102,7 +101,7 @@ router.post('/:setId/assign-tags', async (req, res) => {
       );
     }
     // connect the tags to the set
-    const set = await prisma.set.update({
+    const updatedSet = await prisma.set.update({
       where: { id: setId },
       data: {
         tags: {
@@ -119,7 +118,7 @@ router.post('/:setId/assign-tags', async (req, res) => {
       success: true,
       message: 'Connected tags to set',
       data: {
-        set,
+        set: updatedSet,
       },
     });
   } catch (er) {
@@ -165,17 +164,16 @@ router.put('/:setId', async (req, res) => {
         title: trimmedTitle,
         isPublic,
       },
+      omit: {
+        userId: true,
+      },
     });
-    // remove the userId from the set
-    const { userId: _, ...setWithoutUserId } = updatedSet;
     // return the updated set
     return res.status(200).json({
       success: true,
       message: 'Updated the study set',
       data: {
-        set: {
-          ...setWithoutUserId,
-        },
+        set: updatedSet,
       },
     });
   } catch (er) {
@@ -229,10 +227,8 @@ router.get('/:setId/', async (req, res) => {
       success: true,
       message: 'Retrieved the set',
       data: {
-        set: {
-          ...curSet,
-          cardCount,
-        },
+        set: curSet,
+        cardCount,
       },
     });
   } catch (er) {
@@ -257,7 +253,7 @@ router.get('/:setId/cards', async (req, res) => {
     // query the database for all cards that have setId
     const cards = await prisma.card.findMany({
       where: {
-        setId: setId,
+        setId,
       },
     });
     // return the curSet and cards
@@ -265,10 +261,8 @@ router.get('/:setId/cards', async (req, res) => {
       success: true,
       message: 'Retrieved all cards from set',
       data: {
-        set: {
-          ...curSet,
-          cardCount,
-        },
+        set: curSet,
+        cardCount,
         cards,
       },
     });

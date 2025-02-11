@@ -20,11 +20,9 @@ router.get('/sets', async (req, res) => {
       where: {
         userId,
       },
-    });
-    // remove the userId from each set
-    const setsWithoutUserId = sets.map((set) => {
-      const { userId: _, ...rest } = set;
-      return rest;
+      omit: {
+        userId: true,
+      },
     });
     // get the user
     const user = await userExists(userId);
@@ -37,7 +35,7 @@ router.get('/sets', async (req, res) => {
           username: user.username,
           setCount: sets.length,
         },
-        sets: setsWithoutUserId,
+        sets,
       },
     });
   } catch (er) {
@@ -58,15 +56,16 @@ router.get('/tags', async (req, res) => {
       where: {
         userId,
       },
+      omit: {
+        userId: true,
+      },
     });
-    // remove the userId from each tag
-    const tagsWithoutUserId = tags.map(({ userId: _, ...rest }) => rest);
     // return the tags
     return res.status(201).json({
       success: true,
       message: 'Retrieved all the tags from user',
       data: {
-        tags: { tagsWithoutUserId },
+        tags,
       },
     });
   } catch (er) {
