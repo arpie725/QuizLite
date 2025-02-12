@@ -34,25 +34,11 @@ export const AuthForm = () => {
         er instanceof DuplicateEntryError
       ) {
         setErrorMessage(er.message);
+        console.log(`[EXPECTED]: ${er}`);
+        return;
       }
-
-      if (er instanceof UnauthorizedError) {
-        // TODO: display incorrect password to client
-        console.log('Incorrect password');
-      }
-      if (er instanceof NotFoundError) {
-        // TODO: display username not found to client
-        console.log('Username not found');
-      }
-      if (er instanceof InvalidParamsError) {
-        // TODO: invalid params (empty user / pass)
-        // NOTE: should not go to this ever
-        console.log('Username or password cannot be empty');
-      }
-      if (er instanceof DuplicateEntryError) {
-        // TODO: display duplicate username already exists to client
-        console.log('Username already exists');
-      }
+      // unexpected error
+      console.log(`[UNEXPECTED]: ${er}`);
     }
   };
 

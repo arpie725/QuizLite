@@ -9,9 +9,10 @@ import {
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 /** attempts to log in a user
- *  - make api call with the given credentials
- *  - assign token into local storage
- * @params - username (string), password (string)
+ * - make api call with the given credentials
+ * - assign token into local storage
+ * @param {string} username
+ * @param {string} password
  * @returns - None
  */
 async function loginUser(username, password) {
@@ -47,9 +48,10 @@ async function loginUser(username, password) {
 }
 
 /** attempts to register a new user
- *  - make api call with the given credentials
- *  - assign token into local storage
- * @params - username (string), password (string)
+ * - make api call with the given credentials
+ * - assign token into local storage
+ * @param {string} username
+ * @param {string} password
  * @returns - None
  */
 async function registerUser(username, password) {
