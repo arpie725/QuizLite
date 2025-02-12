@@ -7,6 +7,8 @@ import { Header } from '@/sections/HeaderSection';
 import axios from 'axios';
 import SetData from '@/models/SetData';
 import Set from '@/models/Set';
+import { PersonalSetsSection } from './sections/PersonalSetsSection';
+import { PublicSetsSection } from './sections/PublicSetsSection';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -28,32 +30,24 @@ const DashboardPage = () => {
       return;
     }
 
-    const fetchUserSets = async () => {
+    const fetchUsername = async () => {
       setLoading(true);
       try {
-        const { data: res } = await axios.get(`${apiUrl}/user/sets`, {
+        const { data: res } = await axios.get(`${apiUrl}/user`, {
           headers: {
             Authorization: `${token}`,
           },
         });
-        const username = res.data.user.username;
+        const username = res.data.username;
         setUsername(username);
-        const setsArray = res.data.sets;
-        const sets = setsArray.map((set: SetData) => new Set(set));
-        // populate the sets array
-        setSets(sets);
       } catch (er) {
-        console.error('Error fetching sets:', er);
+        console.error('Error fetching username:', er);
         setError(`ERROR: ${(er as any).response.data.message}`);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchUserSets();
-    // call helper function to fetch all user sets
-
-    // load the data into an array of set objects??
+    fetchUsername();
   }, []);
 
   if (loading) {
@@ -71,13 +65,9 @@ const DashboardPage = () => {
       <Header />
       <div className='mt-48'></div>
       <h1 className='text-5xl login-text'>Dashboard! - Welcome, {username}</h1>
-      <div className='mt-24 border max-w-lg mx-auto min-h-96 flex flex-col gap-2'>
-        {sets.map((set, index) => (
-          <div key={index}>
-            <h1 className='login-text'>{set.title}</h1>
-          </div>
-        ))}
-      </div>
+
+      <PersonalSetsSection />
+      <PublicSetsSection />
     </div>
   );
 };

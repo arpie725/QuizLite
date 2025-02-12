@@ -7,8 +7,34 @@ const router = express.Router();
 
 // NOTE: middleware authenticates the token before reaching this endpoint!
 
+/** retrieves the username of a user
+ * - query the db for the user
+ * - return just the username
+ */
+router.get('/', async (req, res) => {
+  const userId = req.userId;
+  // interact with the database
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    // return the username
+    return res.status(200).json({
+      success: true,
+      message: 'Retrieved the user',
+      data: {
+        username: user.username,
+      },
+    });
+  } catch (er) {
+    return handleErrors(er, res);
+  }
+});
+
 /** retrieves all the sets belonging to the user
- *- query the database to find all the sets
+ * - query the database to find all the sets
  * - return user and sets
  */
 router.get('/sets', async (req, res) => {

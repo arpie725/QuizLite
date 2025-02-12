@@ -14,8 +14,8 @@ POST http://localhost:1322/auth/login
 Content-Type: application/json
 
 {
-  "username": "arpie1",
-  "password": "password"
+  "username": "arpie",
+  "password": "p"
 }
 
 ### Log in using invalid credentials
@@ -166,7 +166,7 @@ Content-Type: application/json
 
 ### Get all tags from a study set
 GET http://localhost:1322/study-set/34/tags
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MzM4NTE5LCJleHAiOjE3Mzk0MjQ5MTl9.Q3spHRpB9q0wj3fHx67jdQSNhZzOaPhO6XB6edVktN4
 
 
 ### Get all sets belonging to a tag
@@ -185,9 +185,9 @@ Content-Type: application/json
 
 ### Get all distinct tag names
 GET http://localhost:1322/tag/all-tags
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MzM4NTE5LCJleHAiOjE3Mzk0MjQ5MTl9.Q3spHRpB9q0wj3fHx67jdQSNhZzOaPhO6XB6edVktN4
 
 
-### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MzM4NTE5LCJleHAiOjE3Mzk0MjQ5MTl9.Q3spHRpB9q0wj3fHx67jdQSNhZzOaPhO6XB6edVktN4
 ### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5Mjk4OTYzLCJleHAiOjE3MzkzODUzNjN9.HfDNgdR6K70HqpXyq4CTIHJ5o1GmpdQPPdFAeC8dYNQ
 ### arpie2: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzM5MTM3NjkxLCJleHAiOjE3MzkyMjQwOTF9.iC0CIavD6U3XEhcwWo4xd1YVXUOj8oq-9-a0E4pikCY
