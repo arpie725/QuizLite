@@ -8,10 +8,11 @@ import axios from 'axios';
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export const PersonalSetsSection = () => {
-
   const [sets, setSets] = useState<Set[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   // on initial load
   useEffect(() => {
@@ -52,7 +53,16 @@ export const PersonalSetsSection = () => {
         <div className='mt-24 border max-w-lg mx-auto min-h-96 flex flex-col gap-2'>
           {sets.map((set, index) => (
             <div key={index}>
-              <h1 className='login-text'>{set.title}</h1>
+              <button
+                className='login-text'
+                onClick={() => {
+                  // TODO: turn this into a function later
+                  // route to the set page passing the setId
+                  router.push(`/set/${set.id}`);
+                }}
+              >
+                {set.title}
+              </button>
             </div>
           ))}
         </div>

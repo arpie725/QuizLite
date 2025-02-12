@@ -101,7 +101,7 @@ Content-Type: application/json
 
 ### Get all cards from a study set
 GET http://localhost:1322/study-set/31/cards
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MzM4NTE5LCJleHAiOjE3Mzk0MjQ5MTl9.Q3spHRpB9q0wj3fHx67jdQSNhZzOaPhO6XB6edVktN4
 
 ### Get all sets from a user
 GET http://localhost:1322/user/sets
