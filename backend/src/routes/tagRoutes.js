@@ -136,18 +136,40 @@ router.get('/get-tag/:tagId', async (req, res) => {
 
 /** retrieves all distinct tag names
  * - queries the database for all distinct tag names
- * - returns tags where each tag is a name
+ * - returns tags where each tag has a name, public set count
  */
 router.get('/all-tags', async (req, res) => {
   // no params
   // interact with the database
   try {
-    const tags = await prisma.tag.findMany({
-      select: {
-        name: true,
-      },
-      distinct: ['name'],
-    });
+    const tags = await prisma.set
+      .findMany({
+        where: {
+          isPublic: true,
+        },
+        include: {
+          tags: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      })
+      .then((sets) => {
+        const tagCounts = {};
+        sets.forEach((set) => {
+          set.tags.forEach((tag) => {
+            if (!tagCounts[tag.name]) {
+              tagCounts[tag.name] = 0;
+            }
+            tagCounts[tag.name]++;
+          });
+        });
+        return Object.entries(tagCounts).map(([name, count]) => ({
+          name,
+          publicSetCount: count,
+        }));
+      });
     return res.status(200).json({
       success: true,
       message: 'Retrieved all distinct tag names',

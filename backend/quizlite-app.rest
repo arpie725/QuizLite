@@ -33,8 +33,8 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5Mjk4
 Content-Type: application/json
 
 {
-  "title": "Cheatsheat farm",
-  "isPublic": false
+  "title": "Music",
+  "isPublic": true
 }
 
 ### Delete a study set
@@ -56,7 +56,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2
 Content-Type: application/json
 
 {
-  "isPublic": false
+  "isPublic": true
 }
 
 ### Create a new card
