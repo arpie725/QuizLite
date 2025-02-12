@@ -134,6 +134,33 @@ router.get('/get-tag/:tagId', async (req, res) => {
   }
 });
 
+/** retrieves all distinct tag names
+ * - queries the database for all distinct tag names
+ * - returns tags where each tag is a name
+ */
+router.get('/all-tags', async (req, res) => {
+  // no params
+  // interact with the database
+  try {
+    const tags = await prisma.tag.findMany({
+      select: {
+        name: true,
+      },
+      distinct: ['name'],
+    });
+    return res.status(200).json({
+      success: true,
+      message: 'Retrieved all distinct tag names',
+      data: {
+        tags,
+        tagCount: tags.length,
+      },
+    });
+  } catch (er) {
+    return handleErrors(er, res);
+  }
+});
+
 /// SETS ------------------------------------------------
 
 /** retrieves all sets belonging to a tag
