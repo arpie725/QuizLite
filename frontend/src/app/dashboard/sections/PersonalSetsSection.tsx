@@ -8,6 +8,7 @@ import axios from 'axios';
 import { twMerge } from 'tailwind-merge';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const token = localStorage.getItem('token');
 
 export const PersonalSetsSection = () => {
   const [sets, setSets] = useState<Set[]>([]);
@@ -27,11 +28,40 @@ export const PersonalSetsSection = () => {
   //   setIsEditing(false);
   // };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleSetRename = async () => {
+    // make the API call to rename the set
+    try {
+      console.log('making API call to rename the study set to: ' + title);
+      await axios.put(
+        `${apiUrl}/study-set/${37}`,
+        {
+          title: title,
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      setIsEditing(false);
+    } catch (er) {
+      // TODO: handle errors
+      // NOTE: there can be many errors (duplicate entry, empty title, etc.)
+      // Prob just need to display the specific error message recieved from the backend
+      // Prob need a renameError state
+      console.error('Error renaming the set: ', er);
+    }
+  };
+
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      setIsEditing(false);
-      // handleBlur();
+      try {
+        // make the API call to rename the set
+        await handleSetRename();
+      } catch (er) {
+        console.error('Error renaming the set: ', er);
+      }
     }
   };
 
@@ -73,7 +103,7 @@ export const PersonalSetsSection = () => {
       }
     };
     fetchUserSets();
-  }, []);
+  }, [isPopupOpen]); // want to refetch user sets whever user deletes a study set
 
   useEffect(() => {
     if (isEditing && textareaRef.current) {
@@ -126,7 +156,7 @@ export const PersonalSetsSection = () => {
           />
         </div>
         {/* TODO: Turn this into a component similar to Card.tsx */}
-        <div className='bg-gray-800 rounded-3xl flex -z-10 overflow-hidden outline-white/20 max-w-3xl lg:max-w-full mx-auto'>
+        <div className='bg-gray-800 rounded-3xl flex -z-10 overflow-hidden outline-white/20 max-w-3xl lg:max-w-full mx-auto lg:min-h-[300px]'>
           {/* Infinitely horizontally moving study sets */}
           {/* TODO: create a component to display a single study set (title) */}
           <div
@@ -139,7 +169,7 @@ export const PersonalSetsSection = () => {
               isOpen={isPopupOpen}
               setIsOpen={setIsPopupOpen}
               title={title}
-              setId={31} // replace this with the set's setId
+              setId={35} // replace this with the set's setId
             />
             <div className='absolute top-2 left-2'>
               <svg
@@ -195,8 +225,7 @@ export const PersonalSetsSection = () => {
                 )}
                 onClick={(e) => {
                   e.stopPropagation();
-                  isEditing ? setIsEditing(false) : setIsEditing(true);
-                  console.log('Clicked the rename / done button');
+                  isEditing ? handleSetRename() : setIsEditing(true);
                 }}
               >
                 {isEditing ? 'Done' : 'Rename'}
@@ -209,8 +238,6 @@ export const PersonalSetsSection = () => {
                     ? (setTitle(''),
                       textareaRef.current && textareaRef.current.focus())
                     : handleDelete();
-
-                  console.log('Clicked the delete / clear button');
                 }}
               >
                 {isEditing ? 'Clear' : 'Delete'}

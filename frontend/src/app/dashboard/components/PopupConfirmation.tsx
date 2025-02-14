@@ -5,8 +5,12 @@ import {
   DialogTitle,
 } from '@headlessui/react';
 import { useState } from 'react';
+import axios from 'axios';
 
-// source: https://headlessui.com/react/dialog 
+// source: https://headlessui.com/react/dialog
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const token = localStorage.getItem('token');
 
 interface PopupConfirmationProps {
   isOpen: boolean;
@@ -22,6 +26,20 @@ export const PopupConfirmation = ({
   setId,
 }: PopupConfirmationProps) => {
   // create a function that makes API call to delete the setId
+  const handleDelete = async () => {
+    try {
+      // make the api call to delete the study set
+      await axios.delete(`${apiUrl}/study-set/${setId}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      setIsOpen(false);
+    } catch (er) {
+      console.error('Error deleting study set: ', er);
+    }
+  };
+
   return (
     <Dialog
       open={isOpen}
@@ -52,7 +70,7 @@ export const PopupConfirmation = ({
             </button>
             <button
               className='text-red-500 hover:underline'
-              onClick={() => setIsOpen(false)}
+              onClick={handleDelete}
             >
               Delete
             </button>
