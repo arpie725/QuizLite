@@ -47,18 +47,15 @@ async function cardExists(cardId) {
 async function validateQuestionAndAnswer(question, answer) {
   const trimmedQuestion = question?.trim();
   const trimmedAnswer = answer?.trim();
-
   try {
-    // check if invalid question, answer, or setId
-    if (!trimmedQuestion || !trimmedAnswer) {
-      throw new InvalidParamsError(
-        'Cannot have empty question, answer, or undefined setId'
-      );
+    // check for empty string
+    if (trimmedQuestion === '' || trimmedAnswer === '') {
+      throw new InvalidParamsError('Question or Answer cannot be empty');
     }
-    return { question: trimmedQuestion, answer: trimmedAnswer };
   } catch (er) {
     throw er;
   }
+  return { question: trimmedQuestion, answer: trimmedAnswer };
 }
 
 export { cardQASExists, cardExists, validateQuestionAndAnswer };

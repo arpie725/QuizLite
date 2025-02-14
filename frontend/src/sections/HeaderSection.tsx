@@ -16,7 +16,7 @@ export const Header = () => {
   };
 
   return (
-    <div className='fixed top-0 w-full backdrop-blur border'>
+    <div className='z-10 fixed top-0 w-full backdrop-blur border'>
       <div className='my-4 px-24 flex justify-between'>
         <h1 className='login-text'>QuizLite</h1>
         {/* Insert future nav bar items below */}

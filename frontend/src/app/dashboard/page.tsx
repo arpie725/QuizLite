@@ -2,11 +2,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
 import { Header } from '@/sections/HeaderSection';
 import axios from 'axios';
-import SetData from '@/models/SetData';
-import Set from '@/models/Set';
 import { PersonalSetsSection } from './sections/PersonalSetsSection';
 import { PublicSetsSection } from './sections/PublicSetsSection';
 
@@ -16,7 +13,6 @@ const DashboardPage = () => {
   const router = useRouter();
 
   const [username, setUsername] = useState('');
-  const [sets, setSets] = useState<Set[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,6 +39,10 @@ const DashboardPage = () => {
       } catch (er) {
         console.error('Error fetching username:', er);
         setError(`ERROR: ${(er as any).response.data.message}`);
+        // error fetching user, so take the user back to the auth page
+        // remove any token in localStorage
+        localStorage.removeItem('token');
+        router.push('/auth');
       } finally {
         setLoading(false);
       }

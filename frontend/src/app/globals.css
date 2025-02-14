@@ -42,3 +42,7 @@ body {
 .bg-purple-pink {
   @apply bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg;
 }
+
+.font-set-title {
+  @apply text-blue-500 text-lg md:text-3xl lg:text-4xl font-geist font-semibold;
+}

@@ -71,12 +71,11 @@ Content-Type: application/json
 
 ### Edit the (question / answer) of a card
 PUT http://localhost:1322/card/37
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5NDczMDY0LCJleHAiOjE3Mzk1NTk0NjR9.0VoFxHW1hBgL298YkMuCQj2ykQPWAN_ezByGMw9LaU8
 Content-Type: application/json
 
 {
-  "question": "Maga is made from who    ",
-  "answer": " donald trumpet "
+  "question": "What is donald trump's favorite instrument?    "
 }
 
 ### Edit the (isComplete) of a card
@@ -188,6 +187,6 @@ GET http://localhost:1322/tag/all-tags
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MzM4NTE5LCJleHAiOjE3Mzk0MjQ5MTl9.Q3spHRpB9q0wj3fHx67jdQSNhZzOaPhO6XB6edVktN4
 
 
-### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MzM4NTE5LCJleHAiOjE3Mzk0MjQ5MTl9.Q3spHRpB9q0wj3fHx67jdQSNhZzOaPhO6XB6edVktN4
+### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5NDczMDY0LCJleHAiOjE3Mzk1NTk0NjR9.0VoFxHW1hBgL298YkMuCQj2ykQPWAN_ezByGMw9LaU8
 ### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5Mjk4OTYzLCJleHAiOjE3MzkzODUzNjN9.HfDNgdR6K70HqpXyq4CTIHJ5o1GmpdQPPdFAeC8dYNQ
 ### arpie2: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzM5MTM3NjkxLCJleHAiOjE3MzkyMjQwOTF9.iC0CIavD6U3XEhcwWo4xd1YVXUOj8oq-9-a0E4pikCY

@@ -9,6 +9,8 @@ export default {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    // Note: On larger screens, the webpage will appear smaller. The fix for this is to include more screen sizes (xl, 2xl, etc.)
+    // Ex: Containers will have more empty space on the sides...
     screens: {
       sm: '375px',
       md: '768px',
