@@ -13,8 +13,10 @@ const token = localStorage.getItem('token');
 export const PersonalSetsSection = () => {
   const [sets, setSets] = useState<Set[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [title, setTitle] = useState('401 Final Review');
+  const [title, setTitle] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [editingSetId, setEditingSetId] = useState(-1);
+  const [deletingSetId, setDeletingSetId] = useState(-1);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,12 +30,18 @@ export const PersonalSetsSection = () => {
   //   setIsEditing(false);
   // };
 
-  const handleSetRename = async () => {
+  const handleSetRename = async (setId: number, setTitle: string) => {
     // make the API call to rename the set
     try {
+      // check if title and setTitle are the same
+      if (title === setTitle) {
+        // no change was made, don't do anything
+        setIsEditing(false);
+        return;
+      }
       console.log('making API call to rename the study set to: ' + title);
       await axios.put(
-        `${apiUrl}/study-set/${37}`,
+        `${apiUrl}/study-set/${setId}`,
         {
           title: title,
         },
@@ -42,6 +50,12 @@ export const PersonalSetsSection = () => {
             Authorization: token,
           },
         }
+      );
+      // Update the sets state with the new title
+      setSets(
+        sets.map(
+          (set) => (set.id === setId ? { ...set, title: title } : set) // Update the correct set
+        )
       );
       setIsEditing(false);
     } catch (er) {
@@ -53,15 +67,24 @@ export const PersonalSetsSection = () => {
     }
   };
 
-  const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = async (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+    setId: number,
+    setTitle_: string
+  ) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       try {
         // make the API call to rename the set
-        await handleSetRename();
+        await handleSetRename(setId, setTitle_);
       } catch (er) {
         console.error('Error renaming the set: ', er);
       }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      // stop editing
+      setTitle(setTitle_);
+      setIsEditing(false);
     }
   };
 
@@ -94,7 +117,11 @@ export const PersonalSetsSection = () => {
         });
         const setsArray = res.data.sets;
         const sets = setsArray.map((set: SetData) => new Set(set));
-        setSets(sets);
+        // sort the sets to maintain same ordering
+        const sortedSets = sets.sort(
+          (a: { id: number }, b: { id: number }) => a.id - b.id
+        );
+        setSets(sortedSets);
       } catch (er) {
         console.log('Error fetching sets:', er);
         setError(`ERROR: ${(er as any).response.data.message}`);
@@ -103,7 +130,7 @@ export const PersonalSetsSection = () => {
       }
     };
     fetchUserSets();
-  }, [isPopupOpen]); // want to refetch user sets whever user deletes a study set
+  }, []);
 
   useEffect(() => {
     if (isEditing && textareaRef.current) {
@@ -159,102 +186,117 @@ export const PersonalSetsSection = () => {
         <div className='bg-gray-800 rounded-3xl flex -z-10 overflow-hidden outline-white/20 max-w-3xl lg:max-w-full mx-auto lg:min-h-[300px]'>
           {/* Infinitely horizontally moving study sets */}
           {/* TODO: create a component to display a single study set (title) */}
-          <div
-            className={twMerge(
-              'border-4 border-zinc-400 flex -z-5 relative flex-col bg-zinc-700 rounded-xl w-1/3 h-28 md:h-60 lg:h-72 m-6 group transition duration-150',
-              !isEditing && 'hover:bg-zinc-700/75'
-            )}
-          >
-            <PopupConfirmation
-              isOpen={isPopupOpen}
-              setIsOpen={setIsPopupOpen}
-              title={title}
-              setId={35} // replace this with the set's setId
-            />
-            <div className='absolute top-2 left-2'>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                viewBox='0 -960 960 960'
-                width='32'
-                // use twMerge
-                // later, you set the fill color based on the set.isFavorite ? fill-yellow-200 hover:fill-zinc-400 : fill-zinc-400 hover:fill-yellow-200
-                className='fill-zinc-400 hover:fill-yellow-200 transition duration-150 cursor-pointer'
-                onClick={() => {
-                  console.log('isFavorite star tapped');
-                }}
-              >
-                <path d='m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z' />
-              </svg>
-            </div>
-            <div className='flex-grow flex justify-center items-center mx-2'>
-              {isEditing ? (
-                <textarea
-                  ref={textareaRef}
-                  value={title}
-                  spellCheck='false'
-                  onChange={handleTextAreaChange}
-                  // onBlur={handleBlur}
-                  onKeyDown={handleKeyDown}
-                  className='flex font-set-title caret-white text-center resize-none focus:outline-none focus:ring-0 transition duration-150 bg-transparent overflow-hidden w-full h-auto max-h-40'
+          {sets.map((set) => (
+            <div
+              key={set.id}
+              className={twMerge(
+                'border-4 border-zinc-400 flex -z-5 relative group flex-col bg-zinc-700 rounded-xl m-6 flex-shrink-0 w-72 h-72 transition duration-150',
+                !isEditing && 'hover:bg-zinc-700/75'
+              )}
+            >
+              {deletingSetId === set.id && (
+                <PopupConfirmation
+                  key={set.id}
+                  isOpen={isPopupOpen}
+                  setIsOpen={setIsPopupOpen}
+                  title={set.title}
+                  setId={set.id}
+                  onSetDeleted={() => {
+                    // update the sets
+                    setSets((prevSets) =>
+                      prevSets.filter((s) => s.id !== set.id)
+                    );
+                    setDeletingSetId(-1);
+                  }}
                 />
-              ) : (
-                <h3
-                  ref={h3Ref}
-                  className='flex justify-center font-set-title text-center overflow-hidden break-words w-full h-auto max-h-40 hover:underline transition duration-150 cursor-pointer'
+              )}
+              <div className='absolute top-2 left-2'>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  viewBox='0 -960 960 960'
+                  width='32'
+                  // use twMerge
+                  // later, you set the fill color based on the set.isFavorite ? fill-yellow-200 hover:fill-zinc-400 : fill-zinc-400 hover:fill-yellow-200
+                  className='fill-zinc-400 hover:fill-yellow-200 transition duration-150 cursor-pointer'
                   onClick={() => {
-                    if (!isEditing) {
-                      router.push(`/set/${31}`);
+                    console.log('isFavorite star tapped');
+                  }}
+                >
+                  <path d='m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z' />
+                </svg>
+              </div>
+              <div className='flex-grow flex justify-center items-center mx-2'>
+                {isEditing && editingSetId === set.id ? (
+                  <textarea
+                    ref={textareaRef}
+                    value={title}
+                    spellCheck='false'
+                    onChange={handleTextAreaChange}
+                    onKeyDown={(e) => handleKeyDown(e, set.id, set.title)}
+                    className='flex font-set-title caret-white text-center resize-none focus:outline-none focus:ring-0 transition duration-150 bg-transparent overflow-hidden w-full h-auto max-h-40'
+                  />
+                ) : (
+                  <h3
+                    ref={h3Ref}
+                    className='flex justify-center font-set-title text-center overflow-hidden break-words w-full h-auto max-h-40 hover:underline transition duration-150 cursor-pointer'
+                    onClick={() => {
+                      router.push(`/set/${set.id}`);
+                    }}
+                  >
+                    {set.title}
+                  </h3>
+                )}
+              </div>
+
+              <div
+                className={twMerge(
+                  'invisible flex w-5/6 justify-between self-end mx-auto mb-4 transition duration-150',
+                  isEditing && editingSetId === set.id && 'visible',
+                  !isEditing && 'group-hover:visible'
+                )}
+              >
+                <button
+                  className={twMerge(
+                    'hover:underline font-geist text-xl',
+                    isEditing ? 'text-lime-500' : 'text-orange-500'
+                  )}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (isEditing) {
+                      handleSetRename(set.id, set.title);
+                    } else {
+                      setTitle(set.title);
+                      setEditingSetId(set.id);
+                      setIsEditing(true);
                     }
                   }}
                 >
-                  {title}
-                </h3>
-              )}
+                  {isEditing ? 'Done' : 'Rename'}
+                </button>
+                <button
+                  className='text-red-500 hover:underline font-geist text-xl'
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    isEditing
+                      ? (setTitle(''),
+                        textareaRef.current && textareaRef.current.focus())
+                      : (setDeletingSetId(set.id), handleDelete());
+                  }}
+                >
+                  {isEditing ? 'Clear' : 'Delete'}
+                </button>
+              </div>
             </div>
-
-            <div
-              className={twMerge(
-                'flex w-5/6 justify-between self-end mx-auto mb-4 transition duration-150',
-                isEditing ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-              )}
-            >
-              <button
-                className={twMerge(
-                  'hover:underline font-geist text-xl',
-                  isEditing ? 'text-lime-500' : 'text-orange-500'
-                )}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  isEditing ? handleSetRename() : setIsEditing(true);
-                }}
-              >
-                {isEditing ? 'Done' : 'Rename'}
-              </button>
-              <button
-                className='text-red-500 hover:underline font-geist text-xl'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  isEditing
-                    ? (setTitle(''),
-                      textareaRef.current && textareaRef.current.focus())
-                    : handleDelete();
-                }}
-              >
-                {isEditing ? 'Clear' : 'Delete'}
-              </button>
-            </div>
-          </div>
+          ))}
         </div>
 
-        <div className='mt-24 border max-w-lg mx-auto min-h-96 flex flex-col gap-2'>
+        <div className='mt-24 border max-w-lg mx-auto min-h-96 flex flex-col gap-8 p-4'>
+          <h1 className='border-b login-text'>Sets:</h1>
           {sets.map((set, index) => (
             <div key={index}>
-              <button
-                className='login-text'
-                onClick={() => routeToSet(set.id)}
-              >
+              <h1 className='font-geist text-xl text-zinc-300 font-bold'>
                 {set.title}
-              </button>
+              </h1>
             </div>
           ))}
         </div>

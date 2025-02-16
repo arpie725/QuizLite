@@ -14,8 +14,8 @@ POST http://localhost:1322/auth/login
 Content-Type: application/json
 
 {
-  "username": "arpie",
-  "password": "p"
+  "username": "arpie1",
+  "password": "password"
 }
 
 ### Log in using invalid credentials
@@ -29,11 +29,11 @@ Content-Type: application/json
 
 ### Create a new study set
 POST http://localhost:1322/study-set
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5Mjk4OTYzLCJleHAiOjE3MzkzODUzNjN9.HfDNgdR6K70HqpXyq4CTIHJ5o1GmpdQPPdFAeC8dYNQ
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5NTcyNjAyLCJleHAiOjE3Mzk2NTkwMDJ9.LShWKw3oS98wujdjw7ESbEFWFvHWCroOLmii0SqsaPs
 Content-Type: application/json
 
 {
-  "title": "Music",
+  "title": "110",
   "isPublic": true
 }
 
@@ -188,5 +188,5 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MzM4
 
 
 ### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5NDczMDY0LCJleHAiOjE3Mzk1NTk0NjR9.0VoFxHW1hBgL298YkMuCQj2ykQPWAN_ezByGMw9LaU8
-### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5Mjk4OTYzLCJleHAiOjE3MzkzODUzNjN9.HfDNgdR6K70HqpXyq4CTIHJ5o1GmpdQPPdFAeC8dYNQ
+### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5NTcyNjAyLCJleHAiOjE3Mzk2NTkwMDJ9.LShWKw3oS98wujdjw7ESbEFWFvHWCroOLmii0SqsaPs
 ### arpie2: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzM5MTM3NjkxLCJleHAiOjE3MzkyMjQwOTF9.iC0CIavD6U3XEhcwWo4xd1YVXUOj8oq-9-a0E4pikCY

@@ -17,6 +17,7 @@ interface PopupConfirmationProps {
   setIsOpen: (isOpen: boolean) => void;
   title: string;
   setId: number;
+  onSetDeleted: () => void;
 }
 
 export const PopupConfirmation = ({
@@ -24,6 +25,7 @@ export const PopupConfirmation = ({
   setIsOpen,
   title,
   setId,
+  onSetDeleted,
 }: PopupConfirmationProps) => {
   // create a function that makes API call to delete the setId
   const handleDelete = async () => {
@@ -35,6 +37,7 @@ export const PopupConfirmation = ({
         },
       });
       setIsOpen(false);
+      onSetDeleted();
     } catch (er) {
       console.error('Error deleting study set: ', er);
     }
