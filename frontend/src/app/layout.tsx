@@ -74,7 +74,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${calistoga.variable} ${inter.variable} antialiased`}
       >
-        <div className='rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full h-screen flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden'>
+        <div className='rounded-md flex md:flex-row bg-gray-100 dark:bg-neutral-800 w-full h-screen mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden'>
           {!isAuthPage && (
             <SidebarProvider>
               <Sidebar
@@ -82,7 +82,7 @@ export default function RootLayout({
                 setOpen={setOpen}
                 // animate={false} // for dev (animates the sidebar)
               >
-                <SidebarBody className='justify-between gap-10'>
+                <SidebarBody className='h-full justify-between gap-10'>
                   {/* side bar content */}
                   <div className='flex flex-col flex-1 overflow-y-auto overflow-x-hidden'>
                     {/* LOGO */}
@@ -101,9 +101,9 @@ export default function RootLayout({
                   </div>
                 </SidebarBody>
               </Sidebar>
+              <main className='flex-1 overflow-y-auto'>{children}</main>
             </SidebarProvider>
           )}
-          <main>{children}</main>
         </div>
       </body>
     </html>
