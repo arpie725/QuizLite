@@ -42,7 +42,7 @@ export const PublicSetsSection = () => {
   }
 
   return (
-    <section>
+    <section className='mb-[1000px]'>
       <div className='container'>
         <h1 className='login-text'>Public Sets Section</h1>
         {tags.map(({ name, publicSetCount }, index) => (
@@ -53,6 +53,8 @@ export const PublicSetsSection = () => {
             tag: {name}, number of sets: {publicSetCount}
           </div>
         ))}
+
+        
       </div>
     </section>
   );

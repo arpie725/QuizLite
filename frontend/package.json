@@ -10,8 +10,11 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
+    "@tabler/icons-react": "^3.30.0",
     "axios": "^1.7.9",
+    "clsx": "^2.1.1",
     "jwt-decode": "^4.0.0",
+    "motion": "^12.4.4",
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -1,4 +1,3 @@
-//
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -62,7 +61,7 @@ const DashboardPage = () => {
 
   return (
     <div>
-      <Header />
+      {/* <Header /> */}
       <div className='mt-48'></div>
       <h1 className='text-5xl login-text'>Dashboard! - Welcome, {username}</h1>
 
