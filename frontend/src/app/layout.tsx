@@ -80,7 +80,7 @@ export default function RootLayout({
               <Sidebar
                 open={open}
                 setOpen={setOpen}
-                // animate={false} // for dev (animates the sidebar)
+                animate={false} // for dev (animates the sidebar)
               >
                 <SidebarBody className='h-full justify-between gap-10'>
                   {/* side bar content */}
@@ -104,6 +104,7 @@ export default function RootLayout({
               <main className='flex-1 overflow-y-auto'>{children}</main>
             </SidebarProvider>
           )}
+          {isAuthPage && <main>{children}</main>}
         </div>
       </body>
     </html>

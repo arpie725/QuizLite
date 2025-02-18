@@ -6,6 +6,7 @@ import SetData from '@/models/SetData';
 import { PopupConfirmation } from '../components/PopupConfirmation';
 import axios from 'axios';
 import { twMerge } from 'tailwind-merge';
+import { DisplayCard } from '@/components/DisplayCard';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const token = localStorage.getItem('token');
@@ -171,7 +172,7 @@ export const PersonalSetsSection = () => {
   }
   // success
   return (
-    <section className='border border-dashed'>
+    <section className='mt-24 border border-dashed'>
       <div className='container border'>
         <div className='mt-4 flex gap-12'>
           <h1 className='login-text'>Your Study Sets</h1>
@@ -187,11 +188,11 @@ export const PersonalSetsSection = () => {
           {/* Infinitely horizontally moving study sets */}
           {/* TODO: create a component to display a single study set (title) */}
           {sets.map((set) => (
-            <div
+            <DisplayCard
               key={set.id}
               className={twMerge(
-                'border-4 border-zinc-400 flex -z-5 relative group flex-col bg-zinc-700 rounded-xl m-6 flex-shrink-0 w-72 h-72 transition duration-150',
-                !isEditing && 'hover:bg-zinc-700/75'
+                !isEditing && 'hover:bg-zinc-700/75',
+                isEditing && editingSetId == set.id && 'bg-zinc-700/75'
               )}
             >
               {deletingSetId === set.id && (
@@ -286,12 +287,13 @@ export const PersonalSetsSection = () => {
                   {isEditing ? 'Clear' : 'Delete'}
                 </button>
               </div>
-            </div>
+            </DisplayCard>
           ))}
         </div>
 
-        <div className='mt-24 border max-w-lg mx-auto min-h-96 flex flex-col gap-8 p-4'>
-          <h1 className='border-b login-text'>Sets:</h1>
+        {/* for dev */}
+        <div className='mt-24 mb-8 border max-w-sm mx-auto flex flex-col p-4'>
+          <h1 className='mb-4 border-b login-text'>Sets:</h1>
           {sets.map((set, index) => (
             <div key={index}>
               <h1 className='font-geist text-xl text-zinc-300 font-bold'>

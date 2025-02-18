@@ -42,19 +42,22 @@ export const PublicSetsSection = () => {
   }
 
   return (
-    <section className='mb-[1000px]'>
-      <div className='container'>
-        <h1 className='login-text'>Public Sets Section</h1>
-        {tags.map(({ name, publicSetCount }, index) => (
-          <div
-            key={index}
-            className='login-text'
-          >
-            tag: {name}, number of sets: {publicSetCount}
-          </div>
-        ))}
+    <section className='mt-12 border border-dashed mb-[1000px]'>
+      <div className='container border'>
+        <h1 className='mt-12 login-text border-b max-w-sm mx-auto text-center'>
+          Explore all tags
+        </h1>
 
-        
+        <div className='mt-48'>
+          {tags.map(({ name, publicSetCount }, index) => (
+            <div
+              key={index}
+              className='login-text'
+            >
+              tag: {name}, number of sets: {publicSetCount}
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
