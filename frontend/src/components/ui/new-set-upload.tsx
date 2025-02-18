@@ -47,7 +47,7 @@ export const NewSetUpload = ({
               <p className='relative z-20 font-sans font-bold text-neutral-700 dark:text-neutral-300 text-base'>
                 Create a Study Set
               </p>
-              <p className='mb-12 relative z-20 font-sans font-normal text-neutral-400 dark:text-neutral-400 text-base mt-2'>
+              <p className='mb-6 relative z-20 font-sans font-normal text-neutral-400 dark:text-neutral-400 text-base mt-2'>
                 Click to create your first study set!
               </p>
               <motion.div
@@ -59,7 +59,7 @@ export const NewSetUpload = ({
                   damping: 20,
                 }}
                 className={cn(
-                  'relative group-hover/file:shadow-2xl z-40 bg-white dark:bg-neutral-900 flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md',
+                  'mb-6 relative group-hover/file:shadow-2xl z-40 bg-white dark:bg-neutral-900 flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md',
                   'shadow-[0px_10px_50px_rgba(0,0,0,0.1)]'
                 )}
               >
