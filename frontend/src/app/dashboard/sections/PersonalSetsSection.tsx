@@ -7,12 +7,15 @@ import { PopupConfirmation } from '../components/PopupConfirmation';
 import axios from 'axios';
 import { twMerge } from 'tailwind-merge';
 import { DisplayCard } from '@/components/DisplayCard';
+import { DisplayCardBackground } from '@/components/DisplayCardBackground';
+import { NewSetUpload } from '@/components/ui/new-set-upload';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const token = localStorage.getItem('token');
 
 export const PersonalSetsSection = () => {
   const [sets, setSets] = useState<Set[]>([]);
+  const [isSetsEmpty, setIsSetsEmpty] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [title, setTitle] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -123,6 +126,7 @@ export const PersonalSetsSection = () => {
           (a: { id: number }, b: { id: number }) => a.id - b.id
         );
         setSets(sortedSets);
+        setIsSetsEmpty(sets.length === 0 ? true : false);
       } catch (er) {
         console.log('Error fetching sets:', er);
         setError(`ERROR: ${(er as any).response.data.message}`);
@@ -184,15 +188,24 @@ export const PersonalSetsSection = () => {
           />
         </div>
         {/* TODO: Turn this into a component similar to Card.tsx */}
-        <div className='bg-gray-800 rounded-3xl flex -z-10 overflow-hidden outline-white/20 max-w-3xl lg:max-w-full mx-auto lg:min-h-[300px]'>
+        <DisplayCardBackground
+          className={twMerge(!isSetsEmpty && 'grid grid-cols-3')}
+        >
           {/* Infinitely horizontally moving study sets */}
           {/* TODO: create a component to display a single study set (title) */}
+          {isSetsEmpty && (
+            <NewSetUpload
+              onClick={() => {
+                console.log('Tapped');
+              }}
+            ></NewSetUpload>
+          )}
           {sets.map((set) => (
             <DisplayCard
               key={set.id}
               className={twMerge(
-                !isEditing && 'hover:bg-zinc-700/75',
-                isEditing && editingSetId == set.id && 'bg-zinc-700/75'
+                !isEditing && 'hover:bg-zinc-600',
+                isEditing && editingSetId == set.id && 'bg-zinc-600'
               )}
             >
               {deletingSetId === set.id && (
@@ -207,6 +220,7 @@ export const PersonalSetsSection = () => {
                     setSets((prevSets) =>
                       prevSets.filter((s) => s.id !== set.id)
                     );
+                    setIsSetsEmpty(sets.length === 0 ? true : false);
                     setDeletingSetId(-1);
                   }}
                 />
@@ -289,7 +303,7 @@ export const PersonalSetsSection = () => {
               </div>
             </DisplayCard>
           ))}
-        </div>
+        </DisplayCardBackground>
 
         {/* for dev */}
         <div className='mt-24 mb-8 border max-w-sm mx-auto flex flex-col p-4'>
