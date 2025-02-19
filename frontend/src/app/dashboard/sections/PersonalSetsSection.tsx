@@ -176,7 +176,7 @@ export const PersonalSetsSection = () => {
   }
   // success
   return (
-    <section className='mt-24 border border-dashed'>
+    <section className='mt-12 border border-dashed'>
       <div className='container border'>
         <div className='mt-4 flex gap-12'>
           <h1 className='login-text'>Your Study Sets</h1>

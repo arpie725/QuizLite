@@ -60,7 +60,8 @@ const DashboardPage = () => {
   }
 
   return (
-    <div>
+    <div className='mt-12'>
+      <h1 className='login-text'>Dashboard!</h1>
       <PersonalSetsSection />
       <PublicSetsSection />
     </div>

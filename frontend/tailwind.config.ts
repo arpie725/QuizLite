@@ -41,6 +41,16 @@ export default {
         serif: 'var(--font-serif)',
         geist: 'var(--font-geist-mono)',
       },
+      animation: {
+        'move-left': 'move-left 1s linear infinite',
+        'move-right': 'move-left 1s linear infinite reverse',
+      },
+      keyframes: {
+        'move-left': {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+      },
     },
   },
   plugins: [
