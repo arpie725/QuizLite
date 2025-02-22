@@ -41,6 +41,7 @@ export default function SpecificSetPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [existsError, setExistsError] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -133,6 +134,12 @@ export default function SpecificSetPage() {
 
   const handleTitleEdit = async () => {
     // make API call to change the title of the set
+    // if no change, just exit
+
+    if (set && title === set.title) {
+      setIsEditingTitle(false);
+      return;
+    }
     try {
       if (!set) {
         throw new Error('Set is undefined!');
@@ -153,11 +160,19 @@ export default function SpecificSetPage() {
       setSet(updatedSet);
       // set isEditing to false
       setIsEditingTitle(false);
+      setExistsError(false);
     } catch (er) {
       console.log('ERROR updating title of the set ', er);
-      setIsEditingTitle(false);
-      if (set) {
-        setTitle(set.title);
+      if (
+        axios.isAxiosError(er) &&
+        er.response?.data.errorType === 'DuplicateEntryError'
+      ) {
+        setExistsError(true);
+      } else {
+        setIsEditingTitle(false);
+        if (set) {
+          setTitle(set.title);
+        }
       }
     }
   };
@@ -221,21 +236,28 @@ export default function SpecificSetPage() {
                   </h3>
                 )}
                 {isEditingTitle && (
-                  <div className='flex gap-4'>
-                    <input
-                      ref={inputRef}
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className='text-zinc-200 font-sans text-5xl font-bold user-input-bg w-2/3'
-                    ></input>
-                    <div className='flex py-4 justify-center items-center'>
-                      <button
-                        onClick={handleTitleEdit}
-                        className='flex justify-center items-center px-2 py-1 rounded bg-white font-semibold font-geist text-black-500 text-xl transition-opacity hover:opacity-80'
-                      >
-                        Save
-                      </button>
+                  <div>
+                    <div className='flex gap-4'>
+                      <input
+                        ref={inputRef}
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className='text-zinc-200 font-sans text-5xl font-bold user-input-bg w-2/3'
+                      ></input>
+                      <div className='flex py-4 justify-center items-center'>
+                        <button
+                          onClick={handleTitleEdit}
+                          className='flex justify-center items-center px-2 py-1 rounded bg-white font-semibold font-geist text-black-500 text-xl transition-opacity hover:opacity-80'
+                        >
+                          Save
+                        </button>
+                      </div>
                     </div>
+                    {existsError && (
+                      <h1 className='mt-2 text-red-500 font-geist text-lg'>
+                        Set already exists!
+                      </h1>
+                    )}
                   </div>
                 )}
                 {!isEditingTitle && (
