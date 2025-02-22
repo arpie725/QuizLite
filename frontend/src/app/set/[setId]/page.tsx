@@ -10,8 +10,9 @@ import TagData from '@/models/TagData';
 import { Header } from '@/sections/HeaderSection';
 import { TagComponent } from '@/components/Tag';
 import { IconPencil, IconPlus } from '@tabler/icons-react';
-import Modal from '@/components/ui/modal';
+import TagModal from '@/components/ui/tag-modal';
 import ToggleSwitch from '@/components/ui/toggle-switch';
+import FlipCard from '@/components/ui/flip-card';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -212,7 +213,7 @@ export default function SpecificSetPage() {
                       className='cursor-pointer group'
                     >
                       {set && (
-                        <Modal
+                        <TagModal
                           modalSize='lg'
                           isOpen={isAddingTag}
                           setIsOpen={setIsAddingTag}
@@ -289,27 +290,15 @@ export default function SpecificSetPage() {
             </div>
           </div>
           {/* actual cards / navigations */}
-          <div></div>
-
-          <div className='mt-[1000px]'>
-            <h1 className='font-geist text-3xl font-semibold text-white'>
-              Study set: {set?.title}, # of flashcards: {cardCount}
-            </h1>
-            <div className='mt-12 flex flex-col gap-12'>
-              {cards.map((card, idx) => (
-                <div
-                  className='flex flex-col'
-                  key={idx}
-                >
-                  <h1 className='login-text'>cardId: {card.id}</h1>
-                  <h1 className='login-text'>Quation: {card.question}</h1>
-                  <h1 className='login-text'>Answer: {card.answer}</h1>
-                  <h1 className='login-text'>
-                    {card.isComplete ? 'Completed' : 'Not completed'}
-                  </h1>
-                </div>
-              ))}
-            </div>
+          <div className='flex flex-col mt-32 gap-24'>
+            {cards.map((card, idx) => (
+              <FlipCard
+                key={card.id}
+                card={card}
+                idx={idx + 1}
+                tot={cards.length}
+              />
+            ))}
           </div>
         </div>
       </section>

@@ -54,3 +54,11 @@ body {
 .font-set-title {
   @apply text-blue-500 text-lg md:text-3xl lg:text-4xl font-geist font-semibold;
 }
+
+.flashcard-style {
+  @apply absolute w-full h-full rounded-2xl bg-black/80 p-4 [backface-visibility:hidden];
+}
+
+.title-font {
+  @apply text-zinc-500 font-geist font-bold text-3xl;
+}

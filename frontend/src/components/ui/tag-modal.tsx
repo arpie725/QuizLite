@@ -23,7 +23,7 @@ interface ModalProps {
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-export default function Modal({
+export default function TagModal({
   modalSize = 'lg',
   isOpen,
   tags,
