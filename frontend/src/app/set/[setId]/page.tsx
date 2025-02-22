@@ -2,7 +2,7 @@
 import Card from '@/models/Card';
 import CardData from '@/models/CardData';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Set from '@/models/Set';
 import Tag from '@/models/Tag';
@@ -37,8 +37,12 @@ export default function SpecificSetPage() {
   const [isPublic, setIsPublic] = useState(false);
   const [cardCount, setCardCount] = useState(0);
   const [isAddingTag, setIsAddingTag] = useState(false);
+  const [title, setTitle] = useState('');
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async () => {
     console.log('SUBMIT BUTTON CLICKED');
@@ -62,9 +66,11 @@ export default function SpecificSetPage() {
         const cards = cardsArray.map((card: CardData) => new Card(card));
         const cardCount = res.data.cardCount;
         const set = res.data.set;
+        const title = set.title;
         const ispublic = set.isPublic;
         // set data into useState variables to be displayed onto the page
         setSet(set);
+        setTitle(title);
         setIsPublic(ispublic);
         setCardCount(cardCount);
         setCards(cards);
@@ -125,6 +131,37 @@ export default function SpecificSetPage() {
     }
   };
 
+  const handleTitleEdit = async () => {
+    // make API call to change the title of the set
+    try {
+      if (!set) {
+        throw new Error('Set is undefined!');
+      }
+      const { data: res } = await axios.put(
+        `${apiUrl}/study-set/${set.id}`,
+        {
+          title,
+        },
+        {
+          headers: {
+            Authorization: token,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const updatedSet = res.data.set;
+      setSet(updatedSet);
+      // set isEditing to false
+      setIsEditingTitle(false);
+    } catch (er) {
+      console.log('ERROR updating title of the set ', er);
+      setIsEditingTitle(false);
+      if (set) {
+        setTitle(set.title);
+      }
+    }
+  };
+
   if (error) {
     return <div className='login-text'>{error}</div>;
   }
@@ -138,45 +175,87 @@ export default function SpecificSetPage() {
           {/* title / editing options */}
           <div className='flex justify-between'>
             {/* display all tags belonging to the current set */}
-            <div className='left-2 top-2 relative'>
-              <div className='flex gap-4'>
-                <h1 className='text-zinc-300 font-serif text-xl'>Tags:</h1>
-                <div className='flex gap-2 justify-center items-center'>
-                  {tags.map(({ id, name }) => (
+            <div className='flex flex-col gap-8'>
+              <div className='left-2 top-2 relative'>
+                <div className='flex gap-4'>
+                  <h1 className='text-zinc-300 font-sans font-bold text-xl'>
+                    Tags:
+                  </h1>
+                  <div className='flex gap-2 justify-center items-center'>
+                    {tags.map(({ id, name }) => (
+                      <TagComponent
+                        key={id}
+                        color={tagColors.at(id % tagColors.length)}
+                      >
+                        {name}
+                      </TagComponent>
+                    ))}
                     <TagComponent
-                      key={id}
-                      color={tagColors.at(id % tagColors.length)}
+                      onClick={() => {
+                        setIsAddingTag(true);
+                      }}
+                      className='cursor-pointer group'
                     >
-                      {name}
+                      {set && (
+                        <Modal
+                          modalSize='lg'
+                          isOpen={isAddingTag}
+                          setIsOpen={setIsAddingTag}
+                          handleSubmit={handleSubmit}
+                          tags={tags}
+                          setTags={setTags}
+                          set={set}
+                        />
+                      )}
+                      <span className='ml-2 hidden group-hover:inline transition duration-150'>
+                        Add Tag
+                      </span>
                     </TagComponent>
-                  ))}
-                  <TagComponent
-                    onClick={() => {
-                      setIsAddingTag(true);
-                    }}
-                    className='cursor-pointer group'
-                  >
-                    {set && (
-                      <Modal
-                        modalSize='lg'
-                        isOpen={isAddingTag}
-                        setIsOpen={setIsAddingTag}
-                        handleSubmit={handleSubmit}
-                        tags={tags}
-                        setTags={setTags}
-                        set={set}
-                      />
-                    )}
-                    <span className='ml-2 hidden group-hover:inline transition duration-150'>
-                      Add Tag
-                    </span>
-                  </TagComponent>
+                  </div>
                 </div>
+              </div>
+              <div className='flex max-w-lg'>
+                {!isEditingTitle && (
+                  <h3 className='font-sans text-zinc-300 text-5xl font-bold p-4'>
+                    {title}
+                  </h3>
+                )}
+                {isEditingTitle && (
+                  <div className='flex gap-4'>
+                    <input
+                      ref={inputRef}
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className='text-zinc-200 font-sans text-5xl font-bold user-input-bg w-2/3'
+                    ></input>
+                    <div className='flex py-4 justify-center items-center'>
+                      <button
+                        onClick={handleTitleEdit}
+                        className='flex justify-center items-center px-2 py-1 rounded bg-white font-semibold font-geist text-black-500 text-xl transition-opacity hover:opacity-80'
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {!isEditingTitle && (
+                  <IconPencil
+                    className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
+                    onClick={() => {
+                      setIsEditingTitle(true);
+                      setTimeout(() => {
+                        if (inputRef.current) {
+                          inputRef.current.focus();
+                        }
+                      });
+                    }}
+                  />
+                )}
               </div>
             </div>
             {/* display public toggle + option to edit the set title */}
             <div className='flex relative top-2 gap-8'>
-              <div className='flex gap-4'>
+              <div className='flex justify-center items-center gap-4'>
                 <h3 className='font-geist text-xl text-zinc-300'>
                   {isPublic ? 'Public set' : 'Private set'}
                 </h3>
@@ -185,14 +264,6 @@ export default function SpecificSetPage() {
                   onChange={togglePrivacy}
                 />
               </div>
-              <IconPencil
-                className='text-zinc-300 size-8 cursor-pointer'
-                onClick={() => {
-                  console.log(
-                    'TODO: Allow user to edit the name of the study set'
-                  );
-                }}
-              />
             </div>
           </div>
           {/* actual cards / navigations */}
