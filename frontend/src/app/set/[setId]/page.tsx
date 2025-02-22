@@ -14,6 +14,8 @@ import Modal from '@/components/ui/modal';
 import ToggleSwitch from '@/components/ui/toggle-switch';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const token = localStorage.getItem('token');
+
 const tagColors = [
   'cyan',
   'lime',
@@ -32,6 +34,7 @@ export default function SpecificSetPage() {
   const [set, setSet] = useState<Set>();
   const [cards, setCards] = useState<Card[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [isPublic, setIsPublic] = useState(false);
   const [cardCount, setCardCount] = useState(0);
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -42,7 +45,6 @@ export default function SpecificSetPage() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     const fetchAllCards = async () => {
       setLoading(true);
       try {
@@ -60,8 +62,10 @@ export default function SpecificSetPage() {
         const cards = cardsArray.map((card: CardData) => new Card(card));
         const cardCount = res.data.cardCount;
         const set = res.data.set;
+        const ispublic = set.isPublic;
         // set data into useState variables to be displayed onto the page
         setSet(set);
+        setIsPublic(ispublic);
         setCardCount(cardCount);
         setCards(cards);
       } catch (er) {
@@ -95,6 +99,31 @@ export default function SpecificSetPage() {
     fetchAllCards();
     fetchTags();
   }, []);
+
+  const togglePrivacy = async () => {
+    try {
+      if (!set) {
+        throw new Error('Set is undefined!');
+      }
+      const newIsPublic = !isPublic;
+      const { data: res } = await axios.put(
+        `${apiUrl}/study-set/${set.id}`,
+        {
+          isPublic: newIsPublic,
+        },
+        {
+          headers: {
+            Authorization: token,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      setIsPublic(newIsPublic);
+      console.log(res);
+    } catch (er) {
+      console.log('ERROR toggling privacy of set: ', er);
+    }
+  };
 
   if (error) {
     return <div className='login-text'>{error}</div>;
@@ -148,11 +177,12 @@ export default function SpecificSetPage() {
             {/* display public toggle + option to edit the set title */}
             <div className='flex relative top-2 gap-8'>
               <div className='flex gap-4'>
-                <h3 className='font-geist text-xl text-zinc-300'>isPublic</h3>
+                <h3 className='font-geist text-xl text-zinc-300'>
+                  {isPublic ? 'Public set' : 'Private set'}
+                </h3>
                 <ToggleSwitch
-                  onChange={() => {
-                    console.log('SWITCH CHANGED');
-                  }}
+                  defaultChecked={isPublic}
+                  onChange={togglePrivacy}
                 />
               </div>
               <IconPencil
