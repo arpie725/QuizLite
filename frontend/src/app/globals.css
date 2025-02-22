@@ -35,8 +35,16 @@ body {
   @apply text-zinc-200 font-mono font-semibold text-2xl;
 }
 
+.user-input-text-light {
+  @apply caret-black text-zinc-700 font-mono font-semibold text-2xl;
+}
+
 .user-input-bg {
   @apply bg-zinc-700 rounded p-2 outline-none focus:outline focus:outline-fuchsia-500/50;
+}
+
+.user-input-bg-light {
+  @apply bg-zinc-200 rounded p-2 outline-none focus:outline focus:outline-fuchsia-300/50;
 }
 
 .bg-purple-pink {

@@ -1,12 +1,15 @@
 import Card from './Card';
 import CardData from './CardData';
 import SetData from './SetData';
+import Tag from './Tag';
+import TagData from './TagData';
 
 class Set {
   id: number;
   title: string;
   isPublic: boolean;
   cards: Card[];
+  tags: Tag[];
 
   constructor(data: SetData) {
     this.id = data.id;
@@ -15,7 +18,9 @@ class Set {
     this.cards = data.cards
       ? data.cards.map((cardData: CardData) => new Card(cardData))
       : [];
-    // TODO: tags
+    this.tags = data.tags
+      ? data.tags.map((tagData: TagData) => new Tag(tagData))
+      : [];
   }
 }
 

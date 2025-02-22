@@ -49,7 +49,6 @@ async function findAndVerifyTag(tagId, userId) {
 }
 
 /** verifies each tagId exists and belongs to the user
- * - ensures tagIds is a non-empty int array
  * @param {number[]} tagIds
  * @param {number} userId
  * @returns tags (with userId removed)
@@ -57,11 +56,7 @@ async function findAndVerifyTag(tagId, userId) {
 async function findAndVerifyTags(tagIds, userId) {
   try {
     // check that tagIds is a non-empty int array
-    if (
-      !Array.isArray(tagIds) ||
-      tagIds.length === 0 ||
-      !tagIds.every(Number.isInteger)
-    ) {
+    if (!Array.isArray(tagIds) || !tagIds.every(Number.isInteger)) {
       throw new InvalidParamsError('tagIds must be a non-empty int array');
     }
     // verify each tag exists and belongs to the user

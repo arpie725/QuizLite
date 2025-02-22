@@ -211,29 +211,29 @@ router.get('/:setId/cards', async (req, res) => {
 
 /// TAGS ------------------------------------------------
 
-/** assigns tags to a study set
- * - expects an array of tagIds
+/** update tags to a study set
+ * - expects an array of tags (id, name)
  * - ensures the set exists and belongs to the user
  * - ensures each tag exists and belongs to the user
- * - connects the tags to the set
+ * - updates the tags to the set
  * - returns the set with the updated tags
  */
-router.post('/:setId/assign-tags', async (req, res) => {
+router.post('/:setId/update-tags', async (req, res) => {
   const userId = req.userId;
   const setId = parseInt(req.params.setId);
-  const { tagIds } = req.body; // expecting an array of tagId
+  const { tags } = req.body; // expecting an array of tags
+  const tagIds = tags.map((tag) => tag.id);
   // interact with the database
   try {
     // verify set exists and belongs to user
     await findAndVerifySet(setId, userId);
     // verify all tags exist and belong to user
-    await findAndVerifyTags(tagIds, userId);
     // connect the tags to the set
     const updatedSet = await prisma.set.update({
       where: { id: setId },
       data: {
         tags: {
-          connect: tagIds.map((id) => ({ id })),
+          set: tagIds.map((id) => ({ id })),
         },
       },
       include: { tags: { omit: { userId: true } } },
@@ -244,7 +244,7 @@ router.post('/:setId/assign-tags', async (req, res) => {
     // return the set with the tags
     return res.status(200).json({
       success: true,
-      message: 'Connected tags to set',
+      message: 'Tags updated for set',
       data: {
         set: updatedSet,
       },
@@ -261,6 +261,7 @@ router.post('/:setId/assign-tags', async (req, res) => {
  * - unconnects the tags to the set
  * - returns the set with all its remaining tags
  */
+/** 
 router.post('/:setId/unassign-tags', async (req, res) => {
   const userId = req.userId;
   const setId = parseInt(req.params.setId);
@@ -296,6 +297,7 @@ router.post('/:setId/unassign-tags', async (req, res) => {
     return handleErrors(er, res);
   }
 });
+*/
 
 /** gets all tags from a study set
  * - ensures the set exists and belongs to the user
