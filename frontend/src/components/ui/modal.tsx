@@ -22,7 +22,6 @@ interface ModalProps {
 }
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-const token = localStorage.getItem('token');
 
 export default function Modal({
   modalSize = 'lg',
@@ -39,6 +38,7 @@ export default function Modal({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
+    const token = localStorage.getItem('token');
     // get all the tags from the user
     const fetchAllTags = async () => {
       setLoading(true);
@@ -81,6 +81,7 @@ export default function Modal({
   };
 
   const handleSave = async () => {
+    const token = localStorage.getItem('token');
     // make API call to save the tags to the current set
     // close the modal
     try {
@@ -101,6 +102,7 @@ export default function Modal({
   };
 
   const handleNewTag = async () => {
+    const token = localStorage.getItem('token');
     // make API call to create a new tag
     // make sure the name is unique!
     try {
