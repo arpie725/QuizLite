@@ -14,7 +14,6 @@ import Modal from '@/components/ui/modal';
 import ToggleSwitch from '@/components/ui/toggle-switch';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-const token = localStorage.getItem('token');
 
 const tagColors = [
   'cyan',
@@ -30,7 +29,6 @@ const tagColors = [
 export default function SpecificSetPage() {
   const params = useParams();
   const setId = params.setId;
-
   const [set, setSet] = useState<Set>();
   const [cards, setCards] = useState<Card[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -50,6 +48,7 @@ export default function SpecificSetPage() {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
     const fetchAllCards = async () => {
       setLoading(true);
       try {
@@ -108,6 +107,7 @@ export default function SpecificSetPage() {
   }, []);
 
   const togglePrivacy = async () => {
+    const token = localStorage.getItem('token');
     try {
       if (!set) {
         throw new Error('Set is undefined!');
@@ -135,7 +135,7 @@ export default function SpecificSetPage() {
   const handleTitleEdit = async () => {
     // make API call to change the title of the set
     // if no change, just exit
-
+    const token = localStorage.getItem('token');
     if (set && title === set.title) {
       setIsEditingTitle(false);
       return;
