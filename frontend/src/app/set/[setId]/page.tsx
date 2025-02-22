@@ -9,8 +9,9 @@ import Tag from '@/models/Tag';
 import TagData from '@/models/TagData';
 import { Header } from '@/sections/HeaderSection';
 import { TagComponent } from '@/components/Tag';
-import { IconPlus } from '@tabler/icons-react';
+import { IconPencil, IconPlus } from '@tabler/icons-react';
 import Modal from '@/components/ui/modal';
+import ToggleSwitch from '@/components/ui/toggle-switch';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const tagColors = [
@@ -106,9 +107,9 @@ export default function SpecificSetPage() {
       <section className='border border-dashed mt-12'>
         <div className='border container'>
           {/* title / editing options */}
-          <div className=''>
+          <div className='flex justify-between'>
             {/* display all tags belonging to the current set */}
-            <div className='top-2 left-2 relative'>
+            <div className='left-2 top-2 relative'>
               <div className='flex gap-4'>
                 <h1 className='text-zinc-300 font-serif text-xl'>Tags:</h1>
                 <div className='flex gap-2 justify-center items-center'>
@@ -143,6 +144,25 @@ export default function SpecificSetPage() {
                   </TagComponent>
                 </div>
               </div>
+            </div>
+            {/* display public toggle + option to edit the set title */}
+            <div className='flex relative top-2 gap-8'>
+              <div className='flex gap-4'>
+                <h3 className='font-geist text-xl text-zinc-300'>isPublic</h3>
+                <ToggleSwitch
+                  onChange={() => {
+                    console.log('SWITCH CHANGED');
+                  }}
+                />
+              </div>
+              <IconPencil
+                className='text-zinc-300 size-8 cursor-pointer'
+                onClick={() => {
+                  console.log(
+                    'TODO: Allow user to edit the name of the study set'
+                  );
+                }}
+              />
             </div>
           </div>
           {/* actual cards / navigations */}
