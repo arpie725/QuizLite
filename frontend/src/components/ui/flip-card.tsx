@@ -9,6 +9,7 @@ interface FlipCardProps extends React.HTMLAttributes<HTMLDivElement> {
   idx: number;
   tot: number;
   rotate?: 'x' | 'y';
+  updateCard: (card: Card) => void;
 }
 
 export default function FlipCard({
@@ -16,6 +17,7 @@ export default function FlipCard({
   idx,
   tot,
   rotate = 'y',
+  updateCard,
   className,
   ...props
 }: FlipCardProps) {
@@ -29,7 +31,7 @@ export default function FlipCard({
     const a = card.answer;
     setQuestion(q);
     setAnswer(a);
-  }, []);
+  }, [card]);
 
   const rotationClass = {
     x: ['[transform:rotateX(180deg)]'],
@@ -51,7 +53,7 @@ export default function FlipCard({
           isOpen={isEditing}
           setIsOpen={setIsEditing}
           card={card}
-          handleSubmit={() => {}}
+          updateCard={updateCard}
         />
       )}
       <div
@@ -70,13 +72,13 @@ export default function FlipCard({
           </div>
           <div className='mt-12 flex flex-col gap-12 text-center'>
             <div className='flex items-center justify-center gap-2'>
+              <h1 className='title-font'>Question:</h1>
               <IconPencil
                 onClick={() => {
                   setIsEditing(true);
                 }}
                 className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
               />
-              <h1 className='title-font'>Question:</h1>
             </div>
             <h3 className='text-zinc-200 font-geist font-bold text-5xl'>
               {question}
@@ -97,7 +99,15 @@ export default function FlipCard({
             </p>
           </div>
           <div className='mt-12 flex flex-col gap-12 text-center'>
-            <h1 className='title-font'>Answer:</h1>
+            <div className='flex items-center justify-center gap-2'>
+              <h1 className='title-font'>Answer:</h1>
+              <IconPencil
+                onClick={() => {
+                  setIsEditing(true);
+                }}
+                className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
+              />
+            </div>
             <h3 className='text-zinc-200 font-geist font-bold text-4xl'>
               {answer}
             </h3>

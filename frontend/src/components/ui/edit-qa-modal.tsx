@@ -16,7 +16,7 @@ interface ModalProps {
   isOpen: boolean;
   card: Card;
   setIsOpen: (value: boolean) => void;
-  handleSubmit: () => void;
+  updateCard: (card: Card) => void;
 }
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -26,7 +26,7 @@ export default function EditQAModal({
   isOpen,
   card,
   setIsOpen,
-  handleSubmit,
+  updateCard,
 }: ModalProps) {
   const [editQuestion, setEditQuestion] = useState('');
   const [editAnswer, setEditAnswer] = useState('');
@@ -42,8 +42,35 @@ export default function EditQAModal({
 
   const handleSave = async () => {
     const token = localStorage.getItem('token');
-    // make API call to save the tags to the current set
-    // close the modal
+    if (
+      editQuestion.trim() === card.question &&
+      editAnswer.trim() === card.answer
+    ) {
+      setIsOpen(false);
+      return;
+    }
+    try {
+      // make API call to save the tags to the current set
+      const { data: res } = await axios.put(
+        `${apiUrl}/card/${card.id}`,
+        {
+          question: editQuestion,
+          answer: editAnswer,
+        },
+        {
+          headers: {
+            Authorization: token,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const { updatedCard } = res.data;
+      updateCard(updatedCard);
+      // close the modal
+      setIsOpen(false);
+    } catch (er) {
+      console.log('ERROR updating the question / answer: ', er);
+    }
   };
 
   return (
@@ -78,9 +105,7 @@ export default function EditQAModal({
                 <div className='flex gap-4 text-lg'>
                   <button
                     className='font-geist text-zinc-300 hover:text-zinc-100 transition duration-150'
-                    onClick={() => {
-                      console.log('TODO: update the question / answer');
-                    }}
+                    onClick={handleSave}
                   >
                     save
                   </button>

@@ -178,6 +178,12 @@ export default function SpecificSetPage() {
     }
   };
 
+  const updateCard = (updatedCard: Card) => {
+    setCards((prevCards) =>
+      prevCards.map((card) => (card.id === updatedCard.id ? updatedCard : card))
+    );
+  };
+
   if (error) {
     return <div className='login-text'>{error}</div>;
   }
@@ -297,6 +303,7 @@ export default function SpecificSetPage() {
                 card={card}
                 idx={idx + 1}
                 tot={cards.length}
+                updateCard={updateCard}
               />
             ))}
           </div>
