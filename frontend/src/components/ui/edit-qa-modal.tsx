@@ -77,10 +77,7 @@ export default function EditQAModal({
     <div className=''>
       <AnimatePresence>
         {isOpen && (
-          <div
-            onDoubleClick={() => setIsOpen(false)}
-            className='fixed rounded-xl inset-0 z-50 flex cursor-pointer items-center justify-center overflow-y-hidden bg-slate-900/20 p-8 backdrop-blur'
-          >
+          <div className='fixed rounded-xl inset-0 z-50 flex cursor-pointer items-center justify-center overflow-y-hidden bg-slate-900/20 p-8 backdrop-blur'>
             <motion.div
               initial={{ scale: 0, rotate: '180deg' }}
               animate={{

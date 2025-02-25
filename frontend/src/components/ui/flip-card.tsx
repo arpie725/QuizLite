@@ -10,6 +10,7 @@ interface FlipCardProps extends React.HTMLAttributes<HTMLDivElement> {
   tot: number;
   rotate?: 'x' | 'y';
   updateCard: (card: Card) => void;
+  onEdit: (card: Card) => void;
 }
 
 export default function FlipCard({
@@ -18,11 +19,11 @@ export default function FlipCard({
   tot,
   rotate = 'y',
   updateCard,
+  onEdit,
   className,
   ...props
 }: FlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
 
@@ -47,15 +48,6 @@ export default function FlipCard({
       className={cn('group w-full h-96 [perspective:1000px]', className)}
       {...props}
     >
-      {card && (
-        <EditQAModal
-          modalSize='lg'
-          isOpen={isEditing}
-          setIsOpen={setIsEditing}
-          card={card}
-          updateCard={updateCard}
-        />
-      )}
       <div
         className={cn(
           'relative h-full rounded-2xl transition-all duration-700 [transform-style:preserve-3d]',
@@ -74,9 +66,7 @@ export default function FlipCard({
             <div className='flex items-center justify-center gap-2'>
               <h1 className='title-font'>Question:</h1>
               <IconPencil
-                onClick={() => {
-                  setIsEditing(true);
-                }}
+                onClick={() => onEdit(card)}
                 className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
               />
             </div>
@@ -102,9 +92,7 @@ export default function FlipCard({
             <div className='flex items-center justify-center gap-2'>
               <h1 className='title-font'>Answer:</h1>
               <IconPencil
-                onClick={() => {
-                  setIsEditing(true);
-                }}
+                onClick={() => onEdit(card)}
                 className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
               />
             </div>

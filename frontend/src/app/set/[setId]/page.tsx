@@ -13,6 +13,8 @@ import { IconPencil, IconPlus } from '@tabler/icons-react';
 import TagModal from '@/components/ui/tag-modal';
 import ToggleSwitch from '@/components/ui/toggle-switch';
 import FlipCard from '@/components/ui/flip-card';
+import EditQAModal from '@/components/ui/edit-qa-modal';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -32,15 +34,19 @@ export default function SpecificSetPage() {
   const setId = params.setId;
   const [set, setSet] = useState<Set>();
   const [cards, setCards] = useState<Card[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [tags, setTags] = useState<Tag[]>([]);
   const [isPublic, setIsPublic] = useState(false);
   const [cardCount, setCardCount] = useState(0);
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [title, setTitle] = useState('');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditing, setIsEditing] = useState(false); // editing the q / a of a card
+  const [editingCard, setEditingCard] = useState<Card | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [existsError, setExistsError] = useState(false);
+  const [direction, setDirection] = useState(0);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -65,7 +71,7 @@ export default function SpecificSetPage() {
         // get data from response
         const cardsArray = res.data.cards;
         const cards = cardsArray.map((card: CardData) => new Card(card));
-        const cardCount = res.data.cardCount;
+        const cardcount = res.data.cardCount;
         const set = res.data.set;
         const title = set.title;
         const ispublic = set.isPublic;
@@ -73,7 +79,7 @@ export default function SpecificSetPage() {
         setSet(set);
         setTitle(title);
         setIsPublic(ispublic);
-        setCardCount(cardCount);
+        setCardCount(cardcount);
         setCards(cards);
       } catch (er) {
         console.log('Error fetching cards:', er);
@@ -182,6 +188,36 @@ export default function SpecificSetPage() {
     setCards((prevCards) =>
       prevCards.map((card) => (card.id === updatedCard.id ? updatedCard : card))
     );
+  };
+
+  const handleEditCard = (card: Card) => {
+    setEditingCard(card);
+    setIsEditing(true);
+  };
+
+  const goToNextCard = () => {
+    setDirection(1);
+    setCurrentIndex((prev) => (prev + 1) % cards.length);
+  };
+
+  const goToPreviousCard = () => {
+    setDirection(-1);
+    setCurrentIndex((prev) => (prev - 1 + cards.length) % cards.length);
+  };
+
+  const cardVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      x: direction > 0 ? -1000 : 1000,
+      opacity: 0,
+    }),
   };
 
   if (error) {
@@ -296,17 +332,62 @@ export default function SpecificSetPage() {
             </div>
           </div>
           {/* actual cards / navigations */}
-          <div className='flex flex-col mt-32 gap-24'>
-            {cards.map((card, idx) => (
-              <FlipCard
-                key={card.id}
-                card={card}
-                idx={idx + 1}
-                tot={cards.length}
-                updateCard={updateCard}
-              />
-            ))}
+          <div className='flex flex-col my-32 overflow-hidden px-20 py-32'>
+            <div className='w-full h-96 relative'>
+              {cards.length > 0 && (
+                <AnimatePresence
+                  initial={false}
+                  custom={direction}
+                >
+                  <motion.div
+                    key={cards[currentIndex].id}
+                    variants={cardVariants}
+                    initial='enter'
+                    animate='center'
+                    exit='exit'
+                    custom={direction}
+                    transition={{
+                      x: { type: 'spring', stiffness: 300, damping: 30 },
+                      opacity: { duration: 0.2 },
+                    }}
+                    className='absolute w-full h-full'
+                  >
+                    <FlipCard
+                      key={cards[currentIndex].id}
+                      card={cards[currentIndex]}
+                      idx={currentIndex + 1}
+                      tot={cards.length}
+                      updateCard={updateCard}
+                      onEdit={handleEditCard}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              )}
+            </div>
+            <div className='mt-4 flex font-geist text-2xl gap-4 justify-center items-center'>
+              <button
+                onClick={goToPreviousCard}
+                className='bg-zinc-300 rounded-full px-3'
+              >
+                {'<'}
+              </button>
+              <button
+                onClick={goToNextCard}
+                className='bg-zinc-300 rounded-full px-3'
+              >
+                {'>'}
+              </button>
+            </div>
           </div>
+          {editingCard && (
+            <EditQAModal
+              modalSize='lg'
+              isOpen={isEditing}
+              setIsOpen={setIsEditing}
+              card={editingCard}
+              updateCard={updateCard}
+            />
+          )}
         </div>
       </section>
     </>
