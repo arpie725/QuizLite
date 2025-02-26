@@ -13,7 +13,7 @@ import {
   useTransform,
 } from 'framer-motion';
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export const FloatingDock = ({
   items,
@@ -118,7 +118,7 @@ const FloatingDockDesktop = ({
       onMouseMove={(e) => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        'mx-auto hidden md:flex h-16 gap-4 items-end rounded-2xl bg-gray-50 dark:bg-neutral-900 px-4 pb-3',
+        'mx-auto hidden md:flex h-16 gap-4 items-end rounded-2xl bg-neutral-500/70 backdrop-blur-sm px-4 pb-3',
         className
       )}
     >
@@ -193,7 +193,7 @@ function IconContainer({
       style={{ width, height }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className='cursor-pointer aspect-square rounded-full bg-gray-200 dark:bg-zinc-700 flex items-center justify-center relative'
+      className='cursor-pointer aspect-square rounded-full bg-zinc-200 flex items-center justify-center relative'
     >
       <AnimatePresence>
         {hovered && (
@@ -201,7 +201,7 @@ function IconContainer({
             initial={{ opacity: 0, y: 10, x: '-50%' }}
             animate={{ opacity: 1, y: 0, x: '-50%' }}
             exit={{ opacity: 0, y: 2, x: '-50%' }}
-            className='font-geist px-2 py-0.5 whitespace-pre rounded-md bg-gray-100 border dark:bg-neutral-800 dark:border-neutral-900 dark:text-white border-gray-200 text-neutral-700 absolute left-1/2 -translate-x-1/2 -top-8 w-fit text-xs'
+            className='font-geist px-2 py-0.5 whitespace-pre rounded-md bg-zinc-200 border  border-gray-200 text-neutral-700 absolute left-1/2 -translate-x-1/2 -top-8 w-fit text-xs'
           >
             {title}
           </motion.div>

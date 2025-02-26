@@ -9,19 +9,16 @@ import { SetTitleTagsSection } from './sections/SetTitleTagsSection';
 import { DisplayCardSection } from './sections/DisplayCardSection';
 import {
   IconArrowsShuffle,
-  IconBrandGithub,
-  IconBrandX,
   IconCheck,
-  IconCircleDashedPlus,
-  IconExchange,
+  IconLayersSubtract,
   IconList,
-  IconNewSection,
   IconPlus,
-  IconTerminal2,
+  IconRectangle,
   IconX,
 } from '@tabler/icons-react';
 import { FloatingDock } from '@/components/ui/floating-dock';
 import { twMerge } from 'tailwind-merge';
+import { DisplayQAWithEdit } from '@/components/DisplayQAWithEdit';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -29,6 +26,7 @@ export default function SpecificSetPage() {
   const params = useParams();
   const setId = params.setId ? parseInt(params.setId.toString()) : null;
   const [cards, setCards] = useState<Card[]>([]);
+  const [showAllCards, setShowAllCards] = useState(true);
   const [isEditing, setIsEditing] = useState(false); // editing the q / a of a card
   const [editingCard, setEditingCard] = useState<Card | null>(null);
   const [isShuffled, setIsShuffled] = useState(false);
@@ -76,6 +74,15 @@ export default function SpecificSetPage() {
     );
   };
 
+  const handleCardMenu = () => {
+    console.log('card menu');
+    // if shuffled, unshuffle
+    if (isShuffled) {
+      handleShuffle();
+    }
+    setShowAllCards((prev) => !prev);
+  };
+
   const handleShuffle = () => {
     if (isShuffled) {
       // unshuffle
@@ -102,17 +109,29 @@ export default function SpecificSetPage() {
     }
   };
 
-  const links = [
+  const handleAddCard = () => {
+    console.log('add card');
+  };
+
+  const handleWrongAnswer = () => {
+    console.log('wrong');
+  };
+
+  const handleCorrectAnswer = () => {
+    console.log('correct');
+  };
+
+  const linksBase = [
     {
-      title: 'All Cards',
-      icon: (
-        <IconList
-          className={twMerge(
-            'h-full w-full text-neutral-500 dark:text-neutral-300'
-          )}
+      title: showAllCards ? 'Individual Card' : 'All Cards',
+      icon: showAllCards ? (
+        <IconLayersSubtract
+          className={twMerge('h-full w-full text-neutral-700')}
         />
+      ) : (
+        <IconList className={twMerge('h-full w-full text-neutral-700')} />
       ),
-      onClick: () => console.log('clicked navbar item'),
+      onClick: handleCardMenu,
     },
 
     {
@@ -121,31 +140,36 @@ export default function SpecificSetPage() {
         <IconArrowsShuffle
           className={twMerge(
             'h-full w-full',
-            isShuffled ? 'text-cyan-500' : 'text-neutral-300'
+            isShuffled ? 'text-cyan-500' : 'text-neutral-700'
           )}
         />
       ),
       onClick: handleShuffle,
-      isShuffled: isShuffled,
     },
     {
       title: 'Add Card',
-      icon: (
-        <IconPlus className='h-full w-full text-neutral-500 dark:text-neutral-300' />
-      ),
-      onClick: () => console.log('clicked navbar item'),
+      icon: <IconPlus className='h-full w-full text-neutral-700' />,
+      onClick: handleAddCard,
     },
     {
       title: 'Wrong',
       icon: <IconX className='h-full w-full text-red-500' />,
-      onClick: () => console.log('clicked navbar item'),
+      onClick: handleWrongAnswer,
     },
     {
       title: 'Correct',
       icon: <IconCheck className='h-full w-full text-lime-500' />,
-      onClick: () => console.log('clicked navbar item'),
+      onClick: handleCorrectAnswer,
     },
   ];
+
+  const links = linksBase.filter(
+    (link) =>
+      !showAllCards ||
+      (link.title !== 'Wrong' &&
+        link.title !== 'Correct' &&
+        link.title != 'Shuffle')
+  );
 
   if (error) {
     return <div className='login-text'>{error}</div>;
@@ -156,15 +180,36 @@ export default function SpecificSetPage() {
   return (
     <>
       {setId && <SetTitleTagsSection setId={setId} />}
-      {setId && (
+      {!showAllCards && (
         <DisplayCardSection
           cards={cards}
           handleEditCard={handleEditCard}
           updateCard={updateCard}
         />
       )}
+      {showAllCards && (
+        <section className='border border-dashed'>
+          <div className='my-24 container border'>
+            {/* show all cards */}
+            <div className='flex flex-col gap-8'>
+              {cards.map((card, idx) => (
+                <div
+                  key={card.id}
+                  className='flex'
+                >
+                  <DisplayQAWithEdit
+                    updateCard={updateCard}
+                    card={card}
+                    idx={idx + 1} // 1 indexed
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
-      <div className='flex items-start justify-center px-4 py-4'>
+      <div className='fixed bottom-0 left-0 w-full flex items-center justify-center px-4 py-4'>
         <FloatingDock items={links} />
       </div>
 

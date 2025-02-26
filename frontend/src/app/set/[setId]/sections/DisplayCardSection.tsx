@@ -75,8 +75,8 @@ export const DisplayCardSection = ({
   }, [cards]);
 
   return (
-    <section className=''>
-      <div className='container'>
+    <section className='border border-dashed'>
+      <div className='border container'>
         <div className='flex flex-col my-32 overflow-hidden px-20 pt-32'>
           <div className='w-full h-96 relative'>
             {cards.length > 0 && (

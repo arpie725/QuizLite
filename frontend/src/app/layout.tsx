@@ -80,7 +80,7 @@ export default function RootLayout({
               <Sidebar
                 open={open}
                 setOpen={setOpen}
-                animate={false} // for dev (animates the sidebar)
+                animate={true} // for dev (animates the sidebar)
               >
                 <SidebarBody className='h-full justify-between gap-10'>
                   {/* side bar content */}
