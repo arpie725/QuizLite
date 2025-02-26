@@ -11,6 +11,7 @@ interface FlipCardProps extends React.HTMLAttributes<HTMLDivElement> {
   rotate?: 'x' | 'y';
   updateCard: (card: Card) => void;
   onEdit: (card: Card) => void;
+  flipCard?: (Flipfn: () => void) => void;
 }
 
 export default function FlipCard({
@@ -20,6 +21,7 @@ export default function FlipCard({
   rotate = 'y',
   updateCard,
   onEdit,
+  flipCard,
   className,
   ...props
 }: FlipCardProps) {
@@ -33,6 +35,12 @@ export default function FlipCard({
     setQuestion(q);
     setAnswer(a);
   }, [card]);
+
+  useEffect(() => {
+    if (flipCard) {
+      flipCard(() => setIsFlipped((prev) => !prev));
+    }
+  });
 
   const rotationClass = {
     x: ['[transform:rotateX(180deg)]'],
