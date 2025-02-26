@@ -7,6 +7,21 @@ import axios from 'axios';
 import EditQAModal from '@/components/ui/edit-qa-modal';
 import { SetTitleTagsSection } from './sections/SetTitleTagsSection';
 import { DisplayCardSection } from './sections/DisplayCardSection';
+import {
+  IconArrowsShuffle,
+  IconBrandGithub,
+  IconBrandX,
+  IconCheck,
+  IconCircleDashedPlus,
+  IconExchange,
+  IconList,
+  IconNewSection,
+  IconPlus,
+  IconTerminal2,
+  IconX,
+} from '@tabler/icons-react';
+import { FloatingDock } from '@/components/ui/floating-dock';
+import { twMerge } from 'tailwind-merge';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -16,6 +31,7 @@ export default function SpecificSetPage() {
   const [cards, setCards] = useState<Card[]>([]);
   const [isEditing, setIsEditing] = useState(false); // editing the q / a of a card
   const [editingCard, setEditingCard] = useState<Card | null>(null);
+  const [isShuffled, setIsShuffled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,6 +76,77 @@ export default function SpecificSetPage() {
     );
   };
 
+  const handleShuffle = () => {
+    if (isShuffled) {
+      // unshuffle
+      setCards((prevCards) => {
+        const sortedCards = [...prevCards].sort(
+          (a: Card, b: Card) => a.id - b.id
+        );
+        return sortedCards;
+      });
+      setIsShuffled(false);
+    } else {
+      setCards((prevCards) => {
+        const shuffledCards = [...prevCards];
+        for (let i = shuffledCards.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffledCards[i], shuffledCards[j]] = [
+            shuffledCards[j],
+            shuffledCards[i],
+          ];
+        }
+        return shuffledCards;
+      });
+      setIsShuffled(true);
+    }
+  };
+
+  const links = [
+    {
+      title: 'All Cards',
+      icon: (
+        <IconList
+          className={twMerge(
+            'h-full w-full text-neutral-500 dark:text-neutral-300'
+          )}
+        />
+      ),
+      onClick: () => console.log('clicked navbar item'),
+    },
+
+    {
+      title: 'Shuffle',
+      icon: (
+        <IconArrowsShuffle
+          className={twMerge(
+            'h-full w-full',
+            isShuffled ? 'text-cyan-500' : 'text-neutral-300'
+          )}
+        />
+      ),
+      onClick: handleShuffle,
+      isShuffled: isShuffled,
+    },
+    {
+      title: 'Add Card',
+      icon: (
+        <IconPlus className='h-full w-full text-neutral-500 dark:text-neutral-300' />
+      ),
+      onClick: () => console.log('clicked navbar item'),
+    },
+    {
+      title: 'Wrong',
+      icon: <IconX className='h-full w-full text-red-500' />,
+      onClick: () => console.log('clicked navbar item'),
+    },
+    {
+      title: 'Correct',
+      icon: <IconCheck className='h-full w-full text-lime-500' />,
+      onClick: () => console.log('clicked navbar item'),
+    },
+  ];
+
   if (error) {
     return <div className='login-text'>{error}</div>;
   }
@@ -76,6 +163,11 @@ export default function SpecificSetPage() {
           updateCard={updateCard}
         />
       )}
+
+      <div className='flex items-start justify-center px-4 py-4'>
+        <FloatingDock items={links} />
+      </div>
+
       {editingCard && (
         <EditQAModal
           modalSize='lg'

@@ -1,20 +1,15 @@
 'use client';
 import Card from '@/models/Card';
 import CardData from '@/models/CardData';
-import { useParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Set from '@/models/Set';
 import Tag from '@/models/Tag';
 import TagData from '@/models/TagData';
-import { Header } from '@/sections/HeaderSection';
 import { TagComponent } from '@/components/Tag';
 import { IconPencil, IconPlus } from '@tabler/icons-react';
 import TagModal from '@/components/ui/tag-modal';
 import ToggleSwitch from '@/components/ui/toggle-switch';
-import FlipCard from '@/components/ui/flip-card';
-import EditQAModal from '@/components/ui/edit-qa-modal';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const tagColors = [

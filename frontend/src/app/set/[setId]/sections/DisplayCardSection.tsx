@@ -52,6 +52,7 @@ export const DisplayCardSection = ({
           break;
         case 'ArrowLeft':
           goToPreviousCard();
+          break;
         case 'ArrowUp':
         case 'ArrowDown':
           if (flipRef.current) {
@@ -69,10 +70,14 @@ export const DisplayCardSection = ({
     };
   }, []);
 
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [cards]);
+
   return (
-    <section className='border border-dashed'>
-      <div className='border container'>
-        <div className='flex flex-col my-32 overflow-hidden px-20 py-32'>
+    <section className=''>
+      <div className='container'>
+        <div className='flex flex-col my-32 overflow-hidden px-20 pt-32'>
           <div className='w-full h-96 relative'>
             {cards.length > 0 && (
               <AnimatePresence
