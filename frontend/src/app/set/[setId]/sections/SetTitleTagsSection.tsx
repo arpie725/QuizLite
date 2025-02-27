@@ -10,6 +10,7 @@ import { TagComponent } from '@/components/Tag';
 import { IconPencil, IconPlus } from '@tabler/icons-react';
 import TagModal from '@/components/ui/tag-modal';
 import ToggleSwitch from '@/components/ui/toggle-switch';
+import { twMerge } from 'tailwind-merge';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const tagColors = [
@@ -39,6 +40,7 @@ export const SetTitleTagsSection = ({ setId }: SetTitleTagsSectionProps) => {
   const [error, setError] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const spanRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -96,6 +98,10 @@ export const SetTitleTagsSection = ({ setId }: SetTitleTagsSectionProps) => {
     fetchTags();
     fetchTitle();
   }, []);
+
+  const inputWidth = isEditingTitle
+    ? undefined
+    : `${spanRef.current?.offsetWidth}px`;
 
   const handleTitleEdit = async () => {
     // make API call to change the title of the set
@@ -212,50 +218,52 @@ export const SetTitleTagsSection = ({ setId }: SetTitleTagsSectionProps) => {
                 </div>
               </div>
             </div>
-            <div className='flex max-w-lg'>
-              {!isEditingTitle && (
-                <h3 className='font-sans text-zinc-300 text-5xl font-bold p-4'>
+            <div className='flex'>
+              <div className='flex gap-4 p-4'>
+                <span
+                  ref={spanRef}
+                  className='absolute invisible font-sans text-5xl font-bold text-zinc-200 p-2'
+                  style={{ whiteSpace: 'nowrap' }}
+                >
                   {title}
-                </h3>
-              )}
-              {isEditingTitle && (
-                <div>
-                  <div className='flex gap-4'>
-                    <input
-                      ref={inputRef}
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className='text-zinc-200 font-sans text-5xl font-bold user-input-bg w-2/3'
-                    ></input>
-                    <div className='flex py-4 justify-center items-center'>
-                      <button
-                        onClick={handleTitleEdit}
-                        className='flex justify-center items-center px-2 py-1 rounded bg-white font-semibold font-geist text-black-500 text-xl transition-opacity hover:opacity-80'
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </div>
-                  {existsError && (
-                    <h1 className='mt-2 text-red-500 font-geist text-lg'>
-                      Set already exists!
-                    </h1>
+                </span>
+                <input
+                  ref={inputRef}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  readOnly={!isEditingTitle}
+                  className={twMerge(
+                    'flex text-zinc-200 font-sans text-5xl p-2 font-bold transition duration-250',
+                    isEditingTitle
+                      ? 'bg-zinc-700 rounded px-2 outline-none focus:outline focus:outline-fuchsia-500/50'
+                      : 'bg-transparent cursor-default outline-none p-2'
                   )}
-                </div>
-              )}
-              {!isEditingTitle && (
-                <IconPencil
-                  className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
-                  onClick={() => {
-                    setIsEditingTitle(true);
-                    setTimeout(() => {
-                      if (inputRef.current) {
-                        inputRef.current.focus();
-                      }
-                    });
-                  }}
+                  style={!isEditingTitle ? { width: inputWidth } : undefined}
                 />
-              )}
+                {!isEditingTitle && (
+                  <IconPencil
+                    className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
+                    onClick={() => {
+                      setIsEditingTitle(true);
+                      setTimeout(() => {
+                        if (inputRef.current) {
+                          inputRef.current.focus();
+                        }
+                      });
+                    }}
+                  />
+                )}
+                {isEditingTitle && (
+                  <div className='flex py-4 justify-center items-center'>
+                    <button
+                      onClick={handleTitleEdit}
+                      className='flex justify-center items-center px-2 py-1 rounded bg-white font-semibold font-geist text-black-500 text-xl transition-opacity hover:opacity-80'
+                    >
+                      Save
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
