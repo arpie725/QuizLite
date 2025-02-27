@@ -19,6 +19,8 @@ import {
 import { FloatingDock } from '@/components/ui/floating-dock';
 import { twMerge } from 'tailwind-merge';
 import { DisplayQAWithEdit } from '@/components/DisplayQAWithEdit';
+import { NewCardEdit } from '@/components/NewCardEdit';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -28,10 +30,13 @@ export default function SpecificSetPage() {
   const [cards, setCards] = useState<Card[]>([]);
   const [showAllCards, setShowAllCards] = useState(true);
   const [isEditing, setIsEditing] = useState(false); // editing the q / a of a card
+  const [isCreatingCard, setIsCreatingCard] = useState(false);
   const [editingCard, setEditingCard] = useState<Card | null>(null);
   const [isShuffled, setIsShuffled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const newCardEditRef = useRef<HTMLDivElement>(null);
 
   const handleEditCard = (card: Card) => {
     setEditingCard(card);
@@ -68,10 +73,23 @@ export default function SpecificSetPage() {
     fetchAllCards();
   }, []);
 
+  useEffect(() => {
+    if (isCreatingCard && newCardEditRef.current) {
+      newCardEditRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [isCreatingCard]);
+
   const updateCard = (updatedCard: Card) => {
     setCards((prevCards) =>
       prevCards.map((card) => (card.id === updatedCard.id ? updatedCard : card))
     );
+  };
+
+  const addCard = (newCard: Card) => {
+    setCards((prevCards) => [...prevCards, newCard]);
   };
 
   const handleCardMenu = () => {
@@ -79,6 +97,9 @@ export default function SpecificSetPage() {
     // if shuffled, unshuffle
     if (isShuffled) {
       handleShuffle();
+    }
+    if (showAllCards) {
+      setIsCreatingCard(false);
     }
     setShowAllCards((prev) => !prev);
   };
@@ -110,7 +131,14 @@ export default function SpecificSetPage() {
   };
 
   const handleAddCard = () => {
-    console.log('add card');
+    // open the card menu
+    // if shuffled, unshuffle
+    if (isShuffled) {
+      handleShuffle();
+    }
+    setShowAllCards(true);
+    // set isCreatingCard to true
+    setIsCreatingCard(true);
   };
 
   const handleWrongAnswer = () => {
@@ -204,6 +232,24 @@ export default function SpecificSetPage() {
                   />
                 </div>
               ))}
+              {/* add new card here */}
+              <AnimatePresence>
+                {setId && isCreatingCard && (
+                  <motion.div
+                    ref={newCardEditRef}
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <NewCardEdit
+                      setId={setId}
+                      isOpen={isCreatingCard}
+                      setIsOpen={setIsCreatingCard}
+                      addCard={addCard}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </section>
