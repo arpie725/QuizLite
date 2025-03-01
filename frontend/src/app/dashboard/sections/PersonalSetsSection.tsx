@@ -141,13 +141,14 @@ export const PersonalSetsSection = () => {
     } catch (er) {}
   };
 
-  const filteredSets = sets
-    .filter((set) => set.title.toLowerCase().includes(searchTerm.toLowerCase()))
-    .sort((a: Set, b: Set) => {
-      if (a.isFavorite && !b.isFavorite) return -1;
-      if (!a.isFavorite && b.isFavorite) return 1;
-      return a.id - b.id;
-    });
+  const filteredSets = sets.filter((set) =>
+    set.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  // .sort((a: Set, b: Set) => {
+  //   if (a.isFavorite && !b.isFavorite) return -1;
+  //   if (!a.isFavorite && b.isFavorite) return 1;
+  //   return a.id - b.id;
+  // });
 
   // on initial load
   useEffect(() => {
@@ -166,7 +167,7 @@ export const PersonalSetsSection = () => {
         const sortedSets = sets.sort((a: Set, b: Set) => {
           if (a.isFavorite && !b.isFavorite) return -1;
           if (!a.isFavorite && b.isFavorite) return 1;
-          return a.id - b.id;
+          return b.id - a.id;
         });
 
         setSets(sortedSets);
@@ -359,18 +360,6 @@ export const PersonalSetsSection = () => {
             </DisplayCard>
           ))}
         </DisplayCardBackground>
-
-        {/* for dev */}
-        <div className='mt-24 mb-8 border max-w-sm mx-auto flex flex-col p-4'>
-          <h1 className='mb-4 border-b login-text'>Sets:</h1>
-          {sets.map((set, index) => (
-            <div key={index}>
-              <h1 className='font-geist text-xl text-zinc-300 font-bold'>
-                {set.title}
-              </h1>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );
