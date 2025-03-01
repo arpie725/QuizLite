@@ -106,7 +106,10 @@ export default function FlipCard({
             </p>
           </div>
           <div className='absolute top-2 right-2'>
-            <p className='font-geist text-zinc-500 text-lg'>{status}</p>
+            <p className='font-geist text-zinc-500 text-3xl'>
+              {status === 'CORRECT' && '✅'}
+              {status === 'WRONG' && '❌'}
+            </p>
           </div>
           <div className='mt-12 flex flex-col gap-12 text-center'>
             <div className='flex items-center justify-center gap-2'>
