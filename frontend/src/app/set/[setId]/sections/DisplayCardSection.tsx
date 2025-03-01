@@ -8,12 +8,14 @@ interface DisplayCardSectionProps {
   cards: Card[];
   handleEditCard: (card: Card) => void;
   updateCard: (card: Card) => void;
+  onCurrentCardChange: (card: Card) => void;
 }
 
 export const DisplayCardSection = ({
   cards,
   handleEditCard,
   updateCard,
+  onCurrentCardChange,
 }: DisplayCardSectionProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
@@ -71,8 +73,11 @@ export const DisplayCardSection = ({
   }, []);
 
   useEffect(() => {
-    setCurrentIndex(0);
-  }, [cards]);
+    // setCurrentIndex(0);
+    if (cards.length > 0) {
+      onCurrentCardChange(cards[currentIndex]);
+    }
+  }, [cards, onCurrentCardChange, currentIndex]);
 
   return (
     <section className='border border-dashed'>

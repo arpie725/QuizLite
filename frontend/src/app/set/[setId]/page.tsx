@@ -28,7 +28,8 @@ export default function SpecificSetPage() {
   const params = useParams();
   const setId = params.setId ? parseInt(params.setId.toString()) : null;
   const [cards, setCards] = useState<Card[]>([]);
-  const [showAllCards, setShowAllCards] = useState(true);
+  const [currentCard, setCurrentCard] = useState<Card | null>(null);
+  const [showAllCards, setShowAllCards] = useState(false);
   const [isEditing, setIsEditing] = useState(false); // editing the q / a of a card
   const [isCreatingCard, setIsCreatingCard] = useState(false);
   const [editingCard, setEditingCard] = useState<Card | null>(null);
@@ -62,6 +63,7 @@ export default function SpecificSetPage() {
         const cards = cardsArray.map((card: CardData) => new Card(card));
         cards.sort((a: Card, b: Card) => a.id - b.id);
         setCards(cards);
+        setCurrentCard(cards.length > 0 ? cards[0] : null);
       } catch (er) {
         console.log('Error fetching cards:', er);
         setError(`ERROR: ${(er as any).response.data.message}`);
@@ -86,6 +88,9 @@ export default function SpecificSetPage() {
     setCards((prevCards) =>
       prevCards.map((card) => (card.id === updatedCard.id ? updatedCard : card))
     );
+    if (currentCard?.id === updatedCard.id) {
+      setCurrentCard(updatedCard);
+    }
   };
 
   const addCard = (newCard: Card) => {
@@ -146,11 +151,41 @@ export default function SpecificSetPage() {
   };
 
   const handleWrongAnswer = () => {
-    console.log('wrong');
+    apiCardStatus('WRONG');
   };
 
   const handleCorrectAnswer = () => {
-    console.log('correct');
+    apiCardStatus('CORRECT');
+  };
+
+  const apiCardStatus = async (status: string) => {
+    console.log('Changing status to ', status);
+    // should set isComplete to true
+    const token = localStorage.getItem('token');
+    if (!currentCard) return;
+    try {
+      // update the card
+      const { data: res } = await axios.put(
+        `${apiUrl}/card/${currentCard.id}`,
+        {
+          status: status,
+        },
+        {
+          headers: {
+            Authorization: token,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const updatedCard = new Card(res.data.updatedCard);
+      updateCard(updatedCard);
+    } catch (er) {
+      console.log('error setting isComplete to True: ', er);
+    }
+  };
+
+  const handleCurrentCardChange = (card: Card) => {
+    setCurrentCard(card);
   };
 
   const linksBase = [
@@ -217,6 +252,7 @@ export default function SpecificSetPage() {
           cards={cards}
           handleEditCard={handleEditCard}
           updateCard={updateCard}
+          onCurrentCardChange={handleCurrentCardChange}
         />
       )}
       {showAllCards && (

@@ -44,11 +44,18 @@ model Set {
   @@unique([title, userId])
 }
 
+
+enum CompletionStatus {
+  NOT_ASSESSED
+  CORRECT
+  WRONG
+}
+
 model Card {
   id          Int       @id @default(autoincrement())
   question    String
   answer      String
-  isComplete  Boolean   @default(false)
+  status      CompletionStatus    @default(NOT_ASSESSED)
   setId       Int
   set         Set       @relation(fields: [setId], references: [id], onDelete: Cascade)
 

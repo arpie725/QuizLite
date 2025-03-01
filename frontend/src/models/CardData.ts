@@ -2,7 +2,7 @@ interface CardData {
   id: number;
   question: string;
   answer: string;
-  isComplete: boolean;
+  status: 'NOT_ASSESSED' | 'CORRECT' | 'WRONG';
   setId: number;
 }
 

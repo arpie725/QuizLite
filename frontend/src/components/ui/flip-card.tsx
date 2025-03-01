@@ -28,12 +28,15 @@ export default function FlipCard({
   const [isFlipped, setIsFlipped] = useState(false);
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
+  const [status, setStatus] = useState('');
 
   useEffect(() => {
     const q = card.question;
     const a = card.answer;
+    const s = card.status;
     setQuestion(q);
     setAnswer(a);
+    setStatus(s);
   }, [card]);
 
   useEffect(() => {
@@ -70,6 +73,12 @@ export default function FlipCard({
               <span className='text-zinc-300'>{idx}</span>/{tot}
             </p>
           </div>
+          <div className='absolute top-2 right-2'>
+            <p className='font-geist text-zinc-500 text-3xl'>
+              {status === 'CORRECT' && '✅'}
+              {status === 'WRONG' && '❌'}
+            </p>
+          </div>
           <div className='mt-12 flex flex-col gap-12 text-center'>
             <div className='flex items-center justify-center gap-2'>
               <h1 className='title-font'>Question:</h1>
@@ -95,6 +104,9 @@ export default function FlipCard({
             <p className='font-geist text-zinc-500 text-lg'>
               <span className='text-zinc-300'>{idx}</span>/{tot}
             </p>
+          </div>
+          <div className='absolute top-2 right-2'>
+            <p className='font-geist text-zinc-500 text-lg'>{status}</p>
           </div>
           <div className='mt-12 flex flex-col gap-12 text-center'>
             <div className='flex items-center justify-center gap-2'>

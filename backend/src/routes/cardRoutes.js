@@ -67,7 +67,7 @@ router.post('/:setId', async (req, res) => {
  * - returns the edited card
  */
 router.put('/:cardId', async (req, res) => {
-  const { question: rawQuestion, answer: rawAnswer, isComplete } = req.body;
+  const { question: rawQuestion, answer: rawAnswer, status } = req.body;
   const userId = req.userId;
   const cardId = parseInt(req.params.cardId);
   // interact with the database
@@ -105,7 +105,7 @@ router.put('/:cardId', async (req, res) => {
       data: {
         question,
         answer,
-        isComplete,
+        status,
       },
     });
     // return the updated card

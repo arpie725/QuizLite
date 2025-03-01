@@ -4,14 +4,14 @@ class Card {
   id: number;
   question: string;
   answer: string;
-  isComplete: boolean;
+  status: 'NOT_ASSESSED' | 'CORRECT' | 'WRONG';
   setId: number;
-  
+
   constructor(data: CardData) {
     this.id = data.id;
     this.question = data.question;
     this.answer = data.answer;
-    this.isComplete = data.isComplete; // can this be undefined?
+    this.status = data.status || 'NOT_ASSESSED'; // can this be undefined?
     this.setId = data.setId;
   }
 }
