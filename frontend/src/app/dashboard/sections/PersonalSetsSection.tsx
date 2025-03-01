@@ -9,6 +9,7 @@ import { twMerge } from 'tailwind-merge';
 import { DisplayCard } from '@/components/DisplayCard';
 import { DisplayCardBackground } from '@/components/DisplayCardBackground';
 import { NewSetUpload } from '@/components/ui/new-set-upload';
+import ToggleSwitch from '@/components/ui/toggle-switch';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const token = localStorage.getItem('token');
@@ -19,11 +20,15 @@ export const PersonalSetsSection = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [title, setTitle] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
   const [editingSetId, setEditingSetId] = useState(-1);
   const [deletingSetId, setDeletingSetId] = useState(-1);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [newSetError, setNewSetError] = useState<string | null>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const h3Ref = useRef<HTMLHeadingElement>(null);
@@ -150,6 +155,37 @@ export const PersonalSetsSection = () => {
   //   return a.id - b.id;
   // });
 
+  const handleAddNewSet = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      // create the new set (newTitle, isPublic)
+      const { data: res } = await axios.post(
+        `${apiUrl}/study-set/`,
+        {
+          title: newTitle,
+          isPublic,
+        },
+        {
+          headers: {
+            Authorization: token,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log(res);
+      const newSet = res.data.set;
+      // bring the user to that newly created set page
+      router.push(`/set/${newSet.id}`);
+    } catch (er) {
+      console.log('Error creating a new set: ', er);
+      if (axios.isAxiosError(er) && er.response) {
+        setNewSetError(er.response.data.message);
+      } else {
+        setNewSetError('An unexpected error occurred');
+      }
+    }
+  };
+
   // on initial load
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -223,7 +259,7 @@ export const PersonalSetsSection = () => {
   return (
     <section className='mt-12 border border-dashed'>
       <div className='container border'>
-        <div className='mt-4 flex gap-12 py-4'>
+        <div className='mt-4 flex justify-center items-center gap-12 py-4'>
           <h1 className='login-text'>Your Study Sets</h1>
           <input
             className='user-input-bg user-input-text placeholder-zinc-500'
@@ -231,10 +267,16 @@ export const PersonalSetsSection = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder='Search...'
           />
+          <button
+            onClick={() => setIsAdding(true)}
+            className='px-2 py-1 bg-zinc-300 rounded font-geist hover:bg-fuchsia-300 '
+          >
+            New Set +
+          </button>
         </div>
         {/* TODO: Turn this into a component similar to Card.tsx */}
         <DisplayCardBackground
-          className={twMerge(!isSetsEmpty && 'grid grid-cols-3')}
+          className={twMerge(!isSetsEmpty && 'grid grid-cols-2 lg:grid-cols-3')}
         >
           {filteredSets.length === 0 && searchTerm !== '' && (
             <div className='flex justify-center items-center w-full col-span-3'>
@@ -246,18 +288,71 @@ export const PersonalSetsSection = () => {
 
           {/* Infinitely horizontally moving study sets */}
           {/* TODO: create a component to display a single study set (title) */}
-          {isSetsEmpty && (
+          {/* TODO: Create a smooth disappear */}
+          {isSetsEmpty && !isAdding && (
             <NewSetUpload
               onClick={() => {
-                console.log('Tapped');
+                // want to add a new study set box
+                setIsAdding(true);
               }}
-            ></NewSetUpload>
+            />
+          )}
+          {/* Add a new set here */}
+          {isAdding && (
+            <DisplayCard className='border-2 border-lime-500/50'>
+              <div>
+                {/* ispublic toggle switch */}
+                <div className='p-2 flex justify-end items-center gap-4'>
+                  <p className='font-geist text-zinc-300'>
+                    {isPublic ? 'public' : 'private'}
+                  </p>
+                  <ToggleSwitch
+                    onChange={() => {
+                      setIsPublic((prev) => !prev);
+                    }}
+                  />
+                </div>
+                {/* input for set title */}
+                <div className='absolute-center w-full px-4'>
+                  <input
+                    className='w-full bg-zinc-200 rounded outline-none focus:outline focus:outline-fuchsia-500/50 caret-black text-zinc-700 font-mono font-semibold placeholder-zinc-500 p-2 text-xl'
+                    value={newTitle}
+                    onChange={(e) => {
+                      setNewTitle(e.target.value);
+                      setNewSetError(null);
+                    }}
+                    placeholder='Title...'
+                  />
+                  <p className='mt-2 font-geist text-red-500 text-center h-4'>
+                    {newSetError}
+                  </p>
+                </div>
+                {/* cancel and save options */}
+                <div className='w-full px-4 absolute bottom-1 flex justify-between py-4 gap-4 transition duration-500 opacity-100 pointer-events-auto'>
+                  <button
+                    onClick={() => {
+                      setIsAdding(false);
+                    }}
+                    className='flex justify-center items-center px-2 py-1 rounded bg-zinc-500 font-semibold font-geist text-red-500 text-xl transition-opacity hover:opacity-80'
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleAddNewSet}
+                    className='flex justify-center items-center px-2 py-1 rounded bg-zinc-500 font-semibold font-geist text-green-500 text-xl transition-opacity hover:opacity-80'
+                  >
+                    Create
+                  </button>
+                </div>
+              </div>
+            </DisplayCard>
           )}
           {filteredSets.map((set) => (
             <DisplayCard
               key={set.id}
               className={twMerge(
-                !isEditing && 'hover:bg-zinc-600',
+                !isEditing &&
+                  'hover:bg-zinc-600 hover:border-fuchsia-500/50 transition duration:250',
                 isEditing && editingSetId == set.id && 'bg-zinc-600'
               )}
             >

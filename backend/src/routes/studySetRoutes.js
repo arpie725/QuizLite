@@ -30,9 +30,7 @@ router.post('/', async (req, res) => {
     }
     // check if the set already exists
     if (await setExists(trimmedTitle, userId)) {
-      throw new DuplicateEntryError(
-        `Study set with with title: ${trimmedTitle} and userId: ${userId} already exists`
-      );
+      throw new DuplicateEntryError(`'${trimmedTitle}' already exists`);
     }
     // add the new study set entry into the database
     const newSet = await prisma.set.create({
