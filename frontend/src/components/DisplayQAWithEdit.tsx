@@ -10,12 +10,14 @@ interface DisplayQAWithEditProps {
   card: Card;
   idx: number;
   updateCard: (updatedCard: Card) => void;
+  onCardDeleted: (cardId: number) => void;
 }
 
 export const DisplayQAWithEdit = ({
   card,
   idx,
   updateCard,
+  onCardDeleted,
 }: DisplayQAWithEditProps) => {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
@@ -59,6 +61,20 @@ export const DisplayQAWithEdit = ({
       setQuestion(card.question);
       setAnswer(card.answer);
       setIsEditing(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.delete(`${apiUrl}/card/${card.id}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      onCardDeleted(card.id);
+    } catch (er) {
+      console.log('error deleting card: ', er);
     }
   };
 
@@ -111,26 +127,36 @@ export const DisplayQAWithEdit = ({
 
       <div
         className={twMerge(
-          'flex py-4 gap-4 justify-center items-center transition duration-500',
+          'flex p-4 w-full justify-between transition duration-500',
           isEditing
             ? 'opacity-100 pointer-events-auto'
             : 'opacity-0 pointer-events-none'
         )}
       >
-        <button
-          onClick={() => {
-            setIsEditing(false);
-          }}
-          className='flex justify-center items-center px-2 py-1 rounded bg-zinc-500 font-semibold font-geist text-red-500 text-xl transition-opacity hover:opacity-80'
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleSave}
-          className='flex justify-center items-center px-2 py-1 rounded bg-zinc-500 font-semibold font-geist text-green-500 text-xl transition-opacity hover:opacity-80'
-        >
-          Save
-        </button>
+        <div className='flex gap-4'>
+          <button
+            onClick={() => {
+              setIsEditing(false);
+            }}
+            className='flex justify-center items-center px-2 py-1 rounded bg-zinc-500 font-semibold font-geist text-red-500 text-xl transition-opacity hover:opacity-80'
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            className='flex justify-center items-center px-2 py-1 rounded bg-zinc-500 font-semibold font-geist text-green-500 text-xl transition-opacity hover:opacity-80'
+          >
+            Save
+          </button>
+        </div>
+        <div>
+          <button
+            onClick={handleDelete}
+            className='flex justify-center items-center px-2 py-1 rounded bg-red-500 font-semibold font-geist text-white'
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </div>
   );

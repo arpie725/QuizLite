@@ -130,6 +130,10 @@ export default function SpecificSetPage() {
     }
   };
 
+  const handleCardDeleted = (cardId: number) => {
+    setCards(cards.filter((card) => card.id !== cardId));
+  };
+
   const handleAddCard = () => {
     // open the card menu
     // if shuffled, unshuffle
@@ -227,6 +231,7 @@ export default function SpecificSetPage() {
                 >
                   <DisplayQAWithEdit
                     updateCard={updateCard}
+                    onCardDeleted={handleCardDeleted}
                     card={card}
                     idx={idx + 1} // 1 indexed
                   />
