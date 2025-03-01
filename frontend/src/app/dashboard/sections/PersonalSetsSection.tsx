@@ -108,6 +108,10 @@ export const PersonalSetsSection = () => {
     setIsPopupOpen(true);
   };
 
+  const filteredSets = sets.filter((set) =>
+    set.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   // on initial load
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -178,7 +182,7 @@ export const PersonalSetsSection = () => {
   return (
     <section className='mt-12 border border-dashed'>
       <div className='container border'>
-        <div className='mt-4 flex gap-12'>
+        <div className='mt-4 flex gap-12 py-4'>
           <h1 className='login-text'>Your Study Sets</h1>
           <input
             className='user-input-bg user-input-text placeholder-zinc-500'
@@ -191,6 +195,12 @@ export const PersonalSetsSection = () => {
         <DisplayCardBackground
           className={twMerge(!isSetsEmpty && 'grid grid-cols-3')}
         >
+          {filteredSets.length === 0 && searchTerm !== '' && (
+            <div className='flex justify-center items-center w-full col-span-3'>
+              <p className='login-text'>No sets found matching '{searchTerm}'</p>
+            </div>
+          )}
+
           {/* Infinitely horizontally moving study sets */}
           {/* TODO: create a component to display a single study set (title) */}
           {isSetsEmpty && (
@@ -200,7 +210,7 @@ export const PersonalSetsSection = () => {
               }}
             ></NewSetUpload>
           )}
-          {sets.map((set) => (
+          {filteredSets.map((set) => (
             <DisplayCard
               key={set.id}
               className={twMerge(

@@ -35,6 +35,7 @@ model Set {
   id        Int       @id @default(autoincrement())
   title     String
   isPublic  Boolean   @default(false)
+  isFavorite  Boolean @default(false)
   tags      Tag[]     @relation("SetTags")
   cards     Card[]
   userId    Int
