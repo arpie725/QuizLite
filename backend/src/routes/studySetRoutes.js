@@ -68,7 +68,7 @@ router.post('/', async (req, res) => {
 });
 
 /** edits an existing study set
- * - can be (title, isPublic, etc.)
+ * - can be (title, isPublic, isFavorite, etc.)
  * - ensures the set belongs to the user
  * - updates the set
  * - returns the updated set
@@ -76,7 +76,7 @@ router.post('/', async (req, res) => {
 router.put('/:setId', async (req, res) => {
   const setId = parseInt(req.params.setId);
   const userId = req.userId;
-  const { title, isPublic } = req.body;
+  const { title, isPublic, isFavorite } = req.body;
   const trimmedTitle = title?.trim();
   // interact with the database
   try {
@@ -103,6 +103,7 @@ router.put('/:setId', async (req, res) => {
       data: {
         title: trimmedTitle,
         isPublic,
+        isFavorite,
       },
       omit: {
         userId: true,

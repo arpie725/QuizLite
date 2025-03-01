@@ -8,6 +8,7 @@ class Set {
   id: number;
   title: string;
   isPublic: boolean;
+  isFavorite: boolean;
   cards: Card[];
   tags: Tag[];
 
@@ -15,6 +16,7 @@ class Set {
     this.id = data.id;
     this.title = data.title;
     this.isPublic = data.isPublic;
+    this.isFavorite = data.isFavorite;
     this.cards = data.cards
       ? data.cards.map((cardData: CardData) => new Card(cardData))
       : [];

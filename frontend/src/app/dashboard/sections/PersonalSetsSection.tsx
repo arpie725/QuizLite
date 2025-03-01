@@ -44,7 +44,7 @@ export const PersonalSetsSection = () => {
         return;
       }
       console.log('making API call to rename the study set to: ' + title);
-      await axios.put(
+      const { data: res } = await axios.put(
         `${apiUrl}/study-set/${setId}`,
         {
           title: title,
@@ -56,6 +56,8 @@ export const PersonalSetsSection = () => {
         }
       );
       // Update the sets state with the new title
+      const updatedSet = res.data.set;
+      updateSet(updatedSet);
       setSets(
         sets.map(
           (set) => (set.id === setId ? { ...set, title: title } : set) // Update the correct set
@@ -108,9 +110,44 @@ export const PersonalSetsSection = () => {
     setIsPopupOpen(true);
   };
 
-  const filteredSets = sets.filter((set) =>
-    set.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const updateSet = (updatedSet: Set) => {
+    setSets((prevSets) =>
+      prevSets.map((set) => (set.id === updatedSet.id ? updatedSet : set))
+    );
+  };
+
+  const handleIsFavorite = async (setId: number, isFavorite: boolean) => {
+    console.log(setId);
+    console.log(isFavorite);
+
+    const token = localStorage.getItem('token');
+    try {
+      const newIsFavorite = !isFavorite;
+      const { data: res } = await axios.put(
+        `${apiUrl}/study-set/${setId}`,
+        {
+          isFavorite: newIsFavorite,
+        },
+        {
+          headers: {
+            Authorization: token,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log(res);
+      const updatedSet = res.data.set;
+      updateSet(updatedSet);
+    } catch (er) {}
+  };
+
+  const filteredSets = sets
+    .filter((set) => set.title.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a: Set, b: Set) => {
+      if (a.isFavorite && !b.isFavorite) return -1;
+      if (!a.isFavorite && b.isFavorite) return 1;
+      return a.id - b.id;
+    });
 
   // on initial load
   useEffect(() => {
@@ -126,11 +163,14 @@ export const PersonalSetsSection = () => {
         const setsArray = res.data.sets;
         const sets = setsArray.map((set: SetData) => new Set(set));
         // sort the sets to maintain same ordering
-        const sortedSets = sets.sort(
-          (a: { id: number }, b: { id: number }) => a.id - b.id
-        );
+        const sortedSets = sets.sort((a: Set, b: Set) => {
+          if (a.isFavorite && !b.isFavorite) return -1;
+          if (!a.isFavorite && b.isFavorite) return 1;
+          return a.id - b.id;
+        });
+
         setSets(sortedSets);
-        setIsSetsEmpty(sets.length === 0 ? true : false);
+        setIsSetsEmpty(sets.length === 0);
       } catch (er) {
         console.log('Error fetching sets:', er);
         setError(`ERROR: ${(er as any).response.data.message}`);
@@ -197,7 +237,9 @@ export const PersonalSetsSection = () => {
         >
           {filteredSets.length === 0 && searchTerm !== '' && (
             <div className='flex justify-center items-center w-full col-span-3'>
-              <p className='login-text'>No sets found matching '{searchTerm}'</p>
+              <p className='login-text'>
+                No sets found matching '{searchTerm}'
+              </p>
             </div>
           )}
 
@@ -242,10 +284,13 @@ export const PersonalSetsSection = () => {
                   width='32'
                   // use twMerge
                   // later, you set the fill color based on the set.isFavorite ? fill-yellow-200 hover:fill-zinc-400 : fill-zinc-400 hover:fill-yellow-200
-                  className='fill-zinc-400 hover:fill-yellow-200 transition duration-150 cursor-pointer'
-                  onClick={() => {
-                    console.log('isFavorite star tapped');
-                  }}
+                  className={twMerge(
+                    'transition duration-150 cursor-pointer',
+                    set.isFavorite
+                      ? 'fill-yellow-200 hover:fill-zinc-400'
+                      : 'fill-zinc-400 hover:fill-yellow-200'
+                  )}
+                  onClick={() => handleIsFavorite(set.id, set.isFavorite)}
                 >
                   <path d='m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z' />
                 </svg>
