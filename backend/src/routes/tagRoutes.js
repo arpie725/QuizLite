@@ -226,8 +226,8 @@ router.get('/sets/:tagId', async (req, res) => {
  * - queries the database using tag name
  * - returns tag name, set count, sets
  */
-router.get('/public-sets', async (req, res) => {
-  const name = req.body.tagName?.trim();
+router.get('/public-sets/:name', async (req, res) => {
+  const name = req.params.name.trim();
   // interact with the database
   try {
     // ensure name is a non empty string
@@ -242,6 +242,13 @@ router.get('/public-sets', async (req, res) => {
           },
         },
         isPublic: true,
+      },
+      include: {
+        user: {
+          select: {
+            username: true,
+          },
+        },
       },
       omit: { userId: true },
     });

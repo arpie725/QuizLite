@@ -12,7 +12,6 @@ import { NewSetUpload } from '@/components/ui/new-set-upload';
 import ToggleSwitch from '@/components/ui/toggle-switch';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-const token = localStorage.getItem('token');
 
 export const PersonalSetsSection = () => {
   const [sets, setSets] = useState<Set[]>([]);
@@ -40,6 +39,7 @@ export const PersonalSetsSection = () => {
   // };
 
   const handleSetRename = async (setId: number, setTitle: string) => {
+    const token = localStorage.getItem('token');
     // make the API call to rename the set
     try {
       // check if title and setTitle are the same

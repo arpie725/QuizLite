@@ -10,7 +10,6 @@ import axios from 'axios';
 // source: https://headlessui.com/react/dialog
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-const token = localStorage.getItem('token');
 
 interface PopupConfirmationProps {
   isOpen: boolean;
@@ -29,6 +28,7 @@ export const PopupConfirmation = ({
 }: PopupConfirmationProps) => {
   // create a function that makes API call to delete the setId
   const handleDelete = async () => {
+    const token = localStorage.getItem('token');
     try {
       // make the api call to delete the study set
       await axios.delete(`${apiUrl}/study-set/${setId}`, {
