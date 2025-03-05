@@ -75,12 +75,14 @@ export default function FlipCard({
               <span className='text-zinc-300'>{idx}</span>/{tot}
             </p>
           </div>
-          <div className='absolute top-2 right-2'>
-            <p className='font-geist text-zinc-500 text-3xl'>
-              {status === 'CORRECT' && '✅'}
-              {status === 'WRONG' && '❌'}
-            </p>
-          </div>
+          {isOwner && (
+            <div className='absolute top-2 right-2'>
+              <p className='font-geist text-zinc-500 text-3xl'>
+                {status === 'CORRECT' && '✅'}
+                {status === 'WRONG' && '❌'}
+              </p>
+            </div>
+          )}
           <div className='mt-12 flex flex-col gap-12 text-center'>
             <div className='flex items-center justify-center gap-2'>
               <h1 className='title-font'>Question:</h1>
@@ -109,12 +111,14 @@ export default function FlipCard({
               <span className='text-zinc-300'>{idx}</span>/{tot}
             </p>
           </div>
-          <div className='absolute top-2 right-2'>
-            <p className='font-geist text-zinc-500 text-3xl'>
-              {status === 'CORRECT' && '✅'}
-              {status === 'WRONG' && '❌'}
-            </p>
-          </div>
+          {isOwner && (
+            <div className='absolute top-2 right-2'>
+              <p className='font-geist text-zinc-500 text-3xl'>
+                {status === 'CORRECT' && '✅'}
+                {status === 'WRONG' && '❌'}
+              </p>
+            </div>
+          )}
           <div className='mt-12 flex flex-col gap-12 text-center'>
             <div className='flex items-center justify-center gap-2'>
               <h1 className='title-font'>Answer:</h1>
