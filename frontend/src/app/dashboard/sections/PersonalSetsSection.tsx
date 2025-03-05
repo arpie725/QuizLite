@@ -332,6 +332,8 @@ export const PersonalSetsSection = () => {
                   <button
                     onClick={() => {
                       setIsAdding(false);
+                      // clear the newTitle
+                      setNewTitle('');
                     }}
                     className='flex justify-center items-center px-2 py-1 rounded bg-zinc-500 font-semibold font-geist text-red-500 text-xl transition-opacity hover:opacity-80'
                   >
