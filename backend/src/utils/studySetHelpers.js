@@ -5,7 +5,7 @@ import {
   UnauthorizedError,
 } from './errors.js';
 
-/** verifies the set exists and belongs to the user
+/** verifies the set exists and belongs to the user (if the set is private)
  * @param {number} setId
  * @param {number} userId
  * @returns curSet (with userId removed) with cardCount
@@ -22,14 +22,22 @@ async function findAndVerifySet(setId, userId) {
       where: {
         id: setId,
       },
+      include: {
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
     });
     if (!curSet) {
       throw new NotFoundError(`Set ${setId} not found`);
     }
-    // ensure the set id belongs to the user
-    if (curSet.userId != userId) {
+    if (!curSet.isPublic && curSet.userId != userId) {
+      // ensure the set id belongs to the user if the set is a private set
       throw new UnauthorizedError('Unauthorized access to the set');
     }
+
     // remove the userId from the set
     const { userId: _, ...curSetWithoutUserId } = curSet;
     // find the number of cards that belong to the setId

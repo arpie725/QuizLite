@@ -12,6 +12,7 @@ interface FlipCardProps extends React.HTMLAttributes<HTMLDivElement> {
   updateCard: (card: Card) => void;
   onEdit: (card: Card) => void;
   flipCard?: (Flipfn: () => void) => void;
+  isOwner: boolean;
 }
 
 export default function FlipCard({
@@ -22,6 +23,7 @@ export default function FlipCard({
   updateCard,
   onEdit,
   flipCard,
+  isOwner,
   className,
   ...props
 }: FlipCardProps) {
@@ -82,10 +84,12 @@ export default function FlipCard({
           <div className='mt-12 flex flex-col gap-12 text-center'>
             <div className='flex items-center justify-center gap-2'>
               <h1 className='title-font'>Question:</h1>
-              <IconPencil
-                onClick={() => onEdit(card)}
-                className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
-              />
+              {isOwner && (
+                <IconPencil
+                  onClick={() => onEdit(card)}
+                  className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
+                />
+              )}
             </div>
             <h3 className='text-zinc-200 font-geist font-bold text-5xl'>
               {question}
@@ -114,10 +118,12 @@ export default function FlipCard({
           <div className='mt-12 flex flex-col gap-12 text-center'>
             <div className='flex items-center justify-center gap-2'>
               <h1 className='title-font'>Answer:</h1>
-              <IconPencil
-                onClick={() => onEdit(card)}
-                className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
-              />
+              {isOwner && (
+                <IconPencil
+                  onClick={() => onEdit(card)}
+                  className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
+                />
+              )}
             </div>
             <h3 className='text-zinc-200 font-geist font-bold text-4xl'>
               {answer}

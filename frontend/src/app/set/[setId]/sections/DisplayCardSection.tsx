@@ -9,6 +9,7 @@ interface DisplayCardSectionProps {
   handleEditCard: (card: Card) => void;
   updateCard: (card: Card) => void;
   onCurrentCardChange: (card: Card) => void;
+  isOwner: boolean;
 }
 
 export const DisplayCardSection = ({
@@ -16,6 +17,7 @@ export const DisplayCardSection = ({
   handleEditCard,
   updateCard,
   onCurrentCardChange,
+  isOwner,
 }: DisplayCardSectionProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
@@ -110,6 +112,7 @@ export const DisplayCardSection = ({
                     updateCard={updateCard}
                     onEdit={handleEditCard}
                     flipCard={(flipFn) => (flipRef.current = flipFn)}
+                    isOwner={isOwner}
                   />
                 </motion.div>
               </AnimatePresence>

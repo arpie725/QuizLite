@@ -64,7 +64,7 @@ const DashboardPage = () => {
       <div className='mx-14'>
         <h1 className='login-text'>Hi {username}!</h1>
       </div>
-      {/* <PersonalSetsSection /> TEMP FOR DEV */}
+      <PersonalSetsSection />
       <PublicSetsSection />
     </div>
   );

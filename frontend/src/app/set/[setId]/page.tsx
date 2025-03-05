@@ -27,6 +27,8 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 export default function SpecificSetPage() {
   const params = useParams();
   const setId = params.setId ? parseInt(params.setId.toString()) : null;
+  const [isOwner, setIsOwner] = useState(false);
+  const [author, setAuthor] = useState('');
   const [cards, setCards] = useState<Card[]>([]);
   const [currentCard, setCurrentCard] = useState<Card | null>(null);
   const [showAllCards, setShowAllCards] = useState(false);
@@ -59,9 +61,11 @@ export default function SpecificSetPage() {
         );
         console.log(res);
         // get data from response
+        const author_ = res.data.set.user.username;
         const cardsArray = res.data.cards;
         const cards = cardsArray.map((card: CardData) => new Card(card));
         cards.sort((a: Card, b: Card) => a.id - b.id);
+        setAuthor(author_);
         setCards(cards);
         setCurrentCard(cards.length > 0 ? cards[0] : null);
       } catch (er) {
@@ -71,7 +75,35 @@ export default function SpecificSetPage() {
         setLoading(false);
       }
     };
+    const determineUserStatus = async () => {
+      // determines if the user owns the current study set
+      const token = localStorage.getItem('token');
+      try {
+        // get the user and all sets belonging to the user
+        const { data: res } = await axios.get(`${apiUrl}/user/sets`, {
+          headers: {
+            Authorization: token,
+          },
+        });
+        console.log(res);
+        const cur_user_sets = res.data.sets;
+        // search the cur_user_sets to see if the id exists
+        const ownsSet = cur_user_sets.some(
+          (set: { id: number }) => set.id === setId
+        );
+        setIsOwner(ownsSet);
+        // for dev:
+        if (ownsSet) {
+          console.log('User owns the set');
+        } else {
+          console.log("User doesn't own the set");
+        }
+      } catch (er) {
+        console.log('Error retrieving the user and sets: ', er);
+      }
+    };
 
+    determineUserStatus();
     fetchAllCards();
   }, []);
 
@@ -230,13 +262,18 @@ export default function SpecificSetPage() {
     },
   ];
 
-  const links = linksBase.filter(
-    (link) =>
+  const links = linksBase.filter((link) => {
+    const alwaysVisible = ['Individual Card', 'All Cards', 'Shuffle'];
+    if (!isOwner) {
+      return alwaysVisible.includes(link.title);
+    }
+    return (
       !showAllCards ||
       (link.title !== 'Wrong' &&
         link.title !== 'Correct' &&
         link.title != 'Shuffle')
-  );
+    );
+  });
 
   if (error) {
     return <div className='login-text'>{error}</div>;
@@ -246,13 +283,20 @@ export default function SpecificSetPage() {
   }
   return (
     <>
-      {setId && <SetTitleTagsSection setId={setId} />}
+      {setId && (
+        <SetTitleTagsSection
+          setId={setId}
+          isOwner={isOwner}
+          author={author}
+        />
+      )}
       {!showAllCards && (
         <DisplayCardSection
           cards={cards}
           handleEditCard={handleEditCard}
           updateCard={updateCard}
           onCurrentCardChange={handleCurrentCardChange}
+          isOwner={isOwner}
         />
       )}
       {showAllCards && (
@@ -270,6 +314,7 @@ export default function SpecificSetPage() {
                     onCardDeleted={handleCardDeleted}
                     card={card}
                     idx={idx + 1} // 1 indexed
+                    isOwner={isOwner}
                   />
                 </div>
               ))}

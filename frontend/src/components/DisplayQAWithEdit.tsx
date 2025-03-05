@@ -11,6 +11,7 @@ interface DisplayQAWithEditProps {
   idx: number;
   updateCard: (updatedCard: Card) => void;
   onCardDeleted: (cardId: number) => void;
+  isOwner: boolean;
 }
 
 export const DisplayQAWithEdit = ({
@@ -18,6 +19,7 @@ export const DisplayQAWithEdit = ({
   idx,
   updateCard,
   onCardDeleted,
+  isOwner,
 }: DisplayQAWithEditProps) => {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
@@ -86,10 +88,12 @@ export const DisplayQAWithEdit = ({
   return (
     <div className='rounded-xl p-4 bg-neutral-900 w-full flex flex-col items-start font-geist text-2xl text-zinc-300'>
       <div className='flex gap-2'>
-        <IconPencil
-          className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
-          onClick={handleEdit}
-        />
+        {isOwner && (
+          <IconPencil
+            className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
+            onClick={handleEdit}
+          />
+        )}
         <h1>Card #{idx}:</h1>
       </div>
       <div className='mt-4 flex flex-col gap-4 w-full'>

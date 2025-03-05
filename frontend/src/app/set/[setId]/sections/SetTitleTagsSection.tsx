@@ -26,9 +26,15 @@ const tagColors = [
 
 interface SetTitleTagsSectionProps {
   setId: number;
+  isOwner: boolean;
+  author?: string;
 }
 
-export const SetTitleTagsSection = ({ setId }: SetTitleTagsSectionProps) => {
+export const SetTitleTagsSection = ({
+  setId,
+  isOwner,
+  author,
+}: SetTitleTagsSectionProps) => {
   const [set, setSet] = useState<Set>();
   const [tags, setTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState('');
@@ -194,27 +200,29 @@ export const SetTitleTagsSection = ({ setId }: SetTitleTagsSectionProps) => {
                       {name}
                     </TagComponent>
                   ))}
-                  <TagComponent
-                    onClick={() => {
-                      setIsAddingTag(true);
-                    }}
-                    className='cursor-pointer group'
-                  >
-                    {set && (
-                      <TagModal
-                        modalSize='lg'
-                        isOpen={isAddingTag}
-                        setIsOpen={setIsAddingTag}
-                        handleSubmit={() => {}}
-                        tags={tags}
-                        setTags={setTags}
-                        set={set}
-                      />
-                    )}
-                    <span className='ml-2 hidden group-hover:inline transition duration-150'>
-                      Add Tag
-                    </span>
-                  </TagComponent>
+                  {isOwner && (
+                    <TagComponent
+                      onClick={() => {
+                        setIsAddingTag(true);
+                      }}
+                      className='cursor-pointer group'
+                    >
+                      {set && (
+                        <TagModal
+                          modalSize='lg'
+                          isOpen={isAddingTag}
+                          setIsOpen={setIsAddingTag}
+                          handleSubmit={() => {}}
+                          tags={tags}
+                          setTags={setTags}
+                          set={set}
+                        />
+                      )}
+                      <span className='ml-2 hidden group-hover:inline transition duration-150'>
+                        Add Tag
+                      </span>
+                    </TagComponent>
+                  )}
                 </div>
               </div>
             </div>
@@ -240,7 +248,7 @@ export const SetTitleTagsSection = ({ setId }: SetTitleTagsSectionProps) => {
                   )}
                   style={!isEditingTitle ? { width: inputWidth } : undefined}
                 />
-                {!isEditingTitle && (
+                {!isEditingTitle && isOwner && (
                   <IconPencil
                     className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
                     onClick={() => {
@@ -268,17 +276,25 @@ export const SetTitleTagsSection = ({ setId }: SetTitleTagsSectionProps) => {
           </div>
 
           {/* display public toggle + option to edit the set title */}
-          <div className='flex relative top-2 gap-8'>
-            <div className='flex justify-center items-center gap-4'>
-              <h3 className='font-geist text-xl text-zinc-300'>
-                {isPublic ? 'Public set' : 'Private set'}
-              </h3>
-              <ToggleSwitch
-                defaultChecked={isPublic}
-                onChange={togglePrivacy}
-              />
+          {isOwner ? (
+            <div className='flex relative top-2 gap-8'>
+              <div className='flex justify-center items-center gap-4'>
+                <h3 className='font-geist text-xl text-zinc-300'>
+                  {isPublic ? 'Public set' : 'Private set'}
+                </h3>
+                <ToggleSwitch
+                  defaultChecked={isPublic}
+                  onChange={togglePrivacy}
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className='flex relative top-2 gap-8'>
+              <span className='font-geist text-zinc-300 text-md'>
+                Created by: <span className='font-bold italic'>{author}</span>
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </section>
