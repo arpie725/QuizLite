@@ -275,7 +275,7 @@ export const PersonalSetsSection = () => {
           className={twMerge(!isSetsEmpty && 'grid grid-cols-2 lg:grid-cols-3')}
         >
           {filteredSets.length === 0 && searchTerm !== '' && (
-            <div className='flex justify-center items-center w-full col-span-3'>
+            <div className='flex justify-center items-center w-full h-96 col-span-3'>
               <p className='login-text'>
                 No sets found matching '{searchTerm}'
               </p>
