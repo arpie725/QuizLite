@@ -281,7 +281,7 @@ export const SetTitleTagsSection = ({
                   onChange={(e) => setTitle(e.target.value)}
                   readOnly={!isEditingTitle}
                   className={twMerge(
-                    'flex text-zinc-200 font-sans text-5xl p-2 font-bold transition duration-250',
+                    'flex max-w-sm text-zinc-200 font-sans text-5xl p-2 font-bold transition duration-250',
                     isEditingTitle
                       ? 'bg-zinc-700 rounded px-2 outline-none focus:outline focus:outline-fuchsia-500/50'
                       : 'bg-transparent cursor-default outline-none p-2'

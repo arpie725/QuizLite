@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import React from 'react';
 import axios from 'axios';
 import { DisplayCardBackground } from '@/components/DisplayCardBackground';
@@ -28,8 +28,11 @@ export const PublicSetsSection = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const publicSetsRef = useRef<HTMLDivElement>(null);
+
   const handleClick = async (tagName: string) => {
     const token = localStorage.getItem('token');
+    setIsTagClicked(false);
     console.log(
       'TODO: show the user all the public study sets that have that specific tag'
     );
@@ -80,6 +83,15 @@ export const PublicSetsSection = () => {
     fetchDistinctTags();
   }, []);
 
+  useEffect(() => {
+    if (isTagClicked && publicSetsRef.current) {
+      publicSetsRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [isTagClicked]);
+
   if (loading) {
     return <div className='login-text'>LOADING</div>;
   }
@@ -127,7 +139,10 @@ export const PublicSetsSection = () => {
               </p>
             </div>
             {/* Displaying the actual sets */}
-            <div className='mt-8 grid md:grid-cols-3 lg:grid-cols-4'>
+            <div
+              ref={publicSetsRef}
+              className='mt-8 grid md:grid-cols-3 lg:grid-cols-4 max-h-96 overflow-x-hidden overflow-y-scroll no-scrollbar'
+            >
               {publicSets.map(({ id, title, user }) => (
                 <div
                   key={id}
