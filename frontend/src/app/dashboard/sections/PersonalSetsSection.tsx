@@ -34,10 +34,6 @@ export const PersonalSetsSection = () => {
 
   const router = useRouter();
 
-  // const handleBlur = () => {
-  //   setIsEditing(false);
-  // };
-
   const handleSetRename = async (setId: number, setTitle: string) => {
     const token = localStorage.getItem('token');
     // make the API call to rename the set
@@ -367,10 +363,13 @@ export const PersonalSetsSection = () => {
                   setId={set.id}
                   onSetDeleted={() => {
                     // update the sets
-                    setSets((prevSets) =>
-                      prevSets.filter((s) => s.id !== set.id)
-                    );
-                    setIsSetsEmpty(sets.length === 0 ? true : false);
+                    setSets((prevSets) => {
+                      const updatedSets = prevSets.filter(
+                        (s) => s.id !== set.id
+                      );
+                      setIsSetsEmpty(updatedSets.length === 0);
+                      return updatedSets;
+                    });
                     setDeletingSetId(-1);
                   }}
                 />

@@ -5,6 +5,7 @@ import {
   InvalidParamsError,
   DuplicateEntryError,
   handleErrors,
+  NotFoundError,
 } from '../utils/errors.js';
 import { findAndVerifyTags } from '../utils/tagHelpers.js';
 
@@ -117,6 +118,68 @@ router.put('/:setId', async (req, res) => {
     });
   } catch (er) {
     // expected error
+    return handleErrors(er, res);
+  }
+});
+
+/** copies an existing study set
+ * - expects the ID of the set to copy
+ * - ensures the original set exists and is accessible
+ * - creates a new set owned by the current user
+ * - deep copies all cards form the original set
+ * - returns the newly created study set
+ */
+router.post('/copy/:setId', async (req, res) => {
+  const setId = parseInt(req.params.setId);
+  const userId = req.userId;
+  const { title } = req.body;
+
+  // interact with the database
+  try {
+    // get the original set
+    const originalSet = await prisma.set.findUnique({
+      where: { id: setId },
+      include: { cards: true },
+    });
+    if (!originalSet) {
+      throw new NotFoundError(`Study set not found`);
+    }
+
+    const newTitle = title?.trim();
+    const setexists = await setExists(newTitle, userId);
+    if (setexists) {
+      throw new DuplicateEntryError(`Study set with title already exists`);
+    }
+
+    // create a new study set
+    const newSet = await prisma.set.create({
+      data: {
+        title: newTitle,
+        user: { connect: { id: userId } },
+      },
+      omit: { userId: true },
+    });
+
+    // deep copy all cards form the original set
+    const cardsToCreate = originalSet.cards.map((card) => ({
+      question: card.question,
+      answer: card.answer,
+      setId: newSet.id,
+    }));
+
+    await prisma.card.createMany({
+      data: cardsToCreate,
+    });
+
+    // return the newly created set
+    return res.status(201).json({
+      success: true,
+      message: 'Copied the study set successfully',
+      data: {
+        set: newSet,
+      },
+    });
+  } catch (er) {
     return handleErrors(er, res);
   }
 });

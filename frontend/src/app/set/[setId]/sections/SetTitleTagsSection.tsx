@@ -9,8 +9,10 @@ import TagData from '@/models/TagData';
 import { TagComponent } from '@/components/Tag';
 import { IconPencil, IconPlus } from '@tabler/icons-react';
 import TagModal from '@/components/ui/tag-modal';
+import CopySetModal from '@/components/ui/copy-set-modal';
 import ToggleSwitch from '@/components/ui/toggle-switch';
 import { twMerge } from 'tailwind-merge';
+import { useRouter } from 'next/navigation';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const tagColors = [
@@ -35,12 +37,16 @@ export const SetTitleTagsSection = ({
   isOwner,
   author,
 }: SetTitleTagsSectionProps) => {
+  const router = useRouter();
+
   const [set, setSet] = useState<Set>();
   const [tags, setTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isCopyingSet, setIsCopyingSet] = useState(false);
+  const [copyingError, setCopyingError] = useState<string | null>(null);
   const [existsError, setExistsError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -180,6 +186,40 @@ export const SetTitleTagsSection = ({
     }
   };
 
+  const handleCopySet = async (copiedTitle: string) => {
+    const token = localStorage.getItem('token');
+    // create a copy of this set to the user
+    console.log('Create a copy with this title: ' + copiedTitle);
+
+    try {
+      const { data: res } = await axios.post(
+        `${apiUrl}/study-set/copy/${setId}`,
+        {
+          title: copiedTitle,
+        },
+        {
+          headers: {
+            Authorization: token,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log(res);
+      const new_setId = res.data.set.id;
+      // close the modal
+      setIsCopyingSet(false);
+      // take the user to this newly created set
+      router.push(`/set/${new_setId}`);
+    } catch (er) {
+      console.log('Error making copy of the set: ', er);
+      if (axios.isAxiosError(er) && er.response) {
+        setCopyingError(er.response.data.message);
+      } else {
+        setCopyingError('An unknown error occurred');
+      }
+    }
+  };
+
   return (
     <section className='border border-dashed mt-24 '>
       <div className='border container'>
@@ -289,11 +329,27 @@ export const SetTitleTagsSection = ({
               </div>
             </div>
           ) : (
-            <div className='flex relative top-2 gap-8'>
+            <div className='flex flex-col justify-center items-center top-2 gap-8'>
               <span className='font-geist text-zinc-300 text-md'>
                 Created by: <span className='font-bold italic'>{author}</span>
               </span>
+              <button
+                onClick={() => setIsCopyingSet(true)}
+                className='px-2 py-2 bg-teal-500 rounded font-geist font-bold text-zinc-800 hover:bg-teal-500/75'
+              >
+                Copy Set
+              </button>
             </div>
+          )}
+          {isCopyingSet && set && (
+            <CopySetModal
+              isOpen={isCopyingSet}
+              setIsOpen={setIsCopyingSet}
+              handleSubmit={handleCopySet}
+              set={set}
+              copyingError={copyingError}
+              setCopyingError={setCopyingError}
+            />
           )}
         </div>
       </div>
