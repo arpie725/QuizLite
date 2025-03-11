@@ -90,7 +90,7 @@ router.put('/:setId', async (req, res) => {
       // verify that a set with the same title doesn't already exist
       if (await setExists(trimmedTitle, userId)) {
         throw new DuplicateEntryError(
-          `Study set with with title: ${trimmedTitle} and userId: ${userId} already exists`
+          `Study set with with title: '${trimmedTitle}' already exists`
         );
       }
     }

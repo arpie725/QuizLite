@@ -44,11 +44,22 @@ export default {
       animation: {
         'move-left': 'move-left 1s linear infinite',
         'move-right': 'move-left 1s linear infinite reverse',
+        'breathe-border-fuchsia':
+          'breatheBorderFuchsia 1.5s ease-in-out infinite',
+        'breathe-border-lime': 'breatheBorderLime 1.5s ease-in-out infinite',
       },
       keyframes: {
         'move-left': {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-50%)' },
+        },
+        breatheBorderFuchsia: {
+          '0%, 100%': { borderColor: 'rgba(168, 85, 247, 0.5)' },
+          '50%': { borderColor: 'rgba(168, 85, 247, 0.1)' },
+        },
+        breatheBorderLime: {
+          '0%, 100%': { borderColor: 'rgba(132, 204, 22, 0.5)' },
+          '50%': { borderColor: 'rgba(132, 204, 22, 0.1)' },
         },
       },
     },
