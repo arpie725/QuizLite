@@ -17,14 +17,6 @@ const DashboardPage = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-
-    // TODO: validate token properly
-    if (!token) {
-      // TEMP
-      router.push('/auth');
-      return;
-    }
-
     const fetchUsername = async () => {
       setLoading(true);
       try {
@@ -62,7 +54,7 @@ const DashboardPage = () => {
   return (
     <div className='mt-12'>
       <div className='mx-14'>
-        <h1 className='login-text'>Hi {username}!</h1>
+        <h1 className='login-text'>Hi, {username}!</h1>
       </div>
       <PersonalSetsSection />
       <PublicSetsSection />

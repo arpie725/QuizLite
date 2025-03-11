@@ -15,6 +15,7 @@ import {
   IconPlus,
   IconLayersSubtract,
   IconLogout2,
+  IconQuestionMark,
 } from '@tabler/icons-react';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -56,16 +57,11 @@ export default function RootLayout({
       icon: <IconHome className='text-neutral-200 h-5 w-5 flex-shrink-0' />,
     },
     {
-      label: 'Study',
-      href: '/auth',
+      label: 'How to Use Quizlite',
+      href: '/dashboard',
       icon: (
-        <IconLayersSubtract className='text-neutral-200 h-5 w-5 flex-shrink-0' />
+        <IconQuestionMark className='text-neutral-200 h-6 w-6 flex-shrink-0' />
       ),
-    },
-    {
-      label: 'Create',
-      href: '/auth',
-      icon: <IconPlus className='text-neutral-200 h-5 w-5 flex-shrink-0' />,
     },
   ];
   const [open, setOpen] = useState(false);

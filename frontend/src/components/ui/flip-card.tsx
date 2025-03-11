@@ -93,9 +93,11 @@ export default function FlipCard({
                 />
               )}
             </div>
-            <h3 className='text-zinc-200 font-geist font-bold text-5xl'>
-              {question}
-            </h3>
+            <div className='relative bottom-6 max-h-60 overflow-y-auto no-scrollbar'>
+              <h3 className='text-zinc-200 font-geist font-bold text-4xl break-words max-w-full overflow-hidden'>
+                {question}
+              </h3>
+            </div>
           </div>
         </div>
 
@@ -129,9 +131,11 @@ export default function FlipCard({
                 />
               )}
             </div>
-            <h3 className='text-zinc-200 font-geist font-bold text-4xl'>
-              {answer}
-            </h3>
+            <div className='relative bottom-6 max-h-60 overflow-y-auto no-scrollbar'>
+              <h3 className='text-zinc-200 font-geist font-bold text-4xl break-words max-w-full overflow-hidden'>
+                {answer}
+              </h3>
+            </div>
           </div>
         </div>
       </div>

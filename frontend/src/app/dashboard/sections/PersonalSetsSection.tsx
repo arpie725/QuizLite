@@ -298,8 +298,6 @@ export const PersonalSetsSection = () => {
             </div>
           )}
 
-          {/* Infinitely horizontally moving study sets */}
-          {/* TODO: create a component to display a single study set (title) */}
           {/* TODO: Create a smooth disappear */}
           {isSetsEmpty && !isAdding && (
             <NewSetUpload
@@ -327,7 +325,6 @@ export const PersonalSetsSection = () => {
                 {/* input for set title */}
                 <div className='absolute-center w-full px-4'>
                   <input
-                    // TODO: have it focus on the input
                     ref={newSetRef}
                     className='w-full bg-zinc-200 rounded outline-none focus:outline focus:outline-fuchsia-500/50 caret-black text-zinc-700 font-mono font-semibold placeholder-zinc-500 p-2 text-xl'
                     value={newTitle}
