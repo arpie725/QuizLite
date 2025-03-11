@@ -31,6 +31,7 @@ export const PersonalSetsSection = () => {
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const h3Ref = useRef<HTMLHeadingElement>(null);
+  const newSetRef = useRef<HTMLInputElement>(null);
 
   const router = useRouter();
 
@@ -237,6 +238,19 @@ export const PersonalSetsSection = () => {
   }, [isEditing, title]);
 
   useEffect(() => {
+    if (isAdding && newSetRef.current) {
+      newSetRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+      const timer = setTimeout(() => {
+        newSetRef.current?.focus();
+      }, 700);
+      return () => clearTimeout(timer);
+    }
+  }, [isAdding]);
+
+  useEffect(() => {
     resizeTextArea();
   }, [title]);
 
@@ -264,7 +278,9 @@ export const PersonalSetsSection = () => {
             placeholder='Search...'
           />
           <button
-            onClick={() => setIsAdding(true)}
+            onClick={() => {
+              setIsAdding(true);
+            }}
             className='px-2 py-1 bg-zinc-300 rounded font-geist hover:bg-fuchsia-300 '
           >
             New Set +
@@ -311,6 +327,8 @@ export const PersonalSetsSection = () => {
                 {/* input for set title */}
                 <div className='absolute-center w-full px-4'>
                   <input
+                    // TODO: have it focus on the input
+                    ref={newSetRef}
                     className='w-full bg-zinc-200 rounded outline-none focus:outline focus:outline-fuchsia-500/50 caret-black text-zinc-700 font-mono font-semibold placeholder-zinc-500 p-2 text-xl'
                     value={newTitle}
                     onChange={(e) => {
