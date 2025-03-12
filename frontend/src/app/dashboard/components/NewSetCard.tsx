@@ -4,10 +4,12 @@ import { twMerge } from 'tailwind-merge';
 import { PopupConfirmation } from './PopupConfirmation';
 import { useEffect, useRef } from 'react';
 import ToggleSwitch from '@/components/ui/toggle-switch';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface NewSetCardProps {
   newTitle: string;
   isPublic: boolean;
+  isSetsEmpty: boolean;
   newSetError: string | null;
   onTitleChange: (title: string) => void;
   onPublicToggle: () => void;
@@ -23,11 +25,12 @@ export const NewSetCard = ({
   onPublicToggle,
   onCreate,
   onCancel,
+  isSetsEmpty,
 }: NewSetCardProps) => {
   const newSetRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (newSetRef.current) {
+    if (newSetRef.current && !isSetsEmpty) {
       newSetRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
@@ -58,9 +61,19 @@ export const NewSetCard = ({
             onChange={(e) => onTitleChange(e.target.value)}
             placeholder='Title...'
           />
-          <p className='mt-2 font-geist text-red-500 text-center h-4'>
-            {newSetError}
-          </p>
+          <AnimatePresence>
+            {newSetError && (
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.2, ease: 'easeInOut' }}
+                className='mt-2 font-geist text-red-500 text-center h-4'
+              >
+                {newSetError}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
         {/* cancel and save options */}
         <div className='w-full px-4 absolute bottom-1 flex justify-between py-4 gap-4 transition duration-500 opacity-100 pointer-events-auto'>

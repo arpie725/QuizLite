@@ -230,7 +230,6 @@ export const PersonalSetsSection = () => {
             New Set +
           </button>
         </div>
-
         <DisplayCardBackground
           className={twMerge(!isSetsEmpty && 'grid grid-cols-2 lg:grid-cols-3')}
         >
@@ -241,19 +240,24 @@ export const PersonalSetsSection = () => {
               </p>
             </div>
           )}
-
-          {/* TODO: Create a smooth disappear */}
-          {isSetsEmpty && !isAdding && (
-            <NewSetUpload
-              onClick={() => {
-                // want to add a new study set box
-                setIsAdding(true);
-              }}
-            />
-          )}
-          {/* Add a new set here */}
-          <AnimatePresence>
-            {isAdding && (
+          <AnimatePresence mode='wait'>
+            {isSetsEmpty && !isAdding && (
+              <motion.div
+                key='new-set-upload'
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 50 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+              >
+                <NewSetUpload
+                  onClick={() => {
+                    // want to add a new study set box
+                    setIsAdding(true);
+                  }}
+                />
+              </motion.div>
+            )}
+            {isAdding && isSetsEmpty && (
               <motion.div
                 key='new-set-card'
                 initial={{ opacity: 0, x: -50 }}
@@ -266,6 +270,7 @@ export const PersonalSetsSection = () => {
                   newTitle={newTitle}
                   isPublic={isPublic}
                   newSetError={newSetError}
+                  isSetsEmpty={isSetsEmpty}
                   onTitleChange={(title) => {
                     setNewTitle(title);
                     setNewSetError(null);
@@ -275,6 +280,38 @@ export const PersonalSetsSection = () => {
                   onCancel={() => {
                     setIsAdding(false);
                     setNewTitle('');
+                    setNewSetError(null);
+                  }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {/* Add a new set here */}
+            {isAdding && !isSetsEmpty && (
+              <motion.div
+                key='new-set-card'
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                layout
+              >
+                <NewSetCard
+                  newTitle={newTitle}
+                  isPublic={isPublic}
+                  newSetError={newSetError}
+                  isSetsEmpty={isSetsEmpty}
+                  onTitleChange={(title) => {
+                    setNewTitle(title);
+                    setNewSetError(null);
+                  }}
+                  onPublicToggle={() => setIsPublic((prev) => !prev)}
+                  onCreate={handleAddNewSet}
+                  onCancel={() => {
+                    setIsAdding(false);
+                    setNewTitle('');
+                    setNewSetError(null);
                   }}
                 />
               </motion.div>
@@ -284,6 +321,9 @@ export const PersonalSetsSection = () => {
               <motion.div
                 key={set.id}
                 layout
+                initial={{ opacity: 0, y: 20 }} // Enter from below
+                animate={{ opacity: 1, y: 0 }} // Fade in and slide up
+                exit={{ opacity: 0, y: -20 }} // Exit upward
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
               >
                 <SetCard
