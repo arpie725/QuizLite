@@ -82,9 +82,9 @@ export const DisplayCardSection = ({
   }, [cards, onCurrentCardChange, currentIndex]);
 
   return (
-    <section className='border border-dashed'>
-      <div className='border container'>
-        <div className='flex flex-col my-32 overflow-hidden px-20 pt-32'>
+    <section className=''>
+      <div className='container'>
+        <div className='flex flex-col my-32 overflow-hidden px-20 pt-32 -mt-0'>
           <div className='w-full h-96 relative'>
             {cards.length > 0 && (
               <AnimatePresence

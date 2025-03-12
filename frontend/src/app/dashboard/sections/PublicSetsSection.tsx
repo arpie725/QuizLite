@@ -5,7 +5,7 @@ import React from 'react';
 import axios from 'axios';
 import { DisplayCardBackground } from '@/components/DisplayCardBackground';
 import { DisplayCard } from '@/components/DisplayCard';
-import Tag from '@/models/Tag';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -20,7 +20,9 @@ interface PublicSet {
 export const PublicSetsSection = () => {
   const router = useRouter();
 
-  const [tags, setTags] = useState<[]>([]);
+  const [tags, setTags] = useState<{ name: string; publicSetCount: number }[]>(
+    []
+  );
   const [selectedTag, setSelectedTag] = useState('');
   const [selectedTagSetCount, setSelectedTagSetCount] = useState(0);
   const [isTagClicked, setIsTagClicked] = useState(false);
@@ -33,9 +35,6 @@ export const PublicSetsSection = () => {
   const handleClick = async (tagName: string) => {
     const token = localStorage.getItem('token');
     setIsTagClicked(false);
-    console.log(
-      'TODO: show the user all the public study sets that have that specific tag'
-    );
     try {
       // make api call to get all PUBLIC sets with the tag
       const { data: res } = await axios.get(
@@ -46,8 +45,6 @@ export const PublicSetsSection = () => {
           },
         }
       );
-      console.log(res);
-      console.log(res.data.sets);
       const public_sets = res.data.sets;
       const setcount = res.data.setCount;
       const tagname = res.data.tagName;
@@ -56,7 +53,7 @@ export const PublicSetsSection = () => {
       setSelectedTagSetCount(setcount);
       setIsTagClicked(true);
     } catch (er) {
-      console.log('Error retrieving all sets with the tag: ' + tagName);
+      // console.log('Error retrieving all sets with the tag: ' + tagName);
     }
   };
 
@@ -72,9 +69,12 @@ export const PublicSetsSection = () => {
           },
         });
         const tags = res.data.tags;
-        setTags(tags);
+        const sortedTags = tags.sort(
+          (a: { name: string }, b: { name: string }) =>
+            a.name.localeCompare(b.name)
+        );
+        setTags(sortedTags);
       } catch (er) {
-        console.log('Error fetching distinct tags: ', er);
         setError(`ERROR: ${(er as any).response.data.message}`);
       } finally {
         setLoading(false);
@@ -87,7 +87,7 @@ export const PublicSetsSection = () => {
     if (isTagClicked && publicSetsRef.current) {
       publicSetsRef.current.scrollIntoView({
         behavior: 'smooth',
-        block: 'center',
+        block: 'end',
       });
     }
   }, [isTagClicked]);
@@ -101,8 +101,8 @@ export const PublicSetsSection = () => {
   }
 
   return (
-    <section className='mt-12 border border-dashed mb-[1000px]'>
-      <div className='container border'>
+    <section className='mt-12 mb-24'>
+      <div className='container'>
         <h1 className='mt-12 login-text border-b max-w-sm mx-auto text-center'>
           Explore all tags
         </h1>
@@ -126,47 +126,55 @@ export const PublicSetsSection = () => {
             ))}
           </div>
         </DisplayCardBackground>
-        {isTagClicked && (
-          <div className=' border mt-12'>
-            {/* Dispaying the tag and set count */}
-            <div className='mt-2 px-4 font-geist text-zinc-300'>
-              <p>
-                <span className='text-xl'>
-                  Showing {selectedTagSetCount} set
-                  <span>{selectedTagSetCount > 1 ? 's' : ''}</span> with tag:{' '}
-                  <span className='font-bold text-3xl'>{selectedTag}</span>
-                </span>
-              </p>
-            </div>
-            {/* Displaying the actual sets */}
-            <div
-              ref={publicSetsRef}
-              className='mt-8 grid md:grid-cols-3 lg:grid-cols-4 max-h-96 overflow-x-hidden overflow-y-scroll no-scrollbar'
-            >
-              {publicSets.map(({ id, title, user }) => (
-                <div
-                  key={id}
-                  className='w-full flex items-center justify-center'
-                >
-                  <DisplayCard
+        <AnimatePresence>
+          {isTagClicked && (
+            <div className='mt-12'>
+              {/* Dispaying the tag and set count */}
+              <div className='mt-2 px-4 font-geist text-zinc-300'>
+                <p>
+                  <span className='text-xl'>
+                    Showing {selectedTagSetCount} set
+                    <span>{selectedTagSetCount > 1 ? 's' : ''}</span> with tag:{' '}
+                    <span className='font-bold text-3xl'>{selectedTag}</span>
+                  </span>
+                </p>
+              </div>
+              {/* Displaying the actual sets */}
+              <div
+                ref={publicSetsRef}
+                className='mt-8 grid md:grid-cols-2 lg:grid-cols-3 max-h-96 overflow-x-hidden overflow-y-scroll no-scrollbar'
+              >
+                {publicSets.map(({ id, title, user }) => (
+                  <motion.div
                     key={id}
-                    className='relative group cursor-pointer w-48 h-48 hover:bg-zinc-600 hover:border-fuchsia-500/50 tranisiton duration:250'
-                    onClick={() => {
-                      router.push(`/set/${id}`);
-                    }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                    className='w-full flex items-center justify-center'
                   >
-                    <h1 className='absolute-center font-geist text-zinc-300 text-2xl group-hover:underline'>
-                      {title}
-                    </h1>
-                    <h1 className='absolute bottom-2 right-2 font-geist text-zinc-300 text-sm'>
-                      Author: {user.username}
-                    </h1>
-                  </DisplayCard>
-                </div>
-              ))}
+                    <DisplayCard
+                      key={id}
+                      className='relative group cursor-pointer w-72 h-72 hover:bg-zinc-600 hover:border-fuchsia-500/50 tranisiton duration:250'
+                      onClick={() => {
+                        router.push(`/set/${id}`);
+                      }}
+                    >
+                      <div className='px-2 flex w-full h-full items-center justify-center'>
+                        <h1 className='flex font-geist text-center text-zinc-300 text-2xl group-hover:underline'>
+                          {title}
+                        </h1>
+                      </div>
+                      <h1 className='absolute bottom-2 right-2 font-geist text-zinc-300 text-sm'>
+                        Author: {user.username}
+                      </h1>
+                    </DisplayCard>
+                  </motion.div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );

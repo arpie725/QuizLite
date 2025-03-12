@@ -221,8 +221,8 @@ export const SetTitleTagsSection = ({
   };
 
   return (
-    <section className='border border-dashed mt-24 '>
-      <div className='border container'>
+    <section className=' mt-0'>
+      <div className='bg-neutral-700 container'>
         {/* display all tags belonging to the current set */}
         <div className='flex justify-between'>
           <div className='flex flex-col gap-8'>

@@ -211,8 +211,8 @@ export const PersonalSetsSection = () => {
   }
   // success
   return (
-    <section className='mt-12 border border-dashed'>
-      <div className='container border'>
+    <section className='mt-12'>
+      <div className='container'>
         <div className='mt-4 flex justify-center items-center gap-12 py-4'>
           <h1 className='login-text'>Your Study Sets</h1>
           <input
