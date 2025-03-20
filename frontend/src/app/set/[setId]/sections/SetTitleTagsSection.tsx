@@ -144,18 +144,13 @@ export const SetTitleTagsSection = ({
       // set isEditing to false
       setIsEditingTitle(false);
       setExistsError(false);
+      setError(null);
     } catch (er) {
       console.log('ERROR updating title of the set ', er);
-      if (
-        axios.isAxiosError(er) &&
-        er.response?.data.errorType === 'DuplicateEntryError'
-      ) {
-        setExistsError(true);
+      if (axios.isAxiosError(er) && er.response) {
+        setError(er.response.data.message || 'Failed to rename set');
       } else {
-        setIsEditingTitle(false);
-        if (set) {
-          setTitle(set.title);
-        }
+        setError('An unexpected error occurred');
       }
     }
   };
@@ -267,50 +262,67 @@ export const SetTitleTagsSection = ({
               </div>
             </div>
             <div className='flex'>
-              <div className='flex gap-4 p-4'>
-                <span
-                  ref={spanRef}
-                  className='absolute invisible font-sans text-5xl font-bold text-zinc-200 p-2'
-                  style={{ whiteSpace: 'nowrap' }}
-                >
-                  {title}
-                </span>
-                <input
-                  ref={inputRef}
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  readOnly={!isEditingTitle}
-                  className={twMerge(
-                    'flex max-w-sm text-zinc-200 font-sans text-5xl p-2 font-bold transition duration-250',
-                    isEditingTitle
-                      ? 'bg-zinc-700 rounded px-2 outline-none focus:outline focus:outline-fuchsia-500/50'
-                      : 'bg-transparent cursor-default outline-none p-2'
-                  )}
-                  style={!isEditingTitle ? { width: inputWidth } : undefined}
-                />
-                {!isEditingTitle && isOwner && (
-                  <IconPencil
-                    className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
-                    onClick={() => {
-                      setIsEditingTitle(true);
-                      setTimeout(() => {
-                        if (inputRef.current) {
-                          inputRef.current.focus();
-                        }
-                      });
-                    }}
+              <div className='flex-col'>
+                {error && (
+                  <h1 className='text-center font-geist font-bold text-red-500'>
+                    {error}
+                  </h1>
+                )}
+                <div className='flex gap-4 p-4'>
+                  <span
+                    ref={spanRef}
+                    className='absolute invisible font-sans text-5xl font-bold text-zinc-200 p-2'
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    {title === '' ? set?.title : title}
+                  </span>
+                  <input
+                    ref={inputRef}
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    readOnly={!isEditingTitle}
+                    className={twMerge(
+                      'flex max-w-sm text-zinc-200 font-sans text-5xl p-2 font-bold transition duration-250',
+                      isEditingTitle
+                        ? 'bg-zinc-700 rounded px-2 outline-none focus:outline focus:outline-fuchsia-500/50'
+                        : 'bg-transparent cursor-default outline-none p-2'
+                    )}
+                    style={!isEditingTitle ? { width: inputWidth } : undefined}
                   />
-                )}
-                {isEditingTitle && (
-                  <div className='flex py-4 justify-center items-center'>
-                    <button
-                      onClick={handleTitleEdit}
-                      className='flex justify-center items-center px-2 py-1 rounded bg-white font-semibold font-geist text-black-500 text-xl transition-opacity hover:opacity-80'
-                    >
-                      Save
-                    </button>
-                  </div>
-                )}
+                  {!isEditingTitle && isOwner && (
+                    <IconPencil
+                      className='text-zinc-300 size-6 cursor-pointer hover:text-zinc-100 hover:rotate-2 hover:scale-125 transition duration-150'
+                      onClick={() => {
+                        setIsEditingTitle(true);
+                        setTimeout(() => {
+                          if (inputRef.current) {
+                            inputRef.current.focus();
+                          }
+                        });
+                      }}
+                    />
+                  )}
+                  {isEditingTitle && set && (
+                    <div className='flex-col'>
+                      <button
+                        onClick={handleTitleEdit}
+                        className='flex px-2 py-1 rounded bg-white font-semibold font-geist text-black-500 text-xl transition-opacity hover:opacity-80'
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => {
+                          setTitle(set.title);
+                          setError(null);
+                          setIsEditingTitle(false);
+                        }}
+                        className='flex mt-4 px-2 py-1 rounded bg-zinc-600 border border-zinc-400 font-semibold font-geist text-red-500 text-xl transition-opacity hover:opacity-80'
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

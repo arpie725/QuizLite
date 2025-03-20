@@ -46,6 +46,7 @@ export default function EditQAModal({
       editQuestion.trim() === card.question &&
       editAnswer.trim() === card.answer
     ) {
+      setError(null);
       setIsOpen(false);
       return;
     }
@@ -66,9 +67,17 @@ export default function EditQAModal({
       );
       const { updatedCard } = res.data;
       updateCard(updatedCard);
+      setError(null);
       // close the modal
       setIsOpen(false);
     } catch (er) {
+      if (axios.isAxiosError(er) && er.response) {
+        setError(
+          er.response.data.message || 'Failed to edit question / answer'
+        );
+      } else {
+        setError('An unexpected error occurred');
+      }
       console.log('ERROR updating the question / answer: ', er);
     }
   };
@@ -109,7 +118,7 @@ export default function EditQAModal({
                   <button
                     className='font-geist text-zinc-300 hover:text-zinc-100 transition duration-150'
                     onClick={() => {
-                      console.log('TODO: close the modal (nothing happens)');
+                      setError(null);
                       setIsOpen(false);
                     }}
                   >
@@ -124,12 +133,18 @@ export default function EditQAModal({
                     Editing Question / Answer
                   </h3>
                 </div>
+                {error && (
+                  <h1 className='font-geist text-xl font-bold bg-black px-2 text-center rounded text-red-500'>
+                    {error}
+                  </h1>
+                )}
                 <div className='flex flex-col'>
                   {/* update question and answer */}
                   <div className='flex-col items-center'>
                     <h1 className='font-geist text-xl font-bold text-zinc-300'>
                       question
                     </h1>
+
                     <textarea
                       value={editQuestion}
                       placeholder={'edit question...'}

@@ -24,6 +24,7 @@ export const DisplayQAWithEdit = ({
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const questionRef = useRef<HTMLInputElement>(null);
   const answerRef = useRef<HTMLInputElement>(null);
@@ -35,8 +36,9 @@ export const DisplayQAWithEdit = ({
   const handleSave = async () => {
     const token = localStorage.getItem('token');
     if (question.trim() === card.question && answer.trim() === card.answer) {
-      // no chance, just close turn isEditing to false
+      // no change, just close turn isEditing to false
       setIsEditing(false);
+      setError(null);
       return;
     }
     try {
@@ -57,12 +59,16 @@ export const DisplayQAWithEdit = ({
       const updatedCard = res.data.updatedCard;
       updateCard(updatedCard);
       setIsEditing(false);
+      setError(null);
     } catch (er) {
       console.log('Error updating the card: ', er);
-      // set the q / a back to the original and close the edit
-      setQuestion(card.question);
-      setAnswer(card.answer);
-      setIsEditing(false);
+      if (axios.isAxiosError(er) && er.response) {
+        setError(
+          er.response.data.message || 'Failed to update question / answer'
+        );
+      } else {
+        setError('An unexpected error occurred');
+      }
     }
   };
 
@@ -140,7 +146,10 @@ export const DisplayQAWithEdit = ({
         <div className='flex gap-4'>
           <button
             onClick={() => {
+              setQuestion(card.question);
+              setAnswer(card.answer);
               setIsEditing(false);
+              setError(null);
             }}
             className='flex justify-center items-center px-2 py-1 rounded bg-zinc-500 font-semibold font-geist text-red-500 text-xl transition-opacity hover:opacity-80'
           >
@@ -152,6 +161,9 @@ export const DisplayQAWithEdit = ({
           >
             Save
           </button>
+          <div className='flex justify-center items-center'>
+            <h1 className='text-red-500 text-center text-sm'>{error}</h1>
+          </div>
         </div>
         <div>
           <button
