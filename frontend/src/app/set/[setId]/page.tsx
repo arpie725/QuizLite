@@ -300,8 +300,8 @@ export default function SpecificSetPage() {
         />
       )}
       {showAllCards && (
-        <section className='border border-dashed'>
-          <div className='my-24 container border'>
+        <section className=''>
+          <div className='my-24 container'>
             {/* show all cards */}
             <div className='flex flex-col gap-8'>
               {cards.map((card, idx) => (

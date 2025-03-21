@@ -11,8 +11,6 @@ export default function Home() {
       console.log('no token found!');
       router.push('/auth');
     }
-    // TODO: token can exist but be a faulty token
-
     // if valid token, navigate to the dashboard
     if (token) {
       router.push('/dashboard');

@@ -7,9 +7,6 @@ import cardRoutes from './routes/cardRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import tagRoutes from './routes/tagRoutes.js';
 
-// TODO: delete the filename, dirname stuff
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
 
 const app = express();
 app.use(cors());

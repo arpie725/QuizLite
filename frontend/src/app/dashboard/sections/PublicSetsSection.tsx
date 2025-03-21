@@ -142,7 +142,7 @@ export const PublicSetsSection = () => {
               {/* Displaying the actual sets */}
               <div
                 ref={publicSetsRef}
-                className='mt-8 grid md:grid-cols-2 lg:grid-cols-3 max-h-96 overflow-x-hidden overflow-y-scroll no-scrollbar'
+                className='mt-8 grid md:grid-cols-2 lg:grid-cols-3 h-[700px] overflow-x-hidden overflow-y-scroll no-scrollbar'
               >
                 {publicSets.map(({ id, title, user }) => (
                   <motion.div

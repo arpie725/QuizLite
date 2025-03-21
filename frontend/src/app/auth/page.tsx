@@ -1,14 +1,14 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { AuthForm } from './components/AuthForm';
 import { useRouter } from 'next/navigation';
 
 const AuthPage = () => {
+  const [isLogin, setIsLogin] = useState(true);
+
   const router = useRouter();
-  // TODO: logged in users should be rerouted to the dashboard
   useEffect(() => {
     const token = localStorage.getItem('token');
-    // TODO: make sure token is valid
 
     if (token) {
       // route to the dashboard
@@ -17,9 +17,21 @@ const AuthPage = () => {
   }, []);
 
   return (
-    <div>
-      {/* temp: TODO: create section */}
-      <AuthForm />
+    <div className='absolute-center'>
+      <div className='flex-col border-4 rounded-2xl border-zinc-500/50'>
+        <div className='px-8 py-4 flex font-geist justify-between items-center'>
+          <h1 className='text-6xl text-fuchsia-500'>
+            Quiz<span className='text-gray-400'>lite:</span>
+          </h1>
+          <h1 className='text-xl text-gray-400'>
+            {isLogin ? 'Login' : 'Register'}
+          </h1>
+        </div>
+        <AuthForm
+          isLogin={isLogin}
+          setIsLogin={setIsLogin}
+        />
+      </div>
     </div>
   );
 };

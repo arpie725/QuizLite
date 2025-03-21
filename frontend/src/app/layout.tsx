@@ -17,7 +17,7 @@ import {
   IconLogout2,
   IconQuestionMark,
 } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import LogoutButton from '@/components/LogoutButton';
 
@@ -58,17 +58,21 @@ export default function RootLayout({
     },
     {
       label: 'How to Use Quizlite',
-      href: '/dashboard',
+      href: '/about',
       icon: (
         <IconQuestionMark className='text-neutral-200 h-6 w-6 flex-shrink-0' />
       ),
     },
   ];
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    setOpen(false);
+  }, []);
+
   return (
     <html lang='en'>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${calistoga.variable} ${inter.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${calistoga.variable} ${inter.variable} antialiased flex flex-col min-h-screen`}
       >
         <div className='rounded-md flex md:flex-row bg-gray-100 dark:bg-neutral-800 w-full h-screen mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden'>
           {!isAuthPage && (
@@ -76,7 +80,7 @@ export default function RootLayout({
               <Sidebar
                 open={open}
                 setOpen={setOpen}
-                animate={true} // for dev (animates the sidebar)
+                animate={true}
               >
                 <SidebarBody className='h-full justify-between gap-10'>
                   {/* side bar content */}

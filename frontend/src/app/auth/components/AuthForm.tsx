@@ -9,12 +9,16 @@ import {
   UnauthorizedError,
 } from '@/utils/errors.js';
 
-export const AuthForm = () => {
+interface AuthFormProps {
+  isLogin: boolean;
+  setIsLogin: (isLogin: boolean) => void;
+}
+
+export const AuthForm = ({ isLogin, setIsLogin }: AuthFormProps) => {
   const router = useRouter();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [isLogin, setIsLogin] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -44,7 +48,7 @@ export const AuthForm = () => {
 
   return (
     <section className='flex justify-center items-center'>
-      <div className='w-fit border border-dashed p-24'>
+      <div className='w-fit p-24'>
         <div className='flex flex-col'>
           {/* form */}
           <form onSubmit={handleSubmit}>

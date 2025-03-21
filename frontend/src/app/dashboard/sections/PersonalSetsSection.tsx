@@ -69,10 +69,6 @@ export const PersonalSetsSection = () => {
       setEditingSetError(null);
       setIsEditing(false);
     } catch (er) {
-      // TODO: handle errors
-      // NOTE: there can be many errors (duplicate entry, empty title, etc.)
-      // Prob just need to display the specific error message recieved from the backend
-      // Prob need a renameError state
       console.error('Error renaming the set: ', er);
       if (axios.isAxiosError(er) && er.response) {
         setEditingSetError(er.response.data.message || 'Failed to rename set');
@@ -213,14 +209,16 @@ export const PersonalSetsSection = () => {
   return (
     <section className='mt-12'>
       <div className='container'>
-        <div className='mt-4 flex justify-center items-center gap-12 py-4'>
-          <h1 className='login-text'>Your Study Sets</h1>
-          <input
-            className='user-input-bg user-input-text placeholder-zinc-500'
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder='Search...'
-          />
+        <div className='mt-4 flex justify-between items-end gap-12 py-4'>
+          <div className='flex flex-col gap-4'>
+            <h1 className='login-text'>Your Study Sets</h1>
+            <input
+              className='user-input-bg user-input-text placeholder-zinc-500'
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder='Search...'
+            />
+          </div>
           <button
             onClick={() => {
               setIsAdding(true);
