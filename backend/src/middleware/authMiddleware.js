@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken';
+import { NotFoundError } from '../utils/errors.js';
+import { userExists } from '../utils/authHelpers.js';
 
 /*
   job of middleware is to intercept network requests to validate tokens
@@ -10,23 +12,47 @@ import jwt from 'jsonwebtoken';
   great for security where we ensure the data is being accessed by the correct users
 */
 
-function authMiddleware(req, res, next) {
+async function authMiddleware(req, res, next) {
   const token = req.headers['authorization'];
+  // console.log(req.headers);
   if (!token) {
     return res.status(401).json({
       success: false,
+      errorType: 'NotFoundError',
       message: 'Token was not found',
     });
   }
   // check if the token is valid using jwt
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
     if (err) {
-      return res.status(401).json({ success: false, message: 'Invalid token' });
+      return res.status(401).json({
+        success: false,
+        errorType: 'UnauthorizedError',
+        message: 'Invalid token',
+      });
     }
-    // modify the request to include a userId
-    req.userId = decoded.indexOf;
-    // continue to the endpoint
-    next();
+    const userId = decoded.id;
+    try {
+      // check if the user exists in the database
+      const existingUser = await userExists(userId);
+      if (!existingUser) {
+        throw new NotFoundError('User not found');
+      }
+      // modify the request to include a userId
+      req.userId = userId;
+      // continue to the endpoint
+      next();
+    } catch (er) {
+      if (er instanceof NotFoundError) {
+        return res
+          .status(er.statusCode)
+          .json({ success: false, errorType: er.name, message: er.message });
+      }
+      console.log(er);
+      return res
+        .status(500)
+        .json({ success: false, message: 'Internal server error' });
+    }
   });
 }
 

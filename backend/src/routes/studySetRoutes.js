@@ -1,0 +1,397 @@
+import express from 'express';
+import prisma from '../prismaClient.js';
+import { findAndVerifySet, setExists } from '../utils/studySetHelpers.js';
+import {
+  InvalidParamsError,
+  DuplicateEntryError,
+  handleErrors,
+  NotFoundError,
+} from '../utils/errors.js';
+import { findAndVerifyTags } from '../utils/tagHelpers.js';
+
+const router = express.Router();
+
+// NOTE: middleware authenticates the token before reaching this endpoint!
+
+/** creates a new study set
+ * - ensures new study set is unique
+ * - adds a new set entry into the database
+ * - creates a default flashcard for the new set
+ * - returns the newly created study set
+ */
+router.post('/', async (req, res) => {
+  const { title, isPublic } = req.body;
+  const userId = req.userId;
+  const trimmedTitle = title?.trim();
+  // interact with the db
+  try {
+    // check if title is empty or undefined
+    if (!trimmedTitle) {
+      throw new InvalidParamsError('Title cannot be empty');
+    }
+    // check if the set already exists
+    if (await setExists(trimmedTitle, userId)) {
+      throw new DuplicateEntryError(`'${trimmedTitle}' already exists`);
+    }
+    // add the new study set entry into the database
+    const newSet = await prisma.set.create({
+      data: {
+        title: trimmedTitle,
+        isPublic,
+        user: { connect: { id: userId } },
+      },
+      omit: {
+        userId: true,
+      },
+    });
+    // create a default flashcard
+    await prisma.card.create({
+      data: {
+        question: 'What color is the sky',
+        answer: 'Blue!',
+        set: { connect: { id: newSet.id } },
+      },
+    });
+    // return the newly created set
+    return res.status(201).json({
+      success: true,
+      message: 'Created a new study set',
+      data: {
+        set: newSet,
+      },
+    });
+  } catch (er) {
+    // expected error
+    return handleErrors(er, res);
+  }
+});
+
+/** edits an existing study set
+ * - can be (title, isPublic, isFavorite, etc.)
+ * - ensures the set belongs to the user
+ * - updates the set
+ * - returns the updated set
+ */
+router.put('/:setId', async (req, res) => {
+  const setId = parseInt(req.params.setId);
+  const userId = req.userId;
+  const { title, isPublic, isFavorite } = req.body;
+  const trimmedTitle = title?.trim();
+  // interact with the database
+  try {
+    // check if the title is empty string
+    if (trimmedTitle === '') {
+      throw new InvalidParamsError('Title cannot be empty');
+    }
+    // verify setId exists and belongs to the user
+    await findAndVerifySet(setId, userId);
+    // possible that title was never passed in
+    if (title) {
+      // verify that a set with the same title doesn't already exist
+      if (await setExists(trimmedTitle, userId)) {
+        throw new DuplicateEntryError(
+          `Study set with with title: '${trimmedTitle}' already exists`
+        );
+      }
+    }
+    // update the title
+    const updatedSet = await prisma.set.update({
+      where: {
+        id: setId,
+      },
+      data: {
+        title: trimmedTitle,
+        isPublic,
+        isFavorite,
+      },
+      omit: {
+        userId: true,
+      },
+    });
+    // return the updated set
+    return res.status(200).json({
+      success: true,
+      message: 'Updated the study set',
+      data: {
+        set: updatedSet,
+      },
+    });
+  } catch (er) {
+    // expected error
+    return handleErrors(er, res);
+  }
+});
+
+/** copies an existing study set
+ * - expects the ID of the set to copy
+ * - ensures the original set exists and is accessible
+ * - creates a new set owned by the current user
+ * - deep copies all cards form the original set
+ * - returns the newly created study set
+ */
+router.post('/copy/:setId', async (req, res) => {
+  const setId = parseInt(req.params.setId);
+  const userId = req.userId;
+  const { title } = req.body;
+
+  // interact with the database
+  try {
+    // get the original set
+    const originalSet = await prisma.set.findUnique({
+      where: { id: setId },
+      include: { cards: true },
+    });
+    if (!originalSet) {
+      throw new NotFoundError(`Study set not found`);
+    }
+
+    const newTitle = title?.trim();
+    const setexists = await setExists(newTitle, userId);
+    if (setexists) {
+      throw new DuplicateEntryError(`Study set with title already exists`);
+    }
+
+    // create a new study set
+    const newSet = await prisma.set.create({
+      data: {
+        title: newTitle,
+        user: { connect: { id: userId } },
+      },
+      omit: { userId: true },
+    });
+
+    // deep copy all cards form the original set
+    const cardsToCreate = originalSet.cards.map((card) => ({
+      question: card.question,
+      answer: card.answer,
+      setId: newSet.id,
+    }));
+
+    await prisma.card.createMany({
+      data: cardsToCreate,
+    });
+
+    // return the newly created set
+    return res.status(201).json({
+      success: true,
+      message: 'Copied the study set successfully',
+      data: {
+        set: newSet,
+      },
+    });
+  } catch (er) {
+    return handleErrors(er, res);
+  }
+});
+
+/** deletes an existing study set
+ * - ensures the set belongs to the user
+ * - deletes the study set from the db
+ * - returns 204 no content
+ */
+router.delete('/:setId', async (req, res) => {
+  const setId = parseInt(req.params.setId);
+  const userId = req.userId;
+  // interact with the database
+  try {
+    // verify setId exists and belongs to the user
+    await findAndVerifySet(setId, userId);
+    // delete the study set from the database
+    await prisma.set.delete({
+      where: {
+        id: setId,
+      },
+    });
+    // send back a 204 status
+    return res.sendStatus(204); // 204 means no content
+  } catch (er) {
+    // expected error
+    return handleErrors(er, res);
+  }
+});
+
+/** retrieves the study set from the database
+ * - ensures the set belongs to the user
+ * - queries the database for the study set
+ * - returns the study set and cardCount
+ */
+router.get('/:setId/', async (req, res) => {
+  const setId = parseInt(req.params.setId);
+  const userId = req.userId;
+  // interact with the database
+  try {
+    // verify the setId exists and belongs to the user
+    const { curSet, cardCount } = await findAndVerifySet(setId, userId);
+    // return the set from the database
+    return res.status(201).json({
+      success: true,
+      message: 'Retrieved the set',
+      data: {
+        set: curSet,
+        cardCount,
+      },
+    });
+  } catch (er) {
+    // expected error
+    return handleErrors(er, res);
+  }
+});
+
+/** retrieves all cards belonging to a study set
+ * - ensures the set belongs to the user
+ * - queries the db for all cards that belong to the study set
+ * - returns the study set, cardCount, and cards
+ */
+router.get('/:setId/cards', async (req, res) => {
+  const setId = parseInt(req.params.setId);
+  const userId = req.userId;
+  // interact with the database
+  try {
+    // verify study set belongs to user
+    const { curSet, cardCount } = await findAndVerifySet(setId, userId);
+    // query the database for all cards that have setId
+    const cards = await prisma.card.findMany({
+      where: {
+        setId,
+      },
+    });
+    // return the curSet and cards
+    return res.status(201).json({
+      success: true,
+      message: 'Retrieved all cards from set',
+      data: {
+        set: curSet,
+        cardCount,
+        cards,
+      },
+    });
+  } catch (er) {
+    // expected error
+    return handleErrors(er, res);
+  }
+});
+
+/// TAGS ------------------------------------------------
+
+/** update tags to a study set
+ * - expects an array of tags (id, name)
+ * - ensures the set exists and belongs to the user
+ * - ensures each tag exists and belongs to the user
+ * - updates the tags to the set
+ * - returns the set with the updated tags
+ */
+router.post('/:setId/update-tags', async (req, res) => {
+  const userId = req.userId;
+  const setId = parseInt(req.params.setId);
+  const { tags } = req.body; // expecting an array of tags
+  const tagIds = tags.map((tag) => tag.id);
+  // interact with the database
+  try {
+    // verify set exists and belongs to user
+    await findAndVerifySet(setId, userId);
+    // verify all tags exist and belong to user
+    // connect the tags to the set
+    const updatedSet = await prisma.set.update({
+      where: { id: setId },
+      data: {
+        tags: {
+          set: tagIds.map((id) => ({ id })),
+        },
+      },
+      include: { tags: { omit: { userId: true } } },
+      omit: {
+        userId: true,
+      },
+    });
+    // return the set with the tags
+    return res.status(200).json({
+      success: true,
+      message: 'Tags updated for set',
+      data: {
+        set: updatedSet,
+      },
+    });
+  } catch (er) {
+    return handleErrors(er, res);
+  }
+});
+
+/** removes tags from a study set
+ * - expects a non-empty int array of tagIds
+ * - ensures the set exists and belongs to the user
+ * - ensures each tag exists and belongs to the user
+ * - unconnects the tags to the set
+ * - returns the set with all its remaining tags
+ */
+/** 
+router.post('/:setId/unassign-tags', async (req, res) => {
+  const userId = req.userId;
+  const setId = parseInt(req.params.setId);
+  const { tagIds } = req.body; // expecting an array of tagId
+  // interact with the database
+  try {
+    // verify set exists and belongs to the user
+    await findAndVerifySet(setId, userId);
+    // verify all tags exist and belong to user
+    await findAndVerifyTags(tagIds, userId);
+    // unconnect the tags to set relationship
+    const updatedSet = await prisma.set.update({
+      where: { id: setId },
+      data: {
+        tags: {
+          disconnect: tagIds.map((id) => ({ id })),
+        },
+      },
+      include: { tags: { omit: { userId: true } } },
+      omit: {
+        userId: true,
+      },
+    });
+    // return the set with the tags
+    return res.status(200).json({
+      success: true,
+      message: 'Disconnected tags from set',
+      data: {
+        set: updatedSet,
+      },
+    });
+  } catch (er) {
+    return handleErrors(er, res);
+  }
+});
+*/
+
+/** gets all tags from a study set
+ * - ensures the set exists and belongs to the user
+ * - queries all tags from a set
+ * - returns the set with all tags
+ */
+router.get('/:setId/tags', async (req, res) => {
+  const userId = req.userId;
+  const setId = parseInt(req.params.setId);
+  // interact with the database
+  try {
+    // verify the set exists and belongs to the user
+    await findAndVerifySet(setId, userId);
+    // get the set with all the tags
+    const set = await prisma.set.findUnique({
+      where: {
+        id: setId,
+      },
+      include: { tags: { omit: { userId: true } } },
+      omit: { userId: true },
+    });
+    // return the set with all the tags
+    return res.status(200).json({
+      success: true,
+      message: 'Retrieved all tags from the set',
+      data: {
+        set,
+      },
+    });
+  } catch (er) {
+    return handleErrors(er, res);
+  }
+});
+
+export default router;

@@ -1,26 +1,67 @@
-//
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Header } from '@/sections/HeaderSection';
+import axios from 'axios';
+import { PersonalSetsSection } from './sections/PersonalSetsSection';
+import { PublicSetsSection } from './sections/PublicSetsSection';
 
-const Dashboard = () => {
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+const DashboardPage = () => {
   const router = useRouter();
+
+  const [username, setUsername] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) {
-      console.log('no token found!');
-      router.push('/');
-    }
-    // TODO: use token to get data from server
-    // make sure to check if the token is a valid token (jwt.verify in server)
+    const fetchUsername = async () => {
+      setLoading(true);
+      try {
+        const { data: res } = await axios.get(`${apiUrl}/user`, {
+          headers: {
+            Authorization: `${token}`,
+          },
+        });
+        const username = res.data.username;
+        setUsername(username);
+      } catch (er) {
+        console.error('Error fetching username:', er);
+        setError(`ERROR: ${(er as any).response.data.message}`);
+        // error fetching user, so take the user back to the auth page
+        // remove any token in localStorage
+        localStorage.removeItem('token');
+        router.push('/auth');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsername();
   }, []);
 
+  if (loading) {
+    // display a loading div
+    return <div className='login-text'>LOADING...</div>;
+  }
+
+  if (error) {
+    // display an error div
+    return <div className='login-text'>{error}</div>;
+  }
+
   return (
-    <div>
-      <h1 className='text-5xl login-text'>Dashboard!</h1>
+    <div className='mt-12'>
+      <div className='mx-14'>
+        <h1 className='login-text'>
+          Hi, <span className='text-gray-400'>{username}!</span>
+        </h1>
+      </div>
+      <PersonalSetsSection />
+      <PublicSetsSection />
     </div>
   );
 };
 
-export default Dashboard;
+export default DashboardPage;

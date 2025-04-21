@@ -1,12 +1,12 @@
+# Important! Commas cannot come after the last json entry
 
-
-## Register a user
+### Register a user
 POST http://localhost:1322/auth/register
 Content-Type: application/json
 
 {
   "username": "arpie",
-  "password": "password"
+  "password": "p"
 }
 
 ### Log in a user
@@ -14,7 +14,7 @@ POST http://localhost:1322/auth/login
 Content-Type: application/json
 
 {
-  "username": "arpie",
+  "username": "arpie1",
   "password": "password"
 }
 
@@ -27,3 +27,166 @@ Content-Type: application/json
   "password": "wrongPassword!"
 }
 
+### Create a new study set
+POST http://localhost:1322/study-set
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5NTcyNjAyLCJleHAiOjE3Mzk2NTkwMDJ9.LShWKw3oS98wujdjw7ESbEFWFvHWCroOLmii0SqsaPs
+Content-Type: application/json
+
+{
+  "title": "110",
+  "isPublic": true
+}
+
+### Delete a study set
+DELETE http://localhost:1322/study-set/29
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODk1MjAyLCJleHAiOjE3Mzg5ODE2MDJ9.dEXf37Q49mYMebOhR3Oq9cdtLmjRUHIiHxwj1qqfnd4
+
+### Change the name of a study set
+PUT http://localhost:1322/study-set/33
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+Content-Type: application/json
+
+{
+  "title": "   Hist Midterm  "
+}
+
+### Change the visibility of a study set
+PUT http://localhost:1322/study-set/31
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+Content-Type: application/json
+
+{
+  "isPublic": true
+}
+
+### Create a new card
+POST http://localhost:1322/card/31
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+Content-Type: application/json
+
+{
+  "question": "What is CRUTON   ",
+  "answer": "  create, read, update, delete     "
+}
+
+### Edit the (question / answer) of a card
+PUT http://localhost:1322/card/37
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5NDczMDY0LCJleHAiOjE3Mzk1NTk0NjR9.0VoFxHW1hBgL298YkMuCQj2ykQPWAN_ezByGMw9LaU8
+Content-Type: application/json
+
+{
+  "question": "What is donald trump's favorite instrument?    "
+}
+
+### Edit the (isComplete) of a card
+PUT http://localhost:1322/card/21
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4OTY5NDQxLCJleHAiOjE3MzkwNTU4NDF9.jr13J9hbHFAXO9qa6ZO7RXO3vtw46LpoS3srnUKwU0k
+Content-Type: application/json
+
+{
+  "question": " Who is the current US President ",
+  "isComplete": true
+}
+
+### Delete a card
+DELETE http://localhost:1322/card/32
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM4OTY5NDQxLCJleHAiOjE3MzkwNTU4NDF9.jr13J9hbHFAXO9qa6ZO7RXO3vtw46LpoS3srnUKwU0k
+
+
+### Get a study set
+GET http://localhost:1322/study-set/13
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+Content-Type: application/json
+
+### Get all cards from a study set
+GET http://localhost:1322/study-set/31/cards
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MzM4NTE5LCJleHAiOjE3Mzk0MjQ5MTl9.Q3spHRpB9q0wj3fHx67jdQSNhZzOaPhO6XB6edVktN4
+
+### Get all sets from a user
+GET http://localhost:1322/user/sets
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+
+### Delete a user
+DELETE http://localhost:1322/user
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4OTkwNjY5LCJleHAiOjE3MzkwNzcwNjl9.0YRM3VxXYpmMLjocRIYLY-yFBrYMi-owwGA_Ypab0jQ
+
+### Create a new tag
+POST http://localhost:1322/tag
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5Mjk4OTYzLCJleHAiOjE3MzkzODUzNjN9.HfDNgdR6K70HqpXyq4CTIHJ5o1GmpdQPPdFAeC8dYNQ
+Content-Type: application/json
+
+{
+  "name": " Farmville "
+}
+
+### Edit a tag
+PUT http://localhost:1322/tag/9
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MTM3NjQ1LCJleHAiOjE3MzkyMjQwNDV9.b8VCjgcxohsNofQnIDcIE0rHIX6m5dt3B3EKFAr3hOM
+Content-Type: application/json
+
+{
+  "name": " Farmville "
+}
+
+
+### Delete a tag
+DELETE http://localhost:1322/tag/6
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5MTM3Njc1LCJleHAiOjE3MzkyMjQwNzV9.jmb6_e7KsWDv_LSYHmw1fCLLQo8Thy2IzqX-Ft7kPC8
+
+
+### Get a tag
+GET http://localhost:1322/tag/get-tag/9
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+
+
+### Get all tags from a user
+GET http://localhost:1322/user/tags
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+
+
+### Assign tags to a study set 
+POST http://localhost:1322/study-set/39/assign-tags
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5Mjk4OTYzLCJleHAiOjE3MzkzODUzNjN9.HfDNgdR6K70HqpXyq4CTIHJ5o1GmpdQPPdFAeC8dYNQ
+Content-Type: application/json
+
+{
+  "tagIds": [11]
+}
+
+
+### Remove tags from a study set
+POST http://localhost:1322/study-set/34/unassign-tags
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+Content-Type: application/json
+
+{
+  "tagIds": [9]
+}
+
+### Get all tags from a study set
+GET http://localhost:1322/study-set/34/tags
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MzM4NTE5LCJleHAiOjE3Mzk0MjQ5MTl9.Q3spHRpB9q0wj3fHx67jdQSNhZzOaPhO6XB6edVktN4
+
+
+### Get all sets belonging to a tag
+GET http://localhost:1322/tag/sets/11
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5Mjk4OTYzLCJleHAiOjE3MzkzODUzNjN9.HfDNgdR6K70HqpXyq4CTIHJ5o1GmpdQPPdFAeC8dYNQ
+
+
+### Get all public sets belonging to a tag
+GET http://localhost:1322/tag/public-sets
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MjQ2OTcwLCJleHAiOjE3MzkzMzMzNzB9.L8IkYFeXid5P5Nffupx_q6XA6GCVEOIPfICWaEyS3-U
+Content-Type: application/json
+
+{
+  "tagName": "   Farmville   "
+}
+
+### Get all distinct tag names
+GET http://localhost:1322/tag/all-tags
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5MzM4NTE5LCJleHAiOjE3Mzk0MjQ5MTl9.Q3spHRpB9q0wj3fHx67jdQSNhZzOaPhO6XB6edVktN4
+
+
+### arpie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNzM5NDczMDY0LCJleHAiOjE3Mzk1NTk0NjR9.0VoFxHW1hBgL298YkMuCQj2ykQPWAN_ezByGMw9LaU8
+### arpie1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzM5NTcyNjAyLCJleHAiOjE3Mzk2NTkwMDJ9.LShWKw3oS98wujdjw7ESbEFWFvHWCroOLmii0SqsaPs
+### arpie2: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzM5MTM3NjkxLCJleHAiOjE3MzkyMjQwOTF9.iC0CIavD6U3XEhcwWo4xd1YVXUOj8oq-9-a0E4pikCY

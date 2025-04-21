@@ -4,15 +4,22 @@ It's a dockerized, full stack flashcards application that uses a Nextjs frontend
 For Development:
 
 - Frontend:
+  - add the .env.local file to the frontend folder
   - Navigate to the frontend folder
   - run 'npm install'
   - run 'npm run dev'
 
 - Backend:
+  - add the .env file to the backend folder
   - Navigate to the backend folder
   - run 'npm install'
   - run 'npm run dev'
 
-
+- postgreSQL DB:
+  - Navigate to the backend folder
+  - run 'psql -U postgres -h localhost -p 5432'
+  - run '\c mydb'
+  - '\dt': shows all the tables
+  - 'SELECT * FROM "User";': shows all the entries in the User table
 
 To run in Docker (Coming Soon!)

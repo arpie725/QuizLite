@@ -6,20 +6,13 @@
 
 // To see tables in terminal: https://www.digitalocean.com/community/questions/how-to-show-all-tables-in-postgresql
 
-// start up the new schema (VERY IMPORTANT)
-// npx prisma migrate dev --name init 
+// any changes to the db:
+// navigate to the backend folder
+// run 'npx prisma generate'
 
-// any changes to the db needs a npx prisma generate
+// migrate the new db (VERY IMPORTANT)
+// npx prisma migrate dev --name choose_a_desc_name
 
-// assuming postgresql is on port 5432
-// psql -U postgress -h localhost -p 5432
-// to switch to 'mydb' database
-// \c mydb
-// to view tables
-// \dt
-
-// to view specific sql commands,
-// SELECT * FROM "User"; 
 
 generator client {
   provider = "prisma-client-js"
@@ -34,22 +27,47 @@ model User {
   id        Int       @id @default(autoincrement())
   username  String    @unique
   password  String    
+  sets      Set[]
+  tags      Tag[]
+}
+
+model Set {
+  id        Int       @id @default(autoincrement())
+  title     String
+  isPublic  Boolean   @default(false)
+  isFavorite  Boolean @default(false)
+  tags      Tag[]     @relation("SetTags")
   cards     Card[]
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([title, userId])
+}
+
+
+enum CompletionStatus {
+  NOT_ASSESSED
+  CORRECT
+  WRONG
 }
 
 model Card {
-  id        Int       @id @default(autoincrement())
-  question  String
-  answer    String
-  completed Boolean   @default(false)
-  tags      Tag[]     @relation("CardTags")
-  userId    Int
-  user      User      @relation(fields: [userId], references: [id])
+  id          Int       @id @default(autoincrement())
+  question    String
+  answer      String
+  status      CompletionStatus    @default(NOT_ASSESSED)
+  setId       Int
+  set         Set       @relation(fields: [setId], references: [id], onDelete: Cascade)
 
+  @@unique([question, answer, setId])
 }
 
 model Tag {
   id        Int       @id @default(autoincrement())
-  name      String    @unique
-  cards     Card[]    @relation("CardTags")
+  name      String    
+  sets      Set[]     @relation("SetTags")
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name])
 }

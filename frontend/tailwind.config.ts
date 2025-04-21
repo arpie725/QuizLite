@@ -1,4 +1,10 @@
 import type { Config } from 'tailwindcss';
+import svgToDataUri from 'mini-svg-data-uri';
+import colors from 'tailwindcss/colors';
+import defaultTheme from 'tailwindcss/defaultTheme';
+const {
+  default: flattenColorPalette,
+} = require('tailwindcss/lib/util/flattenColorPalette');
 
 export default {
   content: [
@@ -9,6 +15,8 @@ export default {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    // Note: On larger screens, the webpage will appear smaller. The fix for this is to include more screen sizes (xl, 2xl, etc.)
+    // Ex: Containers will have more empty space on the sides...
     screens: {
       sm: '375px',
       md: '768px',
@@ -26,14 +34,70 @@ export default {
     extend: {
       colors: {
         background: 'var(--background)',
-        foreground: 'var(--foreground)',
+        foreground: 'hsl(var(--foreground))',
       },
       fontFamily: {
         sans: 'var(--font-sans)',
         serif: 'var(--font-serif)',
         geist: 'var(--font-geist-mono)',
       },
+      animation: {
+        'move-left': 'move-left 1s linear infinite',
+        'move-right': 'move-left 1s linear infinite reverse',
+        'breathe-border-fuchsia':
+          'breatheBorderFuchsia 1.5s ease-in-out infinite',
+        'breathe-border-lime': 'breatheBorderLime 1.5s ease-in-out infinite',
+      },
+      keyframes: {
+        'move-left': {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        breatheBorderFuchsia: {
+          '0%, 100%': { borderColor: 'rgba(168, 85, 247, 0.5)' },
+          '50%': { borderColor: 'rgba(168, 85, 247, 0.1)' },
+        },
+        breatheBorderLime: {
+          '0%, 100%': { borderColor: 'rgba(132, 204, 22, 0.5)' },
+          '50%': { borderColor: 'rgba(132, 204, 22, 0.1)' },
+        },
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    addVariablesForColors,
+    function ({ matchUtilities, theme }: any) {
+      matchUtilities(
+        {
+          'bg-grid': (value: any) => ({
+            backgroundImage: `url("${svgToDataUri(
+              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="${value}"><path d="M0 .5H31.5V32"/></svg>`
+            )}")`,
+          }),
+          'bg-grid-small': (value: any) => ({
+            backgroundImage: `url("${svgToDataUri(
+              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="8" height="8" fill="none" stroke="${value}"><path d="M0 .5H31.5V32"/></svg>`
+            )}")`,
+          }),
+          'bg-dot': (value: any) => ({
+            backgroundImage: `url("${svgToDataUri(
+              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16" fill="none"><circle fill="${value}" id="pattern-circle" cx="10" cy="10" r="1.6257413380501518"></circle></svg>`
+            )}")`,
+          }),
+        },
+        { values: flattenColorPalette(theme('backgroundColor')), type: 'color' }
+      );
+    },
+  ],
 } satisfies Config;
+
+function addVariablesForColors({ addBase, theme }: any) {
+  let allColors = flattenColorPalette(theme('colors'));
+  let newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  );
+
+  addBase({
+    ':root': newVars,
+  });
+}
