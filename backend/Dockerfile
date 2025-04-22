@@ -12,11 +12,13 @@ COPY package-lock.json .
 # Install the dependencies (that are already in the package.json)
 RUN npm install  
 
+# Generate the Prisma client (now assuming schema is at backend/prisma/schema.prisma)
+RUN npx prisma generate --schema=./backend/prisma/schema.prisma
+
 # Copy the entire backend directory
 COPY backend ./backend
 
-# Generate the Prisma client (now assuming schema is at backend/prisma/schema.prisma)
-RUN npx prisma generate --schema=./backend/prisma/schema.prisma
+
 
 # Copy the rest of the application code (copies from the chapter_4 folder to the /app in docker)
 COPY . . 
