@@ -10,7 +10,7 @@ COPY package.json .
 COPY package-lock.json .
 
 # Install the dependencies (that are already in the package.json)
-RUN npm install 
+RUN npm install && npx prisma generate
 
 # Copy the rest of the application code (copies from the chapter_4 folder to the /app in docker)
 COPY . . 
