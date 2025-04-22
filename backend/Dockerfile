@@ -8,7 +8,7 @@ WORKDIR /app
 # '.' refers to the /app in docker
 COPY package.json .
 COPY package-lock.json .
-COPY prisma ./prisma
+COPY backend/prisma ./backend/prisma
 
 # Install the dependencies (that are already in the package.json)
 RUN npm install && npx prisma generate
