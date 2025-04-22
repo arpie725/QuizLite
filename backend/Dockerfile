@@ -6,7 +6,8 @@ WORKDIR /app
 
 # Copy the package.json and package-lock.json files to the container
 # '.' refers to the /app in docker
-COPY package*.json .
+COPY package.json .
+COPY package-lock.json .
 
 # Install the dependencies (that are already in the package.json)
 RUN npm install 
