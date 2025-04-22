@@ -1,7 +1,13 @@
 'use client';
 import { cn } from '@/lib/utils';
 import Link, { LinkProps } from 'next/link';
-import React, { useState, createContext, useContext } from 'react';
+import React, {
+  HTMLAttributes,
+  ReactNode,
+  useState,
+  createContext,
+  useContext,
+} from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { IconMenu2, IconX } from '@tabler/icons-react';
 
@@ -193,17 +199,18 @@ export const SidebarLink = ({
   );
 };
 
+interface SidebarButtonProps extends HTMLAttributes<HTMLButtonElement> {
+  label?: string;
+  icon: ReactNode;
+  className?: string;
+}
+
 export const SidebarButton = ({
   label,
   icon,
   className,
   ...props
-}: {
-  label?: string;
-  icon: React.ReactNode;
-  className?: string;
-  props?: React.HTMLAttributes<HTMLButtonElement>;
-}) => {
+}: SidebarButtonProps) => {
   const { open, animate } = useSidebar();
   return (
     <button
