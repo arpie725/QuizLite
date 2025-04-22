@@ -8,13 +8,19 @@ WORKDIR /app
 # '.' refers to the /app in docker
 COPY package.json .
 COPY package-lock.json .
-COPY backend/prisma ./backend/prisma
 
 # Install the dependencies (that are already in the package.json)
-RUN npm install && npx prisma generate
+RUN npm install  
+
+# Copy the entire backend directory
+COPY backend ./backend
+
+# Generate the Prisma client (now assuming schema is at backend/prisma/schema.prisma)
+RUN npx prisma generate --schema=./backend/prisma/schema.prisma
 
 # Copy the rest of the application code (copies from the chapter_4 folder to the /app in docker)
 COPY . . 
+
 
 # Expose the port that the app runs on 
 EXPOSE 1322
