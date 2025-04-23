@@ -15,13 +15,13 @@ RUN npm install
 COPY . .
 
 # Build the frontend application
-RUN npm run build
+RUN npm run dev
 
-# Stage 2: Serve the static assets
-FROM nginx:alpine
+# # Stage 2: Serve the static assets
+# FROM nginx:alpine
 
-# Copy the built assets from the builder stage
-COPY --from=builder /app/out /usr/share/nginx/html
+# # Copy the built assets from the builder stage
+# COPY --from=builder /app/out /usr/share/nginx/html
 
 # Expose port 80 for HTTP
 EXPOSE 80
