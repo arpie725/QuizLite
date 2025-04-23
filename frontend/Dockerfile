@@ -17,8 +17,6 @@ COPY . .
 # Build the frontend application
 RUN npm run build
 
-RUN npm run export
-
 # Stage 2: Serve the static assets
 FROM nginx:alpine
 
