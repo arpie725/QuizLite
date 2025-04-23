@@ -1,4 +1,4 @@
-'use client';
+// 'use client';
 import Card from '@/models/Card';
 import CardData from '@/models/CardData';
 import { useParams } from 'next/navigation';
