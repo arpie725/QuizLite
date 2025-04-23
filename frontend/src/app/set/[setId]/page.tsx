@@ -24,6 +24,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
+export async function generateStaticParams() {
+  return []; // No static pages generated
+}
+
 export default function SpecificSetPage() {
   const params = useParams();
   const setId = params.setId ? parseInt(params.setId.toString()) : null;
